@@ -1,11 +1,28 @@
 {
-  "presets": [
-    [
-      "@babel/env",
-      {
-        "modules": "commonjs",
-        "targets": "defaults"
-      }
-    ]
-  ]
+  "env": {
+    "build": {
+      "presets": [
+        [
+          "@babel/env",
+          {
+            "modules": "commonjs",
+            "targets": "defaults"
+          }
+        ]
+      ]
+    },
+    "test": {
+      "presets": [
+        [
+          "@babel/env",
+          {
+            "modules": "commonjs",
+            "targets": "defaults",
+            "useBuiltIns": "usage",
+            "corejs": "3"
+          }
+        ]
+      ]
+    }
+  }
 }

@@ -8,12 +8,14 @@
   ],
   "scripts": {
     "start": "npm run dev",
-    "dev": "npm test -- -w",
-    "prebuild": "npm run clean && npm run init",
-    "build": "babel src -d dist --ignore **/*.test.js",
+    "dev": "npm run test:watch",
     "clean": "rm -rf dist",
     "init": "mkdir dist",
-    "test": "mocha --compiler js:babel-core ./src/**/*.test.js"
+    "prebuild": "npm run clean && npm run init",
+    "build": "set BABEL_ENV=build&&babel src -d dist --ignore **/*.test.js",
+    "build:watch": "npm run build -- --watch",
+    "test": "set BABEL_ENV=test&& mocha --compiler js:babel-core ./src/**/*.test.js",
+    "test:watch": "npm run test -- --watch"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,8 @@
     "@babel/preset-env": "^7.14.9",
     "@babel/register": "^7.14.5",
     "chai": "^4.3.4",
-    "mocha": "^9.0.3"
+    "core-js": "^3.16.0",
+    "mocha": "^9.0.3",
+    "node-fetch": "^2.6.1"
   }
 }

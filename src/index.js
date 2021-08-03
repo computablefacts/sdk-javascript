@@ -1,3 +1,3 @@
-const dummy = 45;
+import { api } from './api'
 
-export default dummy;
+export { api };

@@ -1,9 +1,16 @@
+import {describe, it} from 'mocha';
 import {expect} from 'chai';
-import * as index from './index';
+
+import * as cf from './index';
 
 describe('index', () => {
-  it('should have dummy equals to 45', () => {
-    console.log(index)
-    expect(index.default).to.equal(45);
+
+  //console.log('cf', cf)
+
+  it('should export api object', () => {
+    expect(cf).to.have.keys([
+      'api',
+    ])
   });
+
 });
