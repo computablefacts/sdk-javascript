@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import {expect, assert} from "chai";
 
-import {api} from "./api";
+import {api} from "../src/api";
 
 
 describe('api', () => {

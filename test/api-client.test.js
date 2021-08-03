@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import fetch from 'node-fetch';
 
-import {client} from "./api-client";
+import {client} from "../src/api-client";
 
 function jsonOk(body) {
   let mockResponse = new fetch.Response(JSON.stringify(body), {

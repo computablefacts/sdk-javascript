@@ -1,11 +1,11 @@
 import {describe, it} from 'mocha';
 import {expect} from 'chai';
 
-import * as cf from './index';
+import {cf} from '../src/cf';
 
-describe('index', () => {
+describe('cf', () => {
 
-  //console.log('cf', cf)
+  //console.log('cf=', cf)
 
   it('should export api object', () => {
     expect(cf).to.have.keys([

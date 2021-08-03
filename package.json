@@ -2,7 +2,7 @@
   "name": "@computablefacts/sdk-javascript",
   "version": "0.1.1",
   "description": "JavaScript SDK to access to ComputableFacts API",
-  "main": "dist/index.js",
+  "main": "dist/cs.js",
   "files": [
     "dist"
   ],
@@ -12,9 +12,9 @@
     "clean": "rm -rf dist",
     "init": "mkdir dist",
     "prebuild": "npm run clean && npm run init",
-    "build": "set BABEL_ENV=build&&babel src -d dist --ignore **/*.test.js",
+    "build": "rollup --config",
     "build:watch": "npm run build -- --watch",
-    "test": "set BABEL_ENV=test&& mocha --compiler js:babel-core ./src/**/*.test.js",
+    "test": "mocha --compiler js:babel-core ./test/**/*.test.js",
     "test:watch": "npm run test -- --watch"
   },
   "repository": {
@@ -35,6 +35,7 @@
     "chai": "^4.3.4",
     "core-js": "^3.16.0",
     "mocha": "^9.0.3",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "rollup": "^2.55.1"
   }
 }
