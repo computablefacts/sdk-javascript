@@ -62,9 +62,9 @@ $ npm run dev
 To use the package locally and verify that it works correctly, 
 you can use [`npm link` command](https://docs.npmjs.com/cli/v6/commands/npm-link).
 
-Or, with a static HTML page, use a webserver (apache, nginx) with or with a 
-tool like laragon to publish the package over HTTP and use it from the
-HTML:
+Or, with a static HTML page, use a webserver (apache, nginx) with or 
+without a tool like [Laragon](https://laragon.org/) to publish the package
+over HTTP and use it from the HTML:
 
 ```html
 <script src="http://sdk-javascript.test/dist/index.js"></script>
