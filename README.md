@@ -69,3 +69,14 @@ HTML:
 ```html
 <script src="http://sdk-javascript.test/dist/index.js"></script>
 ```
+
+## change version before publishing
+
+Use semantic versionning to change version number. Use 
+[`npm version` command](https://docs.npmjs.com/cli/v6/commands/npm-version).
+
+```shell
+$ npm version patch
+$ npm version minor
+$ npm version major
+```
