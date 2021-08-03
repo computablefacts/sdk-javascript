@@ -67,7 +67,7 @@ without a tool like [Laragon](https://laragon.org/) to publish the package
 over HTTP and use it from the HTML:
 
 ```html
-<script src="http://sdk-javascript.test/dist/index.js"></script>
+<script src="http://sdk-javascript.test/dist/cf.js"></script>
 ```
 
 ## change version before publishing

@@ -2,7 +2,7 @@
   "name": "@computablefacts/sdk-javascript",
   "version": "0.1.2",
   "description": "JavaScript SDK to access to ComputableFacts API",
-  "main": "dist/cs.js",
+  "main": "dist/cf.js",
   "files": [
     "dist"
   ],
