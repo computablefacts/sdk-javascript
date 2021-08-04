@@ -1,12 +1,18 @@
+import {client} from './api-client'
+
 const api = (function () {
 
   let _baseUrl;
+  let _baseUrlAutodetect;
   let _token;
+  let _tokenAutodetect;
   let publicFunctions = {};
 
   const reset = () => {
     _baseUrl = undefined
+    _baseUrlAutodetect = undefined
     _token = undefined
+    _tokenAutodetect = undefined
   }
 
   publicFunctions.getToken = () => {
@@ -14,10 +20,11 @@ const api = (function () {
   }
 
   publicFunctions.setToken = (newValue) => {
+    _tokenAutodetect = false
     _token = newValue
   }
 
-  publicFunctions.hasToken = (newValue) => {
+  publicFunctions.hasToken = () => {
     return _token !== undefined && _token !== null && _token !== ''
   }
 
@@ -26,10 +33,11 @@ const api = (function () {
   }
 
   publicFunctions.setBaseUrl = (newValue) => {
+    _baseUrlAutodetect = false
     _baseUrl = newValue
   }
 
-  publicFunctions.hasBaseUrl = (newValue) => {
+  publicFunctions.hasBaseUrl = () => {
     return _baseUrl !== undefined && _baseUrl !== null && _baseUrl !== ''
   }
 
@@ -40,7 +48,7 @@ const api = (function () {
     return token ? token : undefined;
   }
 
-  const findUrlFromReferrer = () => {
+  const findBaseUrlFromReferrer = () => {
     let origin
 
     if (document?.referrer) {
@@ -51,21 +59,41 @@ const api = (function () {
     return origin
   }
 
+  publicFunctions.hasAutodetect = (newValue) => {
+    return _tokenAutodetect && _baseUrlAutodetect
+  }
+
   publicFunctions.init = (token, baseUrl) => {
     reset()
 
     if (typeof token === 'undefined') {
-      token = findTokenFromQueryString()
+      _token = findTokenFromQueryString()
+      _tokenAutodetect = publicFunctions.hasToken()
+      //console.log('init-autodetect-token token=', token, '_tokenAutodetect=', _tokenAutodetect)
+    } else {
+      publicFunctions.setToken(token)
     }
-    //console.log('token:', token)
 
     if (typeof baseUrl === 'undefined') {
-      baseUrl = findUrlFromReferrer()
+      _baseUrl = findBaseUrlFromReferrer()
+      _baseUrlAutodetect = publicFunctions.hasBaseUrl()
+      //console.log('init-autodetect-baseUrl baseUrl=', baseUrl, '_baseUrlAutodetect=', _baseUrlAutodetect)
+    } else {
+      publicFunctions.setBaseUrl(baseUrl)
     }
-    //console.log('baseUrl:', baseUrl)
 
-    publicFunctions.setBaseUrl(baseUrl)
-    publicFunctions.setToken(token)
+  }
+
+  publicFunctions.materializeSql = ({query, format}) => {
+    return client(`${_baseUrl}/api/v2/public/materialize/sql`, {
+      body: {
+        query: query,
+        format: format,
+      },
+      headers: {
+        Authorization: `Bearer ${_token}`
+      }
+    })
   }
 
   return publicFunctions

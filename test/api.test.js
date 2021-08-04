@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, it} from 'mocha';
-import {expect, assert} from "chai";
+import {expect} from 'chai';
 
-import {api} from "../src/api";
+import {api} from '../src/api';
 
 
 describe('api', () => {
@@ -14,6 +14,8 @@ describe('api', () => {
     global.window = {};
     _documentRef = global.document;
     global.document = {};
+    // reset internal values before each test
+    api.init()
   });
 
   afterEach(() => {
@@ -29,6 +31,20 @@ describe('api', () => {
     global.document = newValue;
   }
 
+  const setQueryString = (newValue) => {
+    changeGlobalWindow({
+      location: {
+        search: newValue
+      }
+    })
+  }
+
+  const setReferrer = (newValue) => {
+    changeGlobalDocument({
+      referrer: newValue
+    })
+  }
+
 
   it('should export api public methods', () => {
     expect(api).to.have.keys([
@@ -39,6 +55,8 @@ describe('api', () => {
       'setBaseUrl',
       'hasBaseUrl',
       'init',
+      'hasAutodetect',
+      'materializeSql',
     ])
   });
 
@@ -55,6 +73,17 @@ describe('api', () => {
     it('should store the token', () => {
       api.setToken('my_dummy_token')
       expect(api.getToken()).to.be.equal('my_dummy_token')
+    });
+
+    it('should set autodetect to false', () => {
+      setQueryString('dummy=xxx&token=my_query_string_token')
+      setReferrer('http://my_cf_ui.web.site/onDemand')
+
+      api.init()
+      expect(api.hasAutodetect()).to.be.true
+
+      api.setToken('my_dummy_token')
+      expect(api.hasAutodetect()).to.be.false
     });
 
   });
@@ -93,6 +122,17 @@ describe('api', () => {
       expect(api.getBaseUrl()).to.be.equal('http://my_dummy_url/')
     });
 
+    it('should set autodetect to false', () => {
+      setQueryString('dummy=xxx&token=my_query_string_token')
+      setReferrer('http://my_cf_ui.web.site/onDemand')
+
+      api.init()
+      expect(api.hasAutodetect()).to.be.true
+
+      api.setBaseUrl('http://my_dummy_url/')
+      expect(api.hasAutodetect()).to.be.false
+    });
+
   });
 
   describe('hasBaseUrl', () => {
@@ -127,23 +167,48 @@ describe('api', () => {
     });
 
     it('should find the token on query string (token=)', () => {
-      changeGlobalWindow({
-        location: {
-          search: 'dummy=xxx&token=my_query_string_token'
-        }
-      })
+      setQueryString('dummy=xxx&token=my_query_string_token')
 
       api.init()
       expect(api.getToken()).to.be.equal('my_query_string_token')
     });
 
     it('should find the base URL on referrer', () => {
-      changeGlobalDocument({
-        referrer: 'http://my_cf_ui.web.site/onDemand'
-      })
+      setReferrer('http://my_cf_ui.web.site/onDemand')
 
       api.init()
       expect(api.getBaseUrl()).to.be.equal('http://my_cf_ui.web.site')
+    });
+
+  });
+
+  describe('hasAutodetect', () => {
+
+    it('should be false if no token nor base URL is found', () => {
+      api.init()
+      expect(api.hasAutodetect()).to.be.false
+    });
+
+    it('should be false if only token is found', () => {
+      setQueryString('dummy=xxx&token=my_query_string_token')
+
+      api.init()
+      expect(api.hasAutodetect()).to.be.false
+    });
+
+    it('should be false if only base URL is found', () => {
+      setReferrer('http://my_cf_ui.web.site/onDemand')
+
+      api.init()
+      expect(api.hasAutodetect()).to.be.false
+    });
+
+    it('should be true if token AND base URL are found', () => {
+      setQueryString('dummy=xxx&token=my_query_string_token')
+      setReferrer('http://my_cf_ui.web.site/onDemand')
+
+      api.init()
+      expect(api.hasAutodetect()).to.be.true
     });
 
   });
