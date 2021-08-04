@@ -1,11 +1,11 @@
 const api = (function () {
 
-  let _url;
+  let _baseUrl;
   let _token;
   let publicFunctions = {};
 
   const reset = () => {
-    _url = undefined
+    _baseUrl = undefined
     _token = undefined
   }
 
@@ -22,11 +22,15 @@ const api = (function () {
   }
 
   publicFunctions.getBaseUrl = () => {
-    return _url
+    return _baseUrl
   }
 
   publicFunctions.setBaseUrl = (newValue) => {
-    _url = newValue
+    _baseUrl = newValue
+  }
+
+  publicFunctions.hasBaseUrl = (newValue) => {
+    return _baseUrl !== undefined && _baseUrl !== null && _baseUrl !== ''
   }
 
   const findTokenFromQueryString = () => {

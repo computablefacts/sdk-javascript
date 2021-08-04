@@ -37,6 +37,7 @@ describe('api', () => {
       'hasToken',
       'getBaseUrl',
       'setBaseUrl',
+      'hasBaseUrl',
       'init',
     ])
   });
@@ -90,6 +91,25 @@ describe('api', () => {
     it('should store the base URL', () => {
       api.setBaseUrl('http://my_dummy_url/')
       expect(api.getBaseUrl()).to.be.equal('http://my_dummy_url/')
+    });
+
+  });
+
+  describe('hasBaseUrl', () => {
+
+    it('should be false if base URL is undefined', () => {
+      api.setBaseUrl(undefined)
+      expect(api.hasBaseUrl()).to.be.false
+    });
+
+    it('should be false if base URL is null', () => {
+      api.setBaseUrl(null)
+      expect(api.hasBaseUrl()).to.be.false
+    });
+
+    it('should be false if base URL is empty', () => {
+      api.setBaseUrl('')
+      expect(api.hasBaseUrl()).to.be.false
     });
 
   });
