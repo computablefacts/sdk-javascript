@@ -17,6 +17,10 @@ const api = (function () {
     _token = newValue
   }
 
+  publicFunctions.hasToken = (newValue) => {
+    return _token !== undefined && _token !== null && _token !== ''
+  }
+
   publicFunctions.getBaseUrl = () => {
     return _url
   }

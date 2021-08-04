@@ -34,6 +34,7 @@ describe('api', () => {
     expect(api).to.have.keys([
       'getToken',
       'setToken',
+      'hasToken',
       'getBaseUrl',
       'setBaseUrl',
       'init',
@@ -53,6 +54,25 @@ describe('api', () => {
     it('should store the token', () => {
       api.setToken('my_dummy_token')
       expect(api.getToken()).to.be.equal('my_dummy_token')
+    });
+
+  });
+
+  describe('hasToken', () => {
+
+    it('should be false if token is undefined', () => {
+      api.setToken(undefined)
+      expect(api.hasToken()).to.be.false
+    });
+
+    it('should be false if token is null', () => {
+      api.setToken(null)
+      expect(api.hasToken()).to.be.false
+    });
+
+    it('should be false if token is empty', () => {
+      api.setToken('')
+      expect(api.hasToken()).to.be.false
     });
 
   });
