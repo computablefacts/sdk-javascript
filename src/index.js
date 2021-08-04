@@ -5,6 +5,10 @@ if (typeof exports === 'object' && typeof module !== 'undefined') {
   module.exports = {cf};
 }
 
+if (typeof window === 'object') {
+  window.cf = cf;
+}
+
 //console.log('typeof exports=', typeof exports)
 //console.log('exports=', exports)
 //console.log('typeof module=', typeof module)
