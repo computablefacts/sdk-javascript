@@ -16,7 +16,11 @@
     "src/**/*.ts"
   ],
   "typedocOptions": {
-    "entryPoints": ["src/index.ts"],
+    "entryPoints": [
+      "src/index.ts",
+      "src/cf.ts",
+      "src/api.ts",
+    ],
     "out": "docs"
   }
 }
