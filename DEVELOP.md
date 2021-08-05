@@ -149,7 +149,7 @@ If you're not sure, make a try before publishing:
 ```shell
 $ npm publish --access public --dry-run
 npm notice
-npm notice package: @computablefacts/sdk-javascript@0.2.0
+npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
 npm notice 2.5kB dist/api-client.js
 npm notice 3.0kB dist/api.js
@@ -157,7 +157,7 @@ npm notice 120B  dist/cf.js
 npm notice 6.0kB dist/bundle/index.js
 npm notice 522B  dist/index.js
 npm notice 2.0kB dist/bundle/index.min.js
-npm notice 1.6kB package.json
+npm notice 1.7kB package.json
 npm notice 463B  README.md
 npm notice 128B  dist/api-client.d.ts
 npm notice 531B  dist/api.d.ts
@@ -165,14 +165,14 @@ npm notice 90B   dist/cf.d.ts
 npm notice 12B   dist/index.d.ts
 npm notice === Tarball Details ===
 npm notice name:          @computablefacts/sdk-javascript
-npm notice version:       0.2.0
+npm notice version:       1.0.0
 npm notice package size:  4.2 kB
-npm notice unpacked size: 17.0 kB
-npm notice shasum:        bc88ec4e287c2c111407303820bc95cfc7021afa
-npm notice integrity:     sha512-dFqKBBke/H7ak[...]+4aXe8fkL9pnQ==
+npm notice unpacked size: 17.1 kB
+npm notice shasum:        9888c35d2b3d3aaba2985e20b1167c464409e95d
+npm notice integrity:     sha512-dOy+tpeLj7r8Y[...]deS116bSkgfCA==
 npm notice total files:   12
 npm notice
-+ @computablefacts/sdk-javascript@0.2.0
++ @computablefacts/sdk-javascript@1.0.0
 ```
 
 6. Publish
@@ -180,7 +180,7 @@ npm notice
 ```shell
 $ npm publish --access public
 npm notice
-npm notice package: @computablefacts/sdk-javascript@0.2.0
+npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
 npm notice 2.5kB dist/api-client.js
 npm notice 3.0kB dist/api.js
@@ -188,7 +188,7 @@ npm notice 120B  dist/cf.js
 npm notice 6.0kB dist/bundle/index.js
 npm notice 522B  dist/index.js
 npm notice 2.0kB dist/bundle/index.min.js
-npm notice 1.6kB package.json
+npm notice 1.7kB package.json
 npm notice 463B  README.md
 npm notice 128B  dist/api-client.d.ts
 npm notice 531B  dist/api.d.ts
@@ -196,12 +196,12 @@ npm notice 90B   dist/cf.d.ts
 npm notice 12B   dist/index.d.ts
 npm notice === Tarball Details ===
 npm notice name:          @computablefacts/sdk-javascript
-npm notice version:       0.2.0
+npm notice version:       1.0.0
 npm notice package size:  4.2 kB
-npm notice unpacked size: 17.0 kB
-npm notice shasum:        bc88ec4e287c2c111407303820bc95cfc7021afa
-npm notice integrity:     sha512-dFqKBBke/H7ak[...]+4aXe8fkL9pnQ==
+npm notice unpacked size: 17.1 kB
+npm notice shasum:        9888c35d2b3d3aaba2985e20b1167c464409e95d
+npm notice integrity:     sha512-dOy+tpeLj7r8Y[...]deS116bSkgfCA==
 npm notice total files:   12
 npm notice
-+ @computablefacts/sdk-javascript@0.2.0
++ @computablefacts/sdk-javascript@1.0.0
 ```
