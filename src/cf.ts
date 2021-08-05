@@ -1,4 +1,4 @@
-import {api, CfApi} from './api'
+import {api} from './api'
 
 const cf = (function () {
 

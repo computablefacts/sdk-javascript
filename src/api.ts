@@ -1,46 +1,28 @@
 import {client} from './api-client'
+import {CfApiInterface, materializeSqlConfig} from './api.interface'
 
-type materializeSqlConfig = {
-  query: string,
-  format: string,
-}
-
-interface CfApi {
-  getToken: () => string,
-  setToken: (newValue: string) => void,
-  hasToken: () => boolean,
-
-  getBaseUrl: () => string,
-  setBaseUrl: (newValue: string) => void,
-  hasBaseUrl: () => boolean,
-
-  init: (token?: string, baseUrl?: string) => void,
-  hasAutodetect: () => boolean,
-  materializeSql: (config: materializeSqlConfig) => Promise<Response>,
-}
-
-const api = (function () {
+const api: CfApiInterface = (function () {
 
   let baseUrl_: string
   let baseUrlAutodetect_: boolean
   let token_: string
   let tokenAutodetect_: boolean
 
-  const reset = () => {
+  const reset_ = () => {
     baseUrl_ = ''
     baseUrlAutodetect_ = false
     token_ = ''
     tokenAutodetect_ = false
   }
 
-  const findTokenFromQueryString = (): string => {
+  const findTokenFromQueryString_ = (): string => {
     const urlParams = new URLSearchParams(window?.location?.search);
     const token = urlParams.get('token')
 
     return token ? token : '';
   }
 
-  const findBaseUrlFromReferrer = (): string => {
+  const findBaseUrlFromReferrer_ = (): string => {
     let origin: string = ''
 
     if (document && document.referrer) {
@@ -51,78 +33,88 @@ const api = (function () {
     return origin
   }
 
-  let publicFunctions: CfApi = {
-    getToken: (): string => {
-      return token_
-    },
+  const getToken = (): string => {
+    return token_
+  }
 
-    setToken: (newValue: string): void => {
-      tokenAutodetect_ = false
-      token_ = newValue
-    },
+  const setToken = (newValue: string): void => {
+    tokenAutodetect_ = false
+    token_ = newValue
+  }
 
-    hasToken: (): boolean => {
-      return token_ !== ''
-    },
+  const hasToken = (): boolean => {
+    return token_ !== ''
+  }
 
-    getBaseUrl: (): string => {
-      return baseUrl_
-    },
+  const getBaseUrl = (): string => {
+    return baseUrl_
+  }
 
-    setBaseUrl: (newValue: string): void => {
-      baseUrlAutodetect_ = false
-      baseUrl_ = newValue
-    },
+  const setBaseUrl = (newValue: string): void => {
+    baseUrlAutodetect_ = false
+    baseUrl_ = newValue
+  }
 
-    hasBaseUrl: (): boolean => {
-      return baseUrl_ !== ''
-    },
+  const hasBaseUrl = (): boolean => {
+    return baseUrl_ !== ''
+  }
 
-    hasAutodetect: (): boolean => {
-      return tokenAutodetect_ && baseUrlAutodetect_
-    },
+  const hasAutodetect = (): boolean => {
+    return tokenAutodetect_ && baseUrlAutodetect_
+  }
 
-    init: (token?: string, baseUrl?: string): void => {
-      reset()
+  const init = (token?: string, baseUrl?: string): void => {
+    reset_()
 
-      if (typeof token === 'undefined') {
-        token_ = findTokenFromQueryString()
-        tokenAutodetect_ = publicFunctions.hasToken()
-        //console.log('init-autodetect-token token=', token, '_tokenAutodetect=', _tokenAutodetect)
-      } else {
-        publicFunctions.setToken(token)
-      }
+    if (typeof token === 'undefined') {
+      token_ = findTokenFromQueryString_()
+      tokenAutodetect_ = hasToken()
+      //console.log('init-autodetect-token token=', token, '_tokenAutodetect=', _tokenAutodetect)
+    } else {
+      setToken(token)
+    }
 
-      if (typeof baseUrl === 'undefined') {
-        baseUrl_ = findBaseUrlFromReferrer()
-        baseUrlAutodetect_ = publicFunctions.hasBaseUrl()
-        //console.log('init-autodetect-baseUrl baseUrl=', baseUrl, 'baseUrlAutodetect_=', baseUrlAutodetect_)
-      } else {
-        publicFunctions.setBaseUrl(baseUrl)
-      }
-
-    },
-
-    materializeSql: (config: materializeSqlConfig) => {
-      return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
-        body: {
-          query: config.query,
-          format: config.format,
-        },
-
-        // @ts-ignore
-        // error TS2345: Argument of type '{ body: { query: string; format: string; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
-        headers: {
-          Authorization: `Bearer ${token_}`
-        }
-      })
-    },
+    if (typeof baseUrl === 'undefined') {
+      baseUrl_ = findBaseUrlFromReferrer_()
+      baseUrlAutodetect_ = hasBaseUrl()
+      //console.log('init-autodetect-baseUrl baseUrl=', baseUrl, 'baseUrlAutodetect_=', baseUrlAutodetect_)
+    } else {
+      setBaseUrl(baseUrl)
+    }
 
   }
 
+  /** Essai pour la doc */
+  const materializeSql = (config: materializeSqlConfig) => {
+    return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
+      body: {
+        query: config.query,
+        format: config.format,
+      },
 
-  return publicFunctions
+      // @ts-ignore
+      // error TS2345: Argument of type '{ body: { query: string; format: string; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+      headers: {
+        Authorization: `Bearer ${token_}`
+      }
+    })
+  }
+
+
+  return {
+    getToken: getToken,
+    setToken: setToken,
+    hasToken: hasToken,
+
+    getBaseUrl: getBaseUrl,
+    setBaseUrl: setBaseUrl,
+    hasBaseUrl: hasBaseUrl,
+
+    init: init,
+    hasAutodetect: hasAutodetect,
+    materializeSql: materializeSql,
+  }
 
 })();
 
-export {api, CfApi}
+export {api, CfApiInterface, materializeSqlConfig}
