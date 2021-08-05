@@ -33,7 +33,7 @@ $ npm publish --access public
 npm notice
 npm notice package: @computablefacts/sdk-javascript@0.1.0
 npm notice === Tarball Contents ===
-npm notice 30B  dist/index.js
+npm notice 30B  dist/index.ts
 npm notice 858B package.json
 npm notice === Tarball Details ===
 npm notice name:          @computablefacts/sdk-javascript
@@ -67,7 +67,7 @@ without a tool like [Laragon](https://laragon.org/) to publish the package
 over HTTP and use it from the HTML:
 
 ```html
-<script src="http://sdk-javascript.test/dist/cf.js"></script>
+<script src="http://sdk-javascript.test/dist/bundle.js"></script>
 ```
 
 ## change version before publishing

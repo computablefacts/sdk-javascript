@@ -6,32 +6,39 @@ import {api} from '../src/api';
 
 describe('api', () => {
 
-  let _windowRef;
-  let _documentRef;
+  let windowRef: Window & typeof globalThis;
+  let documentRef: Document;
 
   beforeEach(() => {
-    _windowRef = global.window;
-    global.window = {};
-    _documentRef = global.document;
-    global.document = {};
+    windowRef = global.window;
+    changeGlobalWindow({})
+
+    documentRef = global.document;
+    changeGlobalDocument({})
+
     // reset internal values before each test
     api.init()
   });
 
   afterEach(() => {
-    global.window = _windowRef;
-    global.document = _documentRef;
+    global["window"] = windowRef;
+    global["document"] = documentRef;
   });
 
-  const changeGlobalWindow = (newValue) => {
-    global.window = newValue;
+  const changeGlobalWindow = (newValue: object) => {
+    // Type '{}' is not assignable to type 'Window & typeof globalThis'.
+    // Type '{}' is missing the following properties from type 'Window': applicationCache, clientInformation, closed, customElements, and 226 more.
+    // @ts-ignore
+    global["window"] = newValue;
   }
 
-  const changeGlobalDocument = (newValue) => {
-    global.document = newValue;
+  const changeGlobalDocument = (newValue: object) => {
+    // error TS2740: Type '{}' is missing the following properties from type 'Document': URL, alinkColor, all, anchors, and 237 more.
+    // @ts-ignore
+    global["document"] = newValue;
   }
 
-  const setQueryString = (newValue) => {
+  const setQueryString = (newValue: string) => {
     changeGlobalWindow({
       location: {
         search: newValue
@@ -39,7 +46,7 @@ describe('api', () => {
     })
   }
 
-  const setReferrer = (newValue) => {
+  const setReferrer = (newValue: string) => {
     changeGlobalDocument({
       referrer: newValue
     })
@@ -62,8 +69,8 @@ describe('api', () => {
 
   describe('getToken', () => {
 
-    it('should be undefined by default', () => {
-      expect(api.getToken()).to.be.undefined
+    it('should be empty string by default', () => {
+      expect(api.getToken()).to.be.equal('')
     });
 
   });
@@ -90,16 +97,6 @@ describe('api', () => {
 
   describe('hasToken', () => {
 
-    it('should be false if token is undefined', () => {
-      api.setToken(undefined)
-      expect(api.hasToken()).to.be.false
-    });
-
-    it('should be false if token is null', () => {
-      api.setToken(null)
-      expect(api.hasToken()).to.be.false
-    });
-
     it('should be false if token is empty', () => {
       api.setToken('')
       expect(api.hasToken()).to.be.false
@@ -109,8 +106,8 @@ describe('api', () => {
 
   describe('getBaseUrl', () => {
 
-    it('should be undefined by default', () => {
-      expect(api.getBaseUrl()).to.be.undefined
+    it('should be empty string by default', () => {
+      expect(api.getBaseUrl()).to.be.equal('')
     });
 
   });
@@ -136,16 +133,6 @@ describe('api', () => {
   });
 
   describe('hasBaseUrl', () => {
-
-    it('should be false if base URL is undefined', () => {
-      api.setBaseUrl(undefined)
-      expect(api.hasBaseUrl()).to.be.false
-    });
-
-    it('should be false if base URL is null', () => {
-      api.setBaseUrl(null)
-      expect(api.hasBaseUrl()).to.be.false
-    });
 
     it('should be false if base URL is empty', () => {
       api.setBaseUrl('')

@@ -14,7 +14,7 @@ interface CfApi {
   setBaseUrl: (newValue: string) => void,
   hasBaseUrl: () => boolean,
 
-  init: (token: string, baseUrl: string) => void,
+  init: (token?: string, baseUrl?: string) => void,
   hasAutodetect: () => boolean,
   materializeSql: (config: materializeSqlConfig) => Promise<Response>,
 }
@@ -82,7 +82,7 @@ const api = (function () {
       return tokenAutodetect_ && baseUrlAutodetect_
     },
 
-    init: (token: string, baseUrl: string): void => {
+    init: (token?: string, baseUrl?: string): void => {
       reset()
 
       if (typeof token === 'undefined') {

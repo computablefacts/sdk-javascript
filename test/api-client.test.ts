@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, it} from 'mocha';
-import fetch from 'node-fetch';
+import fetch, {Response} from 'node-fetch';
 
 import {client} from "../src/api-client";
 
-function jsonOk(body) {
-  let mockResponse = new fetch.Response(JSON.stringify(body), {
+function jsonOk(body: object) {
+  let mockResponse = new Response(JSON.stringify(body), {
     status: 200,
     headers: {
       'Content-type': 'application/json'
@@ -14,7 +14,9 @@ function jsonOk(body) {
   return Promise.resolve(mockResponse);
 }
 
-function mockFetch(body) {
+function mockFetch(body: object) {
+  // error TS2322: Type 'x' is not assignable to type 'y'
+  // @ts-ignore
   global.window.fetch = () => {
     return jsonOk(body)
   }
@@ -23,11 +25,15 @@ function mockFetch(body) {
 
 describe('api-client', () => {
 
-  let windowRef;
+  let windowRef: Window & typeof globalThis;
 
   beforeEach(() => {
-    const windowRef = global.window;
+    windowRef = global.window;
+
+    // error TS2322: Type 'x' is not assignable to type 'y'
+    // @ts-ignore
     global.window = {
+      // @ts-ignore
       fetch: fetch
     };
   });
