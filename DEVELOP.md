@@ -101,7 +101,19 @@ $ npm run test:watch
 
 ## Publish the package
 
-1. Login to npmjs.org
+1. Be sure to build all before publishing
+
+```shell
+$ npm run build
+```
+
+2. Be sure the tests are ok before publishing
+
+```shell
+$ npm run test
+```
+
+3. Login to npmjs.org
 
 ```shell
 $ npm login
@@ -109,26 +121,16 @@ Username: pbrisacier
 Password:
 Email: (this IS public) pbrisacier@mncc.fr
 Logged in as pbrisacier on https://registry.npmjs.com/.
-
-$ npm publish --access public
-npm notice
-npm notice package: @computablefacts/sdk-javascript@0.1.0
-npm notice === Tarball Contents ===
-npm notice 30B  dist/index.ts
-npm notice 858B package.json
-npm notice === Tarball Details ===
-npm notice name:          @computablefacts/sdk-javascript
-npm notice version:       0.1.0
-npm notice package size:  568 B
-npm notice unpacked size: 888 B
-npm notice shasum:        a4bd2010fd32ff397825beeaa2e8cf4b3e6a1bb8
-npm notice integrity:     sha512-W9tkDC8Dowlhl[...]JZA2MySLviHJg==
-npm notice total files:   2
-npm notice
-+ @computablefacts/sdk-javascript@0.1.0
 ```
 
-2. Change version before publishing. 
+You can know if you're already connected with:
+```shell
+$ npm whoami
+pbrisacier
+```
+
+
+4. Change version before publishing. 
 
 Use semantic versioning to change version number. Use
 [`npm version` command](https://docs.npmjs.com/cli/v6/commands/npm-version).
@@ -141,7 +143,7 @@ $ npm version major
 
 Those commands will increment the version number and make a new git commit.
 
-3. Dry run the publication
+5. Dry run the publication
 
 If you're not sure, make a try before publishing:
 ```shell
@@ -173,7 +175,7 @@ npm notice
 + @computablefacts/sdk-javascript@0.2.0
 ```
 
-4. Publish
+6. Publish
 
 ```shell
 $ npm publish --access public
