@@ -1,20 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "strict": true,
     "declaration": true,
     "outDir": "./dist",
     "lib": [
       "dom",
-      "es5",
       "scripthost",
       "es2015.promise"
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src/**/*.ts"
   ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
