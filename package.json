@@ -20,7 +20,7 @@
     "build:bundle:watch": "npm run build:bundle -- --watch",
     "build:doc": "typedoc",
     "build:doc:watch": "npm run build:doc -- --watch",
-    "test": "ts-mocha ./test/**/*.test.ts",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"CommonJS\" }'  ts-mocha ./test/**/*.test.ts",
     "test:watch": "npm run test -- --watch"
   },
   "repository": {
