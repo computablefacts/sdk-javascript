@@ -1,17 +1,24 @@
-function client(endpoint, {body, ...customConfig} = {}) {
+// @ts-ignore
+// error TS2525: Initializer provides no value for this binding element and the binding element has no default value (body).
+// error TS7031: Binding element 'body' implicitly has an 'any' type.
+function client(endpoint: string, {body, ...customConfig} = {}) {
   const headers = {'Content-Type': 'application/json'}
   const config = {
     method: 'GET',
     ...customConfig,
     headers: {
       ...headers,
+      // @ts-ignore
+      // error TS2339: Property 'headers' does not exist on type '{}'.
       ...customConfig.headers,
     },
   }
   if (body) {
-    if (config.method === 'GET' || config.method === 'DELETE') {
+    if (config.method === 'GET') {
       endpoint += '?' + new URLSearchParams(body)
     } else {
+      // @ts-ignore
+      // error TS2339: Property 'body' does not exist on type '{ headers: any; method: string; }'.
       config.body = JSON.stringify(body)
     }
   }

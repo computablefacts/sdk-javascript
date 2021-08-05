@@ -1,14 +1,14 @@
 import {terser} from 'rollup-plugin-terser';
 
 export default {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [
     {
-      file: 'dist/cf.js',
+      file: 'dist/bundle.js',
       format: 'cjs'
     },
     {
-      file: 'dist/cf.min.js',
+      file: 'dist/bundle.min.js',
       format: 'iife',
       name: 'version',
       plugins: [terser()]

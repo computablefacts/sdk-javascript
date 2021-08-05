@@ -6,6 +6,8 @@ if (typeof exports === 'object' && typeof module !== 'undefined') {
 }
 
 if (typeof window === 'object') {
+  // @ts-ignore
+  // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'.
   window.cf = cf;
 }
 
