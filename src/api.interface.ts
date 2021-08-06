@@ -134,6 +134,12 @@ interface CfApiInterface {
    * @see [[`materializeSqlConfig`]]
    */
   materializeSql: (config: materializeSqlConfig) => Promise<Response>,
+
+  /**
+   * Return the current API user (based on API token).
+   */
+  whoami: () => Promise<Response>,
+
 }
 
 export {CfApiInterface, materializeSqlConfig}

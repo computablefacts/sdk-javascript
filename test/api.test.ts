@@ -64,6 +64,7 @@ describe('api', () => {
       'init',
       'hasAutodetect',
       'materializeSql',
+      'whoami',
     ])
   });
 
@@ -196,6 +197,22 @@ describe('api', () => {
 
       api.init()
       expect(api.hasAutodetect()).to.be.true
+    });
+
+  });
+
+  describe('materializeSql', () => {
+
+    it('should be tested', () => {
+      // TODO
+    });
+
+  });
+
+  describe('whoami', () => {
+
+    it('should be tested', () => {
+      // TODO
     });
 
   });
