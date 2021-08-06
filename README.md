@@ -22,7 +22,7 @@ You can fix the major version with:
 
 # usage
 
-TODO
+See https://computablefacts.github.io/sdk-javascript/.
 
 # develop
 
