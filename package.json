@@ -20,6 +20,9 @@
     "dist",
     "DEVELOP.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "npm run dev",
     "dev": "npx concurrently -k -n TSC,MOCHA,BUNDLE,DOC -c green,cyan,yellow,grey npm:build:ts:watch npm:test:watch npm:build:bundle:watch npm:build:doc:watch",

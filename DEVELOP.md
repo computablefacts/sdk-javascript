@@ -187,7 +187,7 @@ Those commands will increment the version number and make a new git commit.
 
 If you're not sure, make a try before publishing:
 ```shell
-$ npm publish --access public --dry-run
+$ npm publish --dry-run
 npm notice
 npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
@@ -218,7 +218,7 @@ npm notice
 6. Publish
 
 ```shell
-$ npm publish --access public
+$ npm publish
 npm notice
 npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
