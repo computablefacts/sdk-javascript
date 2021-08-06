@@ -2,6 +2,18 @@
   "name": "@computablefacts/sdk-javascript",
   "version": "1.0.4",
   "description": "JavaScript SDK to access to ComputableFacts API",
+  "keywords": [
+    "sdk",
+    "javascript"
+  ],
+  "author": "ComputableFacts",
+  "license": "MIT",
+  "homepage": "https://computablefacts.github.io/sdk-javascript/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/computablefacts/sdk-javascript.git"
+  },
+  "bugs": "https://github.com/computablefacts/sdk-javascript/issues/new",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -27,16 +39,6 @@
     "test:coverage": "nyc npm test",
     "lint": "eslint src/**/*.ts test/**/*.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "gitrepo"
-  },
-  "keywords": [
-    "sdk",
-    "javascript"
-  ],
-  "author": "ComputableFacts",
-  "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.14.8",
     "@babel/core": "^7.14.8",
