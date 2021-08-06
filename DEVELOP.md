@@ -88,6 +88,9 @@ or for continuous watching:
 $ npm run build:doc:watch
 ```
 
+To update the documentation you must write comments that TypeDoc understand.
+See: https://typedoc.org/guides/doccomments/.
+
 ## run tests
 
 We can run the tests with:
