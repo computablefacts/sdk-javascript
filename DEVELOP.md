@@ -102,6 +102,25 @@ or for continuous watching:
 $ npm run test:watch
 ```
 
+## run tests coverage
+
+We can run the tests' coverage with:
+```shell
+$ npm run test:coverage
+```
+
+Results are displayed on the console:
+```shell
+=============================== Coverage summary ===============================
+Statements   : 90.54% ( 67/74 )
+Branches     : 78.79% ( 26/33 )
+Functions    : 84.21% ( 16/19 )
+Lines        : 90.14% ( 64/71 )
+================================================================================
+```
+
+Detailed results are visible on: http://sdk-javascript.test/coverage/.
+
 ## Publish the package
 
 1. Be sure to build all before publishing
