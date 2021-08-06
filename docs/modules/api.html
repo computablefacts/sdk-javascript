@@ -70,15 +70,15 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/api.CfApiInterface.html" class="tsd-kind-icon">Cf<wbr>Api<wbr>Interface</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="api.html#materializeSqlConfig" class="tsd-kind-icon">materialize<wbr>Sql<wbr>Config</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/api.CfApiInterface.html" class="tsd-kind-icon">Cf<wbr>Api<wbr>Interface</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -95,20 +95,80 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="materializeSqlConfig" class="tsd-anchor"></a>
 					<h3>materialize<wbr>Sql<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">materialize<wbr>Sql<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">materialize<wbr>Sql<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>format<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;objects&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;arrays&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;arrays_with_header&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;csv&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;csv_with_header&quot;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/computablefacts/sdk-javascript/blob/master/src/api.interface.ts#L1">api.interface.ts:1</a></li>
+							<li>Defined in <a href="https://github.com/computablefacts/sdk-javascript/blob/master/src/api.interface.ts#L4">api.interface.ts:4</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Config for materializeSql API request</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<h5>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>SQL Query.</p>
+									</div>
+									<p>Example:</p>
+									<p>For this SQL query:</p>
+									<pre><code class="language-sql"><span style="color: #0000FF">SELECT</span><span style="color: #000000"> </span><span style="color: #0000FF">name</span><span style="color: #000000">, </span><span style="color: #795E26">count</span><span style="color: #000000">(*) </span><span style="color: #0000FF">As</span><span style="color: #000000"> Total</span>
+<span style="color: #0000FF">FROM</span><span style="color: #000000"> materialized_facts</span>
+<span style="color: #0000FF">GROUP BY</span><span style="color: #000000"> </span><span style="color: #0000FF">name</span>
+</code></pre>
+									<p>Write:</p>
+									<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">query:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;SELECT name, count(*) As Total FROM materialized_facts GROUP BY name&#039;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> params<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{}</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>SQL Query parameters.</p>
+									</div>
+									<p>Example:</p>
+									<pre><code class="language-sql"><span style="color: #0000FF">SELECT</span><span style="color: #000000"> * </span><span style="color: #0000FF">FROM</span><span style="color: #000000"> materialized_facts</span>
+<span style="color: #0000FF">WHERE</span><span style="color: #000000"> </span><span style="color: #0000FF">name</span><span style="color: #000000"> = :</span><span style="color: #0000FF">type</span>
+</code></pre>
+									<p>This SQL query contains a parameter named <code>:type</code>.</p>
+									<p>You can pass the parameter value with:</p>
+									<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">query:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;SELECT * FROM materialized_facts WHERE name = :type&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">params:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;my_type&#039;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+								</div>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>index: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> format<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;objects&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;arrays&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;arrays_with_header&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;csv&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;csv_with_header&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>By default, materializeSql returns data in <code>objects</code> format, an array of JSON objects.
+										Each object is the SQL query row result.</p>
+									</div>
+									<p>Others possibles formats are :</p>
+									<ul>
+										<li><code>arrays</code> : each row is returned as an array.</li>
+										<li><code>csv</code> : each row is returned as a string where columns are comma separated (<code>,</code>).</li>
+										<li><code>arrays_with_header</code> : same as <code>arrays</code> but the first array contains column headers.</li>
+										<li><code>csv_with_header</code> : same as <code>csv</code> but the first string contains comma separated column headers (<code>,</code>).</li>
+									</ul>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -144,11 +204,11 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="../interfaces/api.CfApiInterface.html" class="tsd-kind-icon">Cf<wbr>Api<wbr>Interface</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="api.html#materializeSqlConfig" class="tsd-kind-icon">materialize<wbr>Sql<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/api.CfApiInterface.html" class="tsd-kind-icon">Cf<wbr>Api<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module">
 						<a href="api.html#api-1" class="tsd-kind-icon">api</a>

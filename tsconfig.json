@@ -23,6 +23,7 @@
     ],
     "out": "docs",
     "readme": "none",
-    "gitRevision": "master"
+    "gitRevision": "master",
+    "sort": "source-order"
   }
 }
