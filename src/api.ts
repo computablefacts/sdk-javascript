@@ -23,7 +23,7 @@ const api: CfApiInterface = (function () {
   }
 
   const findBaseUrlFromReferrer_ = (): string => {
-    let origin: string = ''
+    let origin = ''
 
     if (document && document.referrer) {
       const url = new URL(document.referrer)
@@ -84,7 +84,6 @@ const api: CfApiInterface = (function () {
 
   }
 
-  /** Essai pour la doc */
   const materializeSql = (config: materializeSqlConfig) => {
     return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
       body: {

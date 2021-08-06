@@ -21,21 +21,21 @@ describe('api', () => {
   });
 
   afterEach(() => {
-    global["window"] = windowRef;
-    global["document"] = documentRef;
+    global['window'] = windowRef;
+    global['document'] = documentRef;
   });
 
   const changeGlobalWindow = (newValue: object) => {
     // Type '{}' is not assignable to type 'Window & typeof globalThis'.
     // Type '{}' is missing the following properties from type 'Window': applicationCache, clientInformation, closed, customElements, and 226 more.
     // @ts-ignore
-    global["window"] = newValue;
+    global['window'] = newValue;
   }
 
   const changeGlobalDocument = (newValue: object) => {
     // error TS2740: Type '{}' is missing the following properties from type 'Document': URL, alinkColor, all, anchors, and 237 more.
     // @ts-ignore
-    global["document"] = newValue;
+    global['document'] = newValue;
   }
 
   const setQueryString = (newValue: string) => {

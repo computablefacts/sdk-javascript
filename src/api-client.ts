@@ -1,7 +1,7 @@
 // @ts-ignore
 // error TS2525: Initializer provides no value for this binding element and the binding element has no default value (body).
 // error TS7031: Binding element 'body' implicitly has an 'any' type.
-function client(endpoint: string, {body, ...customConfig} = {}) {
+function client(endpoint: string, {body, ...customConfig} = {}): Promise<Response> {
   const headers = {'Content-Type': 'application/json'}
   const config = {
     method: 'GET',

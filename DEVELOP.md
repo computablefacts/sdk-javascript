@@ -121,6 +121,24 @@ Lines        : 90.14% ( 64/71 )
 
 Detailed results are visible on: http://sdk-javascript.test/coverage/.
 
+## lint
+
+We use ESLint to lint our source files.
+
+To show errors and warning:
+```shell
+$ npm run lint
+```
+
+To fix fixable ones:
+```shell
+$ npm run lint -- --fix
+```
+
+If you use IDEA, files found in `.idea/` should configure your IDE to check `.ts`
+files directly on IDE based on [`.eslintrc.json`](.eslintrc.json) configuration.
+
+
 ## Publish the package
 
 1. Be sure to build all before publishing

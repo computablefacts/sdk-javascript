@@ -1,10 +1,10 @@
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import fetch, {Response} from 'node-fetch';
 
-import {client} from "../src/api-client";
+import {client} from '../src/api-client';
 
 function jsonOk(body: object) {
-  let mockResponse = new Response(JSON.stringify(body), {
+  const mockResponse = new Response(JSON.stringify(body), {
     status: 200,
     headers: {
       'Content-type': 'application/json'
@@ -32,14 +32,14 @@ describe('api-client', () => {
 
     // error TS2322: Type 'x' is not assignable to type 'y'
     // @ts-ignore
-    global.window = {
+    global['window'] = {
       // @ts-ignore
       fetch: fetch
     };
   });
 
   afterEach(() => {
-    global.window = windowRef;
+    global['window'] = windowRef;
   });
 
 
