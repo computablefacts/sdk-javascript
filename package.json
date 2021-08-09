@@ -26,6 +26,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npx concurrently -k -n TSC,MOCHA,BUNDLE,DOC -c green,cyan,yellow,grey npm:build:ts:watch npm:test:watch:min npm:build:bundle:watch npm:build:doc:watch",
+    "dev2": "npx concurrently -k -n TSC,MOCHA,BUNDLE,DOC -c green,cyan,yellow,grey npm:build:ts:watch npm:build:bundle:watch npm:build:doc:watch",
     "clean": "rm -rf dist",
     "init": "mkdir dist",
     "prebuild": "npm run clean && npm run init",
