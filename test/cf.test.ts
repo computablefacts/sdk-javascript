@@ -5,12 +5,12 @@ import {cf} from '../src/cf';
 
 describe('cf', () => {
 
-  //console.log('cf=', cf)
+    //console.log('cf=', cf)
 
-  it('should export api object', () => {
-    expect(cf).to.have.keys([
-      'api',
-    ])
-  });
+    it('should export httpClient object', () => {
+        expect(cf).to.have.keys([
+            'httpClient',
+        ])
+    });
 
 });

@@ -5,13 +5,14 @@ import * as index from '../src/index';
 
 describe('index', () => {
 
-  //console.log('index=', index)
+    //console.log('index=', index)
 
-  it('should export cf object', () => {
-    // index has a 'default' key too...
-    expect(index).to.include.keys([
-      'cf',
-    ])
-  });
+    it('should export cf object', () => {
+
+        // index has a 'default' key too...
+        expect(index).to.include.keys([
+            'cf',
+        ])
+    });
 
 });

@@ -1,9 +1,9 @@
-import {api} from './api'
+import {httpClient} from './http-client'
 
 const cf = (function () {
 
   return {
-    api: api
+    httpClient: httpClient
   }
 
 })();

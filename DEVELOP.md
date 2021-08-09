@@ -191,16 +191,16 @@ $ npm publish --dry-run
 npm notice
 npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
-npm notice 2.5kB dist/api-client.js
-npm notice 3.0kB dist/api.js
+npm notice 2.5kB dist/httpClient-client.js
+npm notice 3.0kB dist/httpClient.js
 npm notice 120B  dist/cf.js
 npm notice 6.0kB dist/bundle/index.js
 npm notice 522B  dist/index.js
 npm notice 2.0kB dist/bundle/index.min.js
 npm notice 1.7kB package.json
 npm notice 463B  README.md
-npm notice 128B  dist/api-client.d.ts
-npm notice 531B  dist/api.d.ts
+npm notice 128B  dist/httpClient-client.d.ts
+npm notice 531B  dist/httpClient.d.ts
 npm notice 90B   dist/cf.d.ts
 npm notice 12B   dist/index.d.ts
 npm notice === Tarball Details ===
@@ -222,16 +222,16 @@ $ npm publish
 npm notice
 npm notice package: @computablefacts/sdk-javascript@1.0.0
 npm notice === Tarball Contents ===
-npm notice 2.5kB dist/api-client.js
-npm notice 3.0kB dist/api.js
+npm notice 2.5kB dist/httpClient-client.js
+npm notice 3.0kB dist/httpClient.js
 npm notice 120B  dist/cf.js
 npm notice 6.0kB dist/bundle/index.js
 npm notice 522B  dist/index.js
 npm notice 2.0kB dist/bundle/index.min.js
 npm notice 1.7kB package.json
 npm notice 463B  README.md
-npm notice 128B  dist/api-client.d.ts
-npm notice 531B  dist/api.d.ts
+npm notice 128B  dist/httpClient-client.d.ts
+npm notice 531B  dist/httpClient.d.ts
 npm notice 90B   dist/cf.d.ts
 npm notice 12B   dist/index.d.ts
 npm notice === Tarball Details ===
