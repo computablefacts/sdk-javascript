@@ -11,13 +11,14 @@ $ npm i @computablefacts/sdk-javascript
 Get the latest bundled version with:
 
 ```html
-<script src="https://unpkg.com/@computablefacts/sdk-javascript/dist/bundle/index.js"></script>
+<script src="https://unpkg.com/@computablefacts/sdk-javascript/dist/bundle/index.min.js"></script>
 ```
 
 You can fix the major version with:
 
 ```html
-<script src="https://unpkg.com/@computablefacts/sdk-javascript@1/dist/bundle/index.js"></script>
+
+<script src="https://unpkg.com/@computablefacts/sdk-javascript@1/dist/bundle/index.min.js"></script>
 ```
 
 # usage
