@@ -19,7 +19,8 @@
     "entryPoints": [
       "src/index.ts",
       "src/cf.ts",
-      "src/http-client.ts"
+      "src/http-client.ts",
+      "src/web-components.ts"
     ],
     "out": "docs",
     "readme": "none",
