@@ -3,53 +3,48 @@ import {expect} from 'chai';
 
 import {api} from '../src/api';
 
+type MockWindow = {
+  location: {
+    search: string
+  },
+  document: {
+    referrer: string
+  }
+}
 
 describe('api', () => {
 
-  let windowRef: Window & typeof globalThis;
-  let documentRef: Document;
+  let windowRef: Window & typeof globalThis
+  const windowMock: MockWindow = {
+    location: {
+      search: ''
+    },
+    document: {
+      referrer: ''
+    }
+  }
 
   beforeEach(() => {
-    windowRef = global.window;
-    changeGlobalWindow({})
+    windowRef = global.window
+    global['window'] = windowMock as Window & typeof globalThis
 
-    documentRef = global.document;
-    changeGlobalDocument({})
-
-    // reset internal values before each test
+    // reset window mock
+    setReferrer('')
+    setQueryString('')
+    // reset internal values
     api.init()
   });
 
   afterEach(() => {
     global['window'] = windowRef;
-    global['document'] = documentRef;
   });
 
-  const changeGlobalWindow = (newValue: object) => {
-    // Type '{}' is not assignable to type 'Window & typeof globalThis'.
-    // Type '{}' is missing the following properties from type 'Window': applicationCache, clientInformation, closed, customElements, and 226 more.
-    // @ts-ignore
-    global['window'] = newValue;
-  }
-
-  const changeGlobalDocument = (newValue: object) => {
-    // error TS2740: Type '{}' is missing the following properties from type 'Document': URL, alinkColor, all, anchors, and 237 more.
-    // @ts-ignore
-    global['document'] = newValue;
-  }
-
   const setQueryString = (newValue: string) => {
-    changeGlobalWindow({
-      location: {
-        search: newValue
-      }
-    })
+    windowMock.location.search = newValue
   }
 
   const setReferrer = (newValue: string) => {
-    changeGlobalDocument({
-      referrer: newValue
-    })
+    windowMock.document.referrer = newValue
   }
 
 
@@ -85,7 +80,7 @@ describe('api', () => {
 
     it('should set autodetect to false', () => {
       setQueryString('dummy=xxx&token=my_query_string_token')
-      setReferrer('http://my_cf_ui.web.site/onDemand')
+      setReferrer('https://my_cf_ui.web.site/onDemand')
 
       api.init()
       expect(api.hasAutodetect()).to.be.true
@@ -122,7 +117,7 @@ describe('api', () => {
 
     it('should set autodetect to false', () => {
       setQueryString('dummy=xxx&token=my_query_string_token')
-      setReferrer('http://my_cf_ui.web.site/onDemand')
+      setReferrer('https://my_cf_ui.web.site/onDemand')
 
       api.init()
       expect(api.hasAutodetect()).to.be.true
@@ -162,10 +157,10 @@ describe('api', () => {
     });
 
     it('should find the base URL on referrer', () => {
-      setReferrer('http://my_cf_ui.web.site/onDemand')
+      setReferrer('https://my_cf_ui.web.site/onDemand')
 
       api.init()
-      expect(api.getBaseUrl()).to.be.equal('http://my_cf_ui.web.site')
+      expect(api.getBaseUrl()).to.be.equal('https://my_cf_ui.web.site')
     });
 
   });
@@ -185,7 +180,7 @@ describe('api', () => {
     });
 
     it('should be false if only base URL is found', () => {
-      setReferrer('http://my_cf_ui.web.site/onDemand')
+      setReferrer('https://my_cf_ui.web.site/onDemand')
 
       api.init()
       expect(api.hasAutodetect()).to.be.false
@@ -193,7 +188,7 @@ describe('api', () => {
 
     it('should be true if token AND base URL are found', () => {
       setQueryString('dummy=xxx&token=my_query_string_token')
-      setReferrer('http://my_cf_ui.web.site/onDemand')
+      setReferrer('https://my_cf_ui.web.site/onDemand')
 
       api.init()
       expect(api.hasAutodetect()).to.be.true
