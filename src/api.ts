@@ -3,10 +3,10 @@ import {CfApiInterface, materializeSqlConfig} from './api.interface'
 
 const api: CfApiInterface = (function () {
 
-  let baseUrl_: string
-  let baseUrlAutodetect_: boolean
-  let token_: string
-  let tokenAutodetect_: boolean
+  let baseUrl_ = ''
+  let baseUrlAutodetect_ = false
+  let token_ = ''
+  let tokenAutodetect_ = false
 
   const reset_ = () => {
     baseUrl_ = ''
@@ -25,8 +25,8 @@ const api: CfApiInterface = (function () {
   const findBaseUrlFromReferrer_ = (): string => {
     let origin = ''
 
-    if (document && document.referrer) {
-      const url = new URL(document.referrer)
+    if (window && window.document && window.document.referrer) {
+      const url = new URL(window.document.referrer)
       origin = url.origin
     }
 
