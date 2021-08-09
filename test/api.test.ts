@@ -64,7 +64,7 @@ describe('api', () => {
       'init',
       'hasAutodetect',
       'materializeSql',
-      'whoami',
+      'whoAmI',
     ])
   });
 

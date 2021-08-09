@@ -99,7 +99,7 @@ const api: CfApiInterface = (function () {
     })
   }
 
-  const whoami = () => {
+  const whoAmI = () => {
     return client(`${baseUrl_}/api/v2/users/whoami`, {
       // @ts-ignore
       // error TS2345: Argument of type '{ body: { query: string; format: string; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
@@ -122,7 +122,7 @@ const api: CfApiInterface = (function () {
     init: init,
     hasAutodetect: hasAutodetect,
     materializeSql: materializeSql,
-    whoami: whoami,
+    whoAmI: whoAmI,
   }
 
 })();

@@ -138,7 +138,7 @@ interface CfApiInterface {
   /**
    * Return the current API user (based on API token).
    */
-  whoami: () => Promise<Response>,
+  whoAmI: () => Promise<Response>,
 
 }
 
