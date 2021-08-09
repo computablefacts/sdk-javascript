@@ -5,9 +5,7 @@ const cf = (function () {
 
   return {
     httpClient: httpClient,
-    ui: {
-      webComponents: webComponents,
-    },
+    webComponents: webComponents,
   }
 
 })();

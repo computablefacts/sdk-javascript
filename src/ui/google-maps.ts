@@ -18,7 +18,7 @@
  * </body>
  * <script src="https://unpkg.com/@computablefacts/sdk-javascript/dist/bundle/index.js"></script>
  * <script>
- *   cf.ui.webComponents.registerGoogleMaps()
+ *   cf.webComponents.registerGoogleMaps()
  * </script>
  * </html>
  * ```
