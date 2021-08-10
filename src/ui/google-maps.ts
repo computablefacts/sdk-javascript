@@ -23,33 +23,32 @@
  * </html>
  * ```
  */
+import {CfInterface} from '../cf.interface';
+
 class GoogleMaps extends HTMLElement {
 
     constructor() {
         super();
-        // @ts-ignore
-        // error TS2339: Property 'currentDocument' does not exist on type 'GoogleMap'
-        this.currentDocument = document.currentScript.ownerDocument;
-        this.attachShadow({mode: 'open'});
     }
 
-    connectedCallback() {
-        const className = 'cf_google-map_' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+    public connectedCallback(): void {
+
         const width = this.hasAttribute('width') ? this.getAttribute('width') : '100%';
         const height = this.hasAttribute('height') ? this.getAttribute('height') : '160px';
-        // @ts-ignore
-        // error TS2339: Property 'currentDocument' does not exist on type 'GoogleMap'
-        const template = this.currentDocument.createElement('div');
-        template.setAttribute('class', className);
-        template.style.height = height;
-        template.style.width = width;
-        // @ts-ignore
-        // error TS2531: Object is possibly 'null'
-        this.shadowRoot.appendChild(template.cloneNode(true));
-        this.loadMap(className);
+
+        const currentDocument: Document = document.currentScript!.ownerDocument;
+        const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
+        const template: HTMLDivElement = currentDocument.createElement('div')!;
+        template.setAttribute('class', 'cf_google-maps_wrapper');
+        template.setAttribute('style', `width:${width}; height:${height};`)
+
+        const node = template.cloneNode(true)!;
+        shadowRoot.appendChild(node);
+
+        this.renderMap(shadowRoot);
     }
 
-    async loadMap(className: string): Promise<void> {
+    protected async renderMap(shadowRoot: ShadowRoot): Promise<void> {
 
         if (!this.hasAttribute('api-key')) {
             throw new Error('L`attribut `api-key` est obligatoire pour faire fonctionner ce composant.');
@@ -62,15 +61,15 @@ class GoogleMaps extends HTMLElement {
         const apiKey = this.getAttribute('api-key');
         const address = this.getAttribute('address');
         const mapType = this.hasAttribute('type') ? this.getAttribute('type') : 'plan';
-        // @ts-ignore
-        // error TS2531: Object is possibly 'null'
-        const card = this.shadowRoot.querySelector(`.${className}`);
+        const card = shadowRoot.querySelector('.cf_google-maps_wrapper');
+
+        // Get the URL to the Google Maps library
+        const cf = (window as any).cf as CfInterface;
+        const url = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=&v=weekly`;
 
         // Geocode an address (i.e. get the latitude and longitude) and it on the map
         const drawMap = function () {
-            // @ts-ignore
-            // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-            if (window.cf.google.maps.isLoaded != true) {
+            if (!cf.google.maps.isLoaded) {
                 setTimeout(drawMap, 150);
             } else {
                 // @ts-ignore
@@ -102,38 +101,17 @@ class GoogleMaps extends HTMLElement {
             }
         };
 
-        // Get the URL to the Google Maps library
-        const url = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=&v=weekly`;
-        // @ts-ignore
-        // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-        window.cf = window.cf || {};
-        // @ts-ignore
-        // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-        window.cf.google = window.cf.google || {};
-        // @ts-ignore
-        // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-        window.cf.google.maps = window.cf.google.maps || {};
-
-        // Load the Google Maps library (if needed) and display the map
-        // @ts-ignore
-        // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-        if (typeof window.cf.google.maps.scriptUrl === 'string') {
+        if (typeof cf.google.maps.scriptUrl === 'string') {
             drawMap();
         } else {
 
-            // @ts-ignore
-            // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-            window.cf.google.maps.scriptUrl = url;
-            // @ts-ignore
-            // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-            window.cf.google.maps.isLoaded = false;
+            cf.google.maps.scriptUrl = url;
+            cf.google.maps.isLoaded = false;
 
             const script = document.createElement('script');
             script.setAttribute('src', url);
             script.onload = function () {
-                // @ts-ignore
-                // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'
-                window.cf.google.maps.isLoaded = true;
+                cf.google.maps.isLoaded = true;
                 drawMap();
             };
             document.body.appendChild(script);

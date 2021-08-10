@@ -1,21 +1,23 @@
+import {WebComponentsInterface} from './web-components.interface';
 import {GoogleMaps} from './ui/google-maps';
+import {Autocomplete} from './ui/autocomplete';
 
-const webComponents = (function () {
+const webComponents: WebComponentsInterface = (function () {
 
-    /**
-     * Register the `<google-maps>` Web Component.
-     *
-     * @return `true` if the registration succeeded, `false` otherwise.
-     * @see [[`GoogleMaps`]]
-     */
     const registerGoogleMaps = (): boolean => {
         window.customElements.define('google-maps', GoogleMaps);
         return true;
     }
 
+    const registerAutocomplete = (): boolean => {
+        window.customElements.define('input-terms', Autocomplete);
+        return true;
+    }
+
     return {
         registerGoogleMaps: registerGoogleMaps,
+        registerAutocomplete: registerAutocomplete,
     }
 })();
 
-export {webComponents, GoogleMaps}
+export {webComponents, GoogleMaps, Autocomplete}
