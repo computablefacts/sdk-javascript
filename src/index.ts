@@ -1,4 +1,7 @@
+import {CfCustomWindow} from './custom.window'
 import {cf} from './cf'
+
+declare let window: CfCustomWindow;
 
 // Inspire by: https://unpkg.com/vue@2.6.14/dist/vue.js
 if (typeof exports === 'object' && typeof module !== 'undefined') {
@@ -6,8 +9,6 @@ if (typeof exports === 'object' && typeof module !== 'undefined') {
 }
 
 if (typeof window === 'object') {
-    // @ts-ignore
-    // error TS2339: Property 'cf' does not exist on type 'Window & typeof globalThis'.
     window.cf = cf;
 }
 
