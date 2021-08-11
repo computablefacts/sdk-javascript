@@ -1,29 +1,12 @@
 /**
- * Wrapper around an autocomplete. To be truly useful, this component must be subclassed and implement `fetchData()`.
+ * Wrapper around an autocomplete.
  *
- * Example:
- * ```html
- * <!DOCTYPE html>
- * <html lang="en">
- * <head>
- *   <meta charset="UTF-8">
- * </head>
- * <body>
- *   <div style="width: 50%">
- *     <autocomplete></autocomplete>
- *   </div>
- *   <div>
- *     The popup will be displayed above this text.
- *   </div>
- * </body>
- * <script src="https://unpkg.com/@computablefacts/sdk-javascript/dist/bundle/index.js"></script>
- * <script>
- *   cf.webComponents.registerAutocomplete()
- * </script>
- * </html>
- * ```
+ * This component is not meant to be instantiated but to be subclassed.
  */
 class Autocomplete extends HTMLElement {
+
+    protected SELECT_VALUE = 'Select value...';
+    protected THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH = 'There are no results for your search.';
 
     private static moveSelection(curItem: HTMLElement | null, nextItem: HTMLElement | null): void {
         if (curItem) {
@@ -128,7 +111,7 @@ class Autocomplete extends HTMLElement {
 
     public connectedCallback(): void {
 
-        const placeholder = this.hasAttribute('placeholder') ? this.getAttribute('placeholder') : 'Select value...';
+        const placeholder = this.hasAttribute('placeholder') ? this.getAttribute('placeholder') : this.SELECT_VALUE;
 
         const currentDocument: Document = document.currentScript!.ownerDocument;
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
@@ -192,10 +175,10 @@ class Autocomplete extends HTMLElement {
         const list: HTMLUListElement = shadowRoot.querySelector('.cf_input-terms_list')!;
 
         let text = ''; // the text presently in the input
-        let caret = 0; // the start position of the caret
-        let caretPrev = 0; // the previous start position of the caret
-        let caret2 = 0; // the end position of the caret
-        let caretPrev2 = 0; // the previous end position of the caret
+        let caretStart = 0; // the start position of the caret
+        let caretStartPrev = 0; // the previous start position of the caret
+        let caretEnd = 0; // the end position of the caret
+        let caretEndPrev2 = 0; // the previous end position of the caret
         const selections: string[] = []; // the user-selected items
 
         field.onkeyup = event => {
@@ -208,10 +191,10 @@ class Autocomplete extends HTMLElement {
 
             // Save the current and previous caret position in order to be able to override
             // the default behavior on ARROW_UP and ARROW_DOWN
-            caretPrev = caret;
-            caret = field.selectionStart!;
-            caretPrev2 = caret2;
-            caret2 = field.selectionEnd!;
+            caretStartPrev = caretStart;
+            caretStart = field.selectionStart!;
+            caretEndPrev2 = caretEnd;
+            caretEnd = field.selectionEnd!;
 
             if (!text || text.length <= 0) {
 
@@ -231,10 +214,10 @@ class Autocomplete extends HTMLElement {
                 if (popup.style.display === 'block') {
 
                     // Reset caret position otherwise the selected item might not be inserted at the right place
-                    field.selectionStart = caretPrev;
-                    field.selectionEnd = caretPrev2;
-                    caret = caretPrev;
-                    caret2 = caretPrev2;
+                    field.selectionStart = caretStartPrev;
+                    field.selectionEnd = caretEndPrev2;
+                    caretStart = caretStartPrev;
+                    caretEnd = caretEndPrev2;
 
                     // Move selection to the next list item (if any)
                     // Otherwise, select the first list item
@@ -249,10 +232,10 @@ class Autocomplete extends HTMLElement {
                 if (popup.style.display === 'block') {
 
                     // Reset caret position otherwise the selected item might not be inserted at the right place
-                    field.selectionStart = caretPrev;
-                    field.selectionEnd = caretPrev2;
-                    caret = caretPrev;
-                    caret2 = caretPrev2;
+                    field.selectionStart = caretStartPrev;
+                    field.selectionEnd = caretEndPrev2;
+                    caretStart = caretStartPrev;
+                    caretEnd = caretEndPrev2;
 
                     // Move selection to the previous list item (if any)
                     // Otherwise, select the last list item
@@ -270,11 +253,26 @@ class Autocomplete extends HTMLElement {
                     const selectedItem = Autocomplete.selectedItem(shadowRoot);
                     if (selectedItem) {
 
+                        // Backup caret position to later move it after the inserted item
+                        const caretStartTmp = caretStart;
+                        const caretEndTmp = caretEnd;
+
+                        // Insert the selected item in the input
                         const itemId = selectedItem.getAttribute('value');
                         const itemText = selectedItem.innerText;
 
-                        field.value = Autocomplete.insertSelectedItem(text, caret, itemText, selections);
+                        field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
                         selections.push(itemText);
+
+                        // Move caret to the end of the inserted text, otherwise it will jump to the end of the input
+                        const newCaretStart = field.value.indexOf(',', caretStartTmp);
+                        const newCaretEnd = field.value.indexOf(',', caretEndTmp);
+
+                        field.selectionStart = newCaretStart < 0 ? field.value.length : newCaretStart;
+                        field.selectionEnd = newCaretEnd < 0 ? field.value.length : newCaretEnd;
+
+                        caretStart = field.selectionStart;
+                        caretEnd = field.selectionEnd;
                     }
 
                     // At last, close the list
@@ -285,8 +283,9 @@ class Autocomplete extends HTMLElement {
                 // Remove previously inserted list items
                 list.innerHTML = '';
 
-                // Build the list of items and fill the DOM
-                this.fetchData(currentDocument, list, text, caret);
+                // Build a list of items and fill the DOM
+                const elements = this.newListOfItems(currentDocument, text, caretStart);
+                elements.forEach(e => list.appendChild(e));
 
                 // At last, render the DOM and display the list items
                 popup.style.display = 'block';
@@ -314,11 +313,28 @@ class Autocomplete extends HTMLElement {
             const selectedItem = Autocomplete.selectedItem(shadowRoot);
             if (selectedItem) {
 
+                // Backup caret position to later move it after the inserted item
+                const caretStartTmp = caretStart;
+                const caretEndTmp = caretEnd;
+
+                // Insert the selected item in the input
                 const itemId = selectedItem.getAttribute('value');
                 const itemText = selectedItem.innerText;
 
-                field.value = Autocomplete.insertSelectedItem(text, caret, itemText, selections);
-                selections.push(itemText);
+                if (itemText !== this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH) {
+                    field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
+                    selections.push(itemText);
+                }
+
+                // Move caret to the end of the inserted text, otherwise it will jump to the end of the input
+                const newCaretStart = field.value.indexOf(',', caretStartTmp);
+                const newCaretEnd = field.value.indexOf(',', caretEndTmp);
+
+                field.selectionStart = newCaretStart < 0 ? field.value.length : newCaretStart;
+                field.selectionEnd = newCaretEnd < 0 ? field.value.length : newCaretEnd;
+
+                caretStart = field.selectionStart;
+                caretEnd = field.selectionEnd;
             }
 
             // At last, close the list and cleanup the DOM
@@ -330,24 +346,38 @@ class Autocomplete extends HTMLElement {
         };
     }
 
-    protected newListItem(currentDocument: Document, id: number, name: string): HTMLElement {
+    /**
+     * Create a single `HTMLElement` of type `<li>` to replace the ones displayed in the popup. This `HTMLElement`
+     * must represent a single list item.
+     *
+     * @param currentDocument the `Document` where the element will be inserted.
+     * @param id the list item identifier.
+     * @param name the list item visible name.
+     * @returns the newly created `HTMLElement`.
+     */
+    public newListItem(currentDocument: Document, id: string, name: string): HTMLElement {
         const listItem = currentDocument.createElement('li');
         listItem.setAttribute('class', 'cf_input-terms_list-item');
-        listItem.setAttribute('value', id.toString());
+        listItem.setAttribute('value', id);
         listItem.innerHTML = name;
         return listItem;
     }
 
-    protected fetchData(currentDocument: Document, list: HTMLElement, text: string, caret: number): void {
+    /**
+     * Create a list of `HTMLElement` to replace the ones displayed in the popup. This list of `HTMLElement`
+     * must represent the full list.
+     *
+     * @param currentDocument the `Document` where the elements will be inserted.
+     * @param text the text in the `<input>` field of the `Autocomplete` component.
+     * @param caret the caret position in the text.
+     * @returns an array of `HTMLElement`.
+     */
+    public newListOfItems(currentDocument: Document, text: string, caret: number): HTMLElement[] {
 
         console.log('text : ' + text);
         console.log('caret : ' + caret);
 
-        // TODO : call function and fill list
-        for (let i = 0; i < 5; i++) {
-            const item = this.newListItem(currentDocument, i, 'Item ' + i);
-            list.appendChild(item);
-        }
+        return [this.newListItem(currentDocument, 'no-results', this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)];
     }
 }
 
