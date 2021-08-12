@@ -9,12 +9,12 @@ interface WebComponentsInterface {
     registerGoogleMaps(): boolean,
 
     /**
-     * Register the `<autocomplete>` Web Component.
+     * Register the `<autocomplete-concept>` Web Component.
      *
      * @return `true` if the registration succeeded, `false` otherwise.
-     * @see [[`Autocomplete`]]
+     * @see [[`AutocompleteConcept`]]
      */
-    registerAutocomplete(): boolean,
+    registerAutocompleteConcept(): boolean,
 }
 
 export {WebComponentsInterface}

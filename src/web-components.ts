@@ -1,6 +1,6 @@
 import {WebComponentsInterface} from './web-components.interface';
 import {GoogleMaps} from './ui/google-maps';
-import {Autocomplete} from './ui/autocomplete';
+import {AutocompleteConcept} from './ui/autocomplete-concept';
 
 const webComponents: WebComponentsInterface = (function () {
 
@@ -9,15 +9,15 @@ const webComponents: WebComponentsInterface = (function () {
         return true;
     }
 
-    const registerAutocomplete = (): boolean => {
-        window.customElements.define('input-terms', Autocomplete);
+    const registerAutocompleteConcept = (): boolean => {
+        window.customElements.define('autocomplete-concept', AutocompleteConcept);
         return true;
     }
 
     return {
         registerGoogleMaps: registerGoogleMaps,
-        registerAutocomplete: registerAutocomplete,
+        registerAutocompleteConcept: registerAutocompleteConcept,
     }
 })();
 
-export {webComponents, GoogleMaps, Autocomplete}
+export {webComponents, GoogleMaps, AutocompleteConcept}

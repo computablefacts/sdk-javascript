@@ -27,6 +27,7 @@ type materializedConceptsSqlQueryConfig = {
      * SQL Query parameters.
      *
      * Example:
+     *
      * ```sql
      * SELECT *
      * FROM materialized_concepts
@@ -61,6 +62,33 @@ type materializedConceptsSqlQueryConfig = {
      *
      */
     format?: 'objects' | 'arrays' | 'arrays_with_header' | 'csv' | 'csv_with_header',
+}
+
+/**
+ * Config for concepts auto-completion API request
+ */
+type autocompleteConceptConfig = {
+
+    /**
+     * A caller-defined unique identifier. This identifier will be set back in the `id` attribute of the response.
+     * This identifier can be used to reorder the responses returned by the server.
+     */
+    uuid: string,
+
+    /**
+     * A concept name as configured in the platform.
+     */
+    concept: string,
+
+    /**
+     * The list of concept properties where the terms will be matched against.
+     */
+    properties: string[],
+
+    /**
+     * The terms to match.
+     */
+    terms: string[],
 }
 
 interface HttpClientInterface {
@@ -122,6 +150,7 @@ interface HttpClientInterface {
      * Returns materialized concepts, i.e. facts, based on your SQL request.
      *
      * Example:
+     *
      * ```javascript
      * cf.httpClient.queryMaterializedConcepts({
      *     query: 'SELECT * FROM materialized_concepts LIMIT 0, 100',
@@ -142,6 +171,19 @@ interface HttpClientInterface {
      * Return the current API user (based on API token).
      */
     whoAmI: () => Promise<Response>,
+
+    /**
+     * Trigger autocompletion on a given set of properties of a given concept.
+     *
+     * Example:
+     * ```javascript
+     *
+     * ```
+     *
+     * @param config The parameters needed to trigger autocompletion.
+     * @see [[`autocompleteConceptConfig`]]
+     */
+    autocompleteConcept: (config: autocompleteConceptConfig) => Promise<Response>,
 }
 
-export {HttpClientInterface, materializedConceptsSqlQueryConfig}
+export {HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig}

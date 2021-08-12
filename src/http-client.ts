@@ -1,5 +1,9 @@
 import {client} from './fetch-api-client'
-import {HttpClientInterface, materializedConceptsSqlQueryConfig} from './http-client.interface'
+import {
+    autocompleteConceptConfig,
+    HttpClientInterface,
+    materializedConceptsSqlQueryConfig
+} from './http-client.interface'
 
 const httpClient: HttpClientInterface = (function () {
 
@@ -112,6 +116,27 @@ const httpClient: HttpClientInterface = (function () {
         })
     }
 
+    const autocompleteConcept = (config: autocompleteConceptConfig) => {
+        return client(`${baseUrl_}/api/v3/coreapi/problog/queries/autocomplete`, {
+
+            // @ts-ignore
+            // TS2345: Argument of type '{ method: string; body: { uuid: string; concept: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            method: 'POST',
+
+            body: {
+                uuid: config.uuid,
+                concept: config.concept,
+                properties: config.properties,
+                terms: config.terms,
+            },
+
+            // @ts-ignore
+            // TS2345: Argument of type '{ method: string; body: { uuid: string; query: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            headers: {
+                Authorization: `Bearer ${token_}`
+            }
+        })
+    }
 
     return {
         getToken: getToken,
@@ -126,7 +151,8 @@ const httpClient: HttpClientInterface = (function () {
         hasAutodetect: hasAutodetect,
         queryMaterializedConcepts: queryMaterializedConcepts,
         whoAmI: whoAmI,
+        autocompleteConcept: autocompleteConcept,
     }
 })();
 
-export {httpClient, HttpClientInterface, materializedConceptsSqlQueryConfig}
+export {httpClient, HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig}

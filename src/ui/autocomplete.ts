@@ -8,6 +8,16 @@ class Autocomplete extends HTMLElement {
     protected SELECT_VALUE = 'Select value...';
     protected THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH = 'There are no results for your search.';
 
+    protected static extractTermBeforeCaret(text: string, caret: number): string {
+
+        const prevComma = text.lastIndexOf(',', caret - 1);
+        const prevWhitespace = text.lastIndexOf(' ', caret - 1);
+        const begin = prevComma < 0 && prevWhitespace < 0 ? 0 : Math.max(prevComma, prevWhitespace);
+        const length = caret - begin;
+
+        return text.substr(begin, length);
+    }
+
     private static moveSelection(curItem: HTMLElement | null, nextItem: HTMLElement | null): void {
         if (curItem) {
             curItem.classList.remove('cf_input-terms_list-item_hover');
@@ -284,11 +294,13 @@ class Autocomplete extends HTMLElement {
                 list.innerHTML = '';
 
                 // Build a list of items and fill the DOM
-                const elements = this.newListOfItems(currentDocument, text, caretStart);
-                elements.forEach(e => list.appendChild(e));
+                this.newListOfItems(currentDocument, text, caretStart).then(elements => {
 
-                // At last, render the DOM and display the list items
-                popup.style.display = 'block';
+                    elements.forEach(e => list.appendChild(e));
+
+                    // At last, render the DOM and display the list items
+                    popup.style.display = 'block';
+                });
             } else {
 
                 // Close the list
@@ -372,12 +384,12 @@ class Autocomplete extends HTMLElement {
      * @param caret the caret position in the text.
      * @returns an array of `HTMLElement`.
      */
-    public newListOfItems(currentDocument: Document, text: string, caret: number): HTMLElement[] {
+    public newListOfItems(currentDocument: Document, text: string, caret: number): Promise<HTMLElement[]> {
 
-        console.log('text : ' + text);
-        console.log('caret : ' + caret);
+        // console.log('text : ' + text);
+        // console.log('caret : ' + caret);
 
-        return [this.newListItem(currentDocument, 'no-results', this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)];
+        return new Promise(() => [this.newListItem(currentDocument, 'no-results', this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)]);
     }
 }
 
