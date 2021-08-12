@@ -1,3 +1,5 @@
+import {CfInterface} from '../cf.interface';
+
 /**
  * Wrapper around Google Maps.
  *
@@ -23,8 +25,6 @@
  * </html>
  * ```
  */
-import {CfInterface} from '../cf.interface';
-
 class GoogleMaps extends HTMLElement {
 
     constructor() {
