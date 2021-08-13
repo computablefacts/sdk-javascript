@@ -1,4 +1,12 @@
 /**
+ * The list of items to display in the popup.
+ */
+type ListOfItems = {
+    uuid: number;
+    elements: HTMLElement[];
+}
+
+/**
  * Wrapper around an autocomplete.
  *
  * This component is not meant to be instantiated but to be subclassed.
@@ -7,6 +15,9 @@ class Autocomplete extends HTMLElement {
 
     protected SELECT_VALUE = 'Select value...';
     protected THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH = 'There are no results for your search.';
+    protected POPUP_WIDTH = '100%';
+    protected POPUP_HEIGHT = 'auto';
+    protected uuid = 0;
 
     protected static extractTermBeforeCaret(text: string, caret: number): string {
 
@@ -15,20 +26,35 @@ class Autocomplete extends HTMLElement {
         const begin = prevComma < 0 && prevWhitespace < 0 ? 0 : Math.max(prevComma, prevWhitespace);
         const length = caret - begin;
 
-        return text.substr(begin, length);
+        return text.substr(begin, length).trim();
     }
 
-    private static moveSelection(curItem: HTMLElement | null, nextItem: HTMLElement | null): void {
+    private static moveSelection(wrapper: HTMLElement, curItem: HTMLElement | null, nextItem: HTMLElement | null): void {
         if (curItem) {
-            curItem.classList.remove('cf_input-terms_list-item_hover');
+            curItem.classList.remove('list-item_hover');
         }
         if (nextItem) {
-            nextItem.classList.add('cf_input-terms_list-item_hover');
+
+            const top = nextItem.offsetTop;
+            const bottom = nextItem.offsetTop + nextItem.offsetHeight;
+
+            const scrollTop = wrapper.scrollTop;
+            const scrollBottom = wrapper.scrollTop + wrapper.offsetHeight;
+
+            const isVisible = (top >= scrollTop && bottom <= scrollBottom);
+
+            if (!isVisible && bottom > scrollBottom) {
+                wrapper.scrollTop = bottom - wrapper.offsetHeight;
+            }
+            if (!isVisible && top < scrollTop) {
+                wrapper.scrollTop = top;
+            }
+            nextItem.classList.add('list-item_hover');
         }
     }
 
     private static selectedItem(shadowRoot: ShadowRoot): HTMLElement | null {
-        return shadowRoot.querySelector('.cf_input-terms_list-item_hover');
+        return shadowRoot.querySelector('.list-item_hover');
     }
 
     private static previousItem(shadowRoot: ShadowRoot): Element | null {
@@ -42,11 +68,11 @@ class Autocomplete extends HTMLElement {
     }
 
     private static firstItem(shadowRoot: ShadowRoot): HTMLElement | null {
-        return shadowRoot.querySelector('.cf_input-terms_list-item:first-child');
+        return shadowRoot.querySelector('.list-item:first-child');
     }
 
     private static lastItem(shadowRoot: ShadowRoot): HTMLElement | null {
-        return shadowRoot.querySelector('.cf_input-terms_list-item:last-child');
+        return shadowRoot.querySelector('.list-item:last-child');
     }
 
     private static position(haystack: string[], needle: string): number {
@@ -122,15 +148,17 @@ class Autocomplete extends HTMLElement {
     public connectedCallback(): void {
 
         const placeholder = this.hasAttribute('placeholder') ? this.getAttribute('placeholder') : this.SELECT_VALUE;
+        const popupWidth = this.hasAttribute('popup-width') ? this.getAttribute('popup-width') : this.POPUP_WIDTH;
+        const popupHeight = this.hasAttribute('popup-height') ? this.getAttribute('popup-height') : this.POPUP_HEIGHT;
 
         const currentDocument: Document = document.currentScript!.ownerDocument;
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.innerHTML = `
             <style>
-                .cf_input-terms_wrapper {
+                .wrapper {
                     position: relative;
                 }
-                .cf_input-terms_field {
+                .field {
                     background: #fff;
                     height: 40px;
                     margin: 0;
@@ -139,10 +167,10 @@ class Autocomplete extends HTMLElement {
                     border: 1px solid #dfe1e5;
                     outline: none;
                 }
-                .cf_input-terms_popup {
+                .popup {
                     position: absolute;
                     z-index: 3;
-                    width: 100%;
+                    width: ${popupWidth};
                     background: #fff;
                     box-shadow: 0 4px 6px rgb(32 33 36 / 28%);
                     display: none;
@@ -151,38 +179,40 @@ class Autocomplete extends HTMLElement {
                     border: 0;
                     overflow: hidden;
                 }
-                .cf_input-terms_list {
+                .list {
+                    max-height: ${popupHeight};
+                    overflow-y: auto;
                     list-style-type: none;
                     margin: 0;
                     padding: 0;
                 }
-                .cf_input-terms_list-item {
+                .list-item {
                     padding: 0.5em 0 0.5em 1em;
                 }
-                .cf_input-terms_list-item:hover {
-                    
+                .list-item:hover {
+                    /* DO NOT REMOVE */
                 } 
-                .cf_input-terms_list-item_hover {
+                .list-item_hover {
                     background: #eee;
                 }
             </style>
 	    `;
 
         const template = currentDocument.createElement('div');
-        template.setAttribute('class', 'cf_input-terms_wrapper');
+        template.setAttribute('class', 'wrapper');
         template.insertAdjacentHTML('afterbegin', `
-            <input class="cf_input-terms_field" type="text" placeholder="${placeholder}"/>
-            <div class="cf_input-terms_popup">
-                <ul class="cf_input-terms_list"></ul>
+            <input class="field" type="text" placeholder="${placeholder}"/>
+            <div class="popup">
+                <ul class="list"></ul>
             </div>
         `);
 
         const node = template.cloneNode(true);
         shadowRoot.appendChild(node);
 
-        const field: HTMLInputElement = shadowRoot.querySelector('.cf_input-terms_field')!;
-        const popup: HTMLDivElement = shadowRoot.querySelector('.cf_input-terms_popup')!;
-        const list: HTMLUListElement = shadowRoot.querySelector('.cf_input-terms_list')!;
+        const field: HTMLInputElement = shadowRoot.querySelector('.field')!;
+        const popup: HTMLDivElement = shadowRoot.querySelector('.popup')!;
+        const list: HTMLUListElement = shadowRoot.querySelector('.list')!;
 
         let text = ''; // the text presently in the input
         let caretStart = 0; // the start position of the caret
@@ -234,7 +264,7 @@ class Autocomplete extends HTMLElement {
                     const curItem = Autocomplete.selectedItem(shadowRoot);
                     const nextItem = Autocomplete.nextItem(shadowRoot);
                     const firstItem = Autocomplete.firstItem(shadowRoot);
-                    Autocomplete.moveSelection(curItem, (nextItem ? nextItem : firstItem) as HTMLElement | null);
+                    Autocomplete.moveSelection(list, curItem, (nextItem ? nextItem : firstItem) as HTMLElement | null);
                 }
             } else if (event.key === 'ArrowUp') {
 
@@ -252,7 +282,7 @@ class Autocomplete extends HTMLElement {
                     const curItem = Autocomplete.selectedItem(shadowRoot);
                     const prevItem = Autocomplete.previousItem(shadowRoot);
                     const lastItem = Autocomplete.lastItem(shadowRoot);
-                    Autocomplete.moveSelection(curItem, (prevItem ? prevItem : lastItem) as HTMLElement | null);
+                    Autocomplete.moveSelection(list, curItem, (prevItem ? prevItem : lastItem) as HTMLElement | null);
                 }
             } else if (event.key === 'Enter') {
 
@@ -268,8 +298,7 @@ class Autocomplete extends HTMLElement {
                         const caretEndTmp = caretEnd;
 
                         // Insert the selected item in the input
-                        const itemId = selectedItem.getAttribute('value');
-                        const itemText = selectedItem.innerText;
+                        const itemText = selectedItem.getAttribute('value')!;
 
                         field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
                         selections.push(itemText);
@@ -294,12 +323,14 @@ class Autocomplete extends HTMLElement {
                 list.innerHTML = '';
 
                 // Build a list of items and fill the DOM
-                this.newListOfItems(currentDocument, text, caretStart).then(elements => {
+                const self = this;
+                this.newListOfItems(++this.uuid, currentDocument, text, caretStart).then(response => {
+                    if (response && self.uuid === response.uuid) {
 
-                    elements.forEach(e => list.appendChild(e));
-
-                    // At last, render the DOM and display the list items
-                    popup.style.display = 'block';
+                        // At last, render the DOM and display the list items
+                        response.elements.forEach(e => list.appendChild(e));
+                        popup.style.display = response.elements.length > 0 ? 'block' : 'none';
+                    }
                 });
             } else {
 
@@ -314,7 +345,15 @@ class Autocomplete extends HTMLElement {
 
             // If a list item is already selected, move the item CSS class from the selected one to the hovered one
             const curItem = Autocomplete.selectedItem(shadowRoot);
-            Autocomplete.moveSelection(curItem, event.target as HTMLElement);
+
+            if ((event.target as HTMLElement).classList.contains('list-item')) {
+                Autocomplete.moveSelection(list, curItem, event.target as HTMLElement);
+            } else {
+
+                // Find the first parent with the 'list-item' class
+                const li: HTMLElement = (event.target as HTMLElement).closest('.list-item')!;
+                Autocomplete.moveSelection(list, curItem, li);
+            }
         };
         list.onclick = event => {
 
@@ -330,8 +369,7 @@ class Autocomplete extends HTMLElement {
                 const caretEndTmp = caretEnd;
 
                 // Insert the selected item in the input
-                const itemId = selectedItem.getAttribute('value');
-                const itemText = selectedItem.innerText;
+                const itemText = selectedItem.getAttribute('value')!;
 
                 if (itemText !== this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH) {
                     field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
@@ -364,14 +402,14 @@ class Autocomplete extends HTMLElement {
      *
      * @param currentDocument the `Document` where the element will be inserted.
      * @param id the list item identifier.
-     * @param name the list item visible name.
+     * @param html the list item visible name.
      * @returns the newly created `HTMLElement`.
      */
-    public newListItem(currentDocument: Document, id: string, name: string): HTMLElement {
+    public newListItem(currentDocument: Document, id: string, html: string): HTMLElement {
         const listItem = currentDocument.createElement('li');
-        listItem.setAttribute('class', 'cf_input-terms_list-item');
+        listItem.setAttribute('class', 'list-item');
         listItem.setAttribute('value', id);
-        listItem.innerHTML = name;
+        listItem.innerHTML = html;
         return listItem;
     }
 
@@ -379,18 +417,27 @@ class Autocomplete extends HTMLElement {
      * Create a list of `HTMLElement` to replace the ones displayed in the popup. This list of `HTMLElement`
      * must represent the full list.
      *
+     * @param uuid a unique identifier in order to be able to apply updates in the right order.
      * @param currentDocument the `Document` where the elements will be inserted.
      * @param text the text in the `<input>` field of the `Autocomplete` component.
      * @param caret the caret position in the text.
-     * @returns an array of `HTMLElement`.
+     * @returns a `Promise<ListOfItems>`.
      */
-    public newListOfItems(currentDocument: Document, text: string, caret: number): Promise<HTMLElement[]> {
+    public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
 
         // console.log('text : ' + text);
         // console.log('caret : ' + caret);
 
-        return new Promise(() => [this.newListItem(currentDocument, 'no-results', this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)]);
+        const self = this;
+        return new Promise(function (resolve) {
+            return resolve({
+                uuid: uuid,
+                elements: [
+                    self.newListItem(currentDocument, 'no-results', self.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)
+                ]
+            });
+        });
     }
 }
 
-export {Autocomplete}
+export {Autocomplete, ListOfItems}
