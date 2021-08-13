@@ -1,4 +1,4 @@
-import {Autocomplete} from './autocomplete';
+import {Autocomplete, ListOfItems} from './autocomplete';
 import {CfInterface} from '../cf.interface';
 
 /**
@@ -14,6 +14,8 @@ import {CfInterface} from '../cf.interface';
  * <body>
  *   <div style="width: 50%">
  *     <autocomplete-concept
+ *       popup-width="600px"
+ *       popup-height="auto"
  *       placeholder="Enter an address..."
  *       concept="address"
  *       properties="rue,complement_de_rue"></autocomplete-concept>
@@ -33,27 +35,28 @@ class AutocompleteConcept extends Autocomplete {
 
     protected UNKNOWN_CONCEPT = 'unk';
     protected UNKNOWN_PROPERTIES = 'unk';
-    protected uuid = 0;
 
     constructor() {
         super();
     }
 
-    public newListOfItems(currentDocument: Document, text: string, caret: number): Promise<HTMLElement[]> {
+    public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
 
         const concept = this.hasAttribute('concept') ? this.getAttribute('concept') : this.UNKNOWN_CONCEPT;
         const properties = this.hasAttribute('properties') ? this.getAttribute('properties') : this.UNKNOWN_PROPERTIES;
         const term = Autocomplete.extractTermBeforeCaret(text, caret);
 
-        if (term.length < 3) {
-            return new Promise(() => []);
+        if (concept === this.UNKNOWN_CONCEPT || properties === this.UNKNOWN_PROPERTIES || term.length < 3) {
+            return new Promise(function (resolve) {
+                return resolve({uuid: uuid, elements: []});
+            });
         }
 
         const self = this;
         const cf = (window as any).cf as CfInterface;
 
         return cf.httpClient.autocompleteConcept({
-            uuid: (++this.uuid).toString(),
+            uuid: uuid.toString(),
             concept: concept ? concept : '',
             properties: properties ? properties.split(',').filter(p => p && p.trim() !== '') : [],
             terms: [term],
@@ -63,19 +66,65 @@ class AutocompleteConcept extends Autocomplete {
 
             if (response && self.uuid === parseInt(response.id, 10)) {
 
-                console.log(response);
+                const props = properties ? properties.split(',').filter(p => p && p.trim() !== '') : [];
+                const termUpperCase = term.toUpperCase();
 
                 for (let i = 0; i < response.results.length; i++) {
-                    const newListItem = self.newListItem(currentDocument, i.toString(), response.results[i]);
-                    elements.push(newListItem);
+
+                    const item = response.results[i];
+                    const footnotes: string[] = [];
+                    let header = '';
+                    let text = '';
+
+                    for (let k = 0; k < props.length; k++) {
+
+                        const key = props[k];
+
+                        if (key in item) {
+
+                            const value = item[key].trim();
+
+                            if (value && value !== '') {
+
+                                const valueUpperCase = value.toUpperCase();
+                                const index = valueUpperCase.indexOf(termUpperCase);
+
+                                if (index >= 0) {
+                                    const prefix = valueUpperCase.substr(0, index);
+                                    const suffix = valueUpperCase.substr(index + termUpperCase.length);
+                                    header = `${prefix}<span style="background-color: #ededed">${termUpperCase}</span>${suffix}`;
+                                    text = value;
+                                } else {
+                                    const keyLowerCase = key.toLowerCase();
+                                    const valueLowerCase = value.toLowerCase();
+                                    footnotes.push(`${keyLowerCase}: ${valueLowerCase}`);
+                                }
+                            } else {
+                                const keyLowerCase = key.toLowerCase();
+                                footnotes.push(`${keyLowerCase}: n/a`);
+                            }
+                        }
+                    }
+
+                    if (!header.startsWith('MASKED_')) {
+                        const footer = footnotes.filter(n => n.indexOf('MASKED_') < 0).join(' <span style="font-weight: bold">/</span> ');
+                        const listItem = `
+                            <div style="color: black">
+                                ${header}
+                            </div>
+                            <div style="color: #707070">
+                                ${footer}
+                            </div>
+                        `;
+                        const newListItem = self.newListItem(currentDocument, text, listItem);
+                        elements.push(newListItem);
+                    }
                 }
             }
-            return elements;
+            return {uuid: uuid, elements: elements};
         }).catch(error => {
-
             console.log(error);
-
-            return [];
+            return {uuid: uuid, elements: []};
         });
     }
 }

@@ -53,7 +53,7 @@ type materializedConceptsSqlQueryConfig = {
      * By default, queries on materialized concepts return data in `objects` format, an array of JSON objects.
      * Each object is the SQL query row result.
      *
-     * Others possibles formats are :
+     * Others formats are :
      *
      * - `arrays` : each row is returned as an array.
      * - `csv` : each row is returned as a string where columns are comma separated (`,`).
@@ -89,6 +89,21 @@ type autocompleteConceptConfig = {
      * The terms to match.
      */
     terms: string[],
+
+    /**
+     * By default, auto-complete queries on concepts return data in `objects` format, an array of JSON objects.
+     * Each object represents a fact.
+     *
+     * Others formats are :
+     *
+     * - `facts` : each row is a fully-formed ProbLog clause.
+     * - `arrays` : each row is returned as an array.
+     * - `csv` : each row is returned as a string where columns are comma separated (`,`).
+     * - `arrays_with_header` : same as `arrays` but the first array contains column headers.
+     * - `csv_with_header` : same as `csv` but the first string contains comma separated column headers (`,`).
+     *
+     */
+    format?: 'objects' | 'facts' | 'arrays' | 'arrays_with_header' | 'csv' | 'csv_with_header',
 }
 
 interface HttpClientInterface {
