@@ -59,6 +59,7 @@ class AutocompleteConcept extends Autocomplete {
             });
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         const cf = (window as any).cf as CfInterface;
 

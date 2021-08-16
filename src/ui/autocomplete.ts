@@ -145,6 +145,15 @@ class Autocomplete extends HTMLElement {
         super();
     }
 
+    get value(): string {
+        const val = this.getAttribute('value');
+        return val && val.trim() !== '' ? val : '';
+    }
+
+    set value(newValue: string) {
+        this.setAttribute('value', newValue);
+    }
+
     public connectedCallback(): void {
 
         const placeholder = this.getAttributeOrDefault('placeholder', this.SELECT_VALUE);
@@ -227,6 +236,7 @@ class Autocomplete extends HTMLElement {
 
             // Extract the input text
             text = field.value;
+            this.value = field.value;
 
             // Save the current and previous caret position in order to be able to override
             // the default behavior on ARROW_UP and ARROW_DOWN
@@ -299,6 +309,7 @@ class Autocomplete extends HTMLElement {
                         // Insert the selected item in the input
                         const itemText = selectedItem.getAttribute('value')!;
                         field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
+                        this.value = field.value;
                         selections.push(itemText);
 
                         // Catch the click event and creates a custom event for the parent(s) to catch
@@ -394,6 +405,7 @@ class Autocomplete extends HTMLElement {
                 if (value !== this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH) {
 
                     field.value = Autocomplete.insertSelectedItem(text, caretStart, value, selections);
+                    this.value = field.value;
                     selections.push(value);
 
                     // Catch the click event and creates a custom event for the parent(s) to catch
@@ -476,6 +488,7 @@ class Autocomplete extends HTMLElement {
         // console.log('text : ' + text);
         // console.log('caret : ' + caret);
 
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         return new Promise(function (resolve) {
             return resolve({
