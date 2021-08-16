@@ -138,7 +138,7 @@ class Autocomplete extends HTMLElement {
         // console.log('adjusted prefix : ' + prefix)
         // console.log('adjusted suffix : ' + suffix)
 
-        return (prefix.length <= 0 ? '' : prefix + ', ') + item + (suffix.length <= 0 ? '' : ', ' + suffix);
+        return (prefix.length <= 0 ? '' : prefix + ', ') + item.replace(',', '') + (suffix.length <= 0 ? '' : ', ' + suffix);
     }
 
     constructor() {
