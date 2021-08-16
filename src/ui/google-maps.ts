@@ -36,9 +36,8 @@ class GoogleMaps extends HTMLElement {
         const width = this.hasAttribute('width') ? this.getAttribute('width') : '100%';
         const height = this.hasAttribute('height') ? this.getAttribute('height') : '160px';
 
-        const currentDocument: Document = document.currentScript!.ownerDocument;
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
-        const template: HTMLDivElement = currentDocument.createElement('div')!;
+        const template: HTMLDivElement = document.createElement('div')!;
         template.setAttribute('class', 'cf_google-maps_wrapper');
         template.setAttribute('style', `width:${width}; height:${height};`)
 

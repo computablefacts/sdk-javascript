@@ -44,7 +44,7 @@ class AutocompleteConcept extends Autocomplete {
         super();
     }
 
-    public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
+    public newListOfItems(uuid: number, text: string, caret: number): Promise<ListOfItems> {
 
         const sampleSize = parseInt(this.getAttributeOrDefault('popup-max-items', this.UNKNOWN_MAX_ITEMS).trim(), 10);
         const concept = this.getAttributeOrDefault('concept', this.UNKNOWN_CONCEPT).trim();
@@ -141,8 +141,6 @@ class AutocompleteConcept extends Autocomplete {
 
                     const subtitleHtml = subtitle.join(' <span style="font-weight: bold">/</span> ');
 
-                    const id = title.join(' ');
-
                     if (titleHtml && titleHtml.trim().length > 0) {
                         const listItem = `
                             <div style="color: black">
@@ -152,7 +150,11 @@ class AutocompleteConcept extends Autocomplete {
                                 ${subtitleHtml}
                             </div>
                         `;
-                        const newListItem = self.newListItem(currentDocument, id, listItem);
+                        const fact = {
+                            concept: concept,
+                            properties: item,
+                        };
+                        const newListItem = self.newListItem(title.join(' '), listItem, JSON.stringify(fact));
                         elements.push(newListItem);
                     }
                 }

@@ -151,7 +151,6 @@ class Autocomplete extends HTMLElement {
         const popupWidth = this.getAttributeOrDefault('popup-width', this.POPUP_WIDTH);
         const popupHeight = this.getAttributeOrDefault('popup-height', this.POPUP_HEIGHT);
 
-        const currentDocument: Document = document.currentScript!.ownerDocument;
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.innerHTML = `
             <style>
@@ -198,7 +197,7 @@ class Autocomplete extends HTMLElement {
             </style>
 	    `;
 
-        const template = currentDocument.createElement('div');
+        const template = document.createElement('div');
         template.setAttribute('class', 'wrapper');
         template.insertAdjacentHTML('afterbegin', `
             <input class="field" type="text" placeholder="${placeholder}"/>
@@ -299,9 +298,30 @@ class Autocomplete extends HTMLElement {
 
                         // Insert the selected item in the input
                         const itemText = selectedItem.getAttribute('value')!;
-
                         field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
                         selections.push(itemText);
+
+                        // Catch the click event and creates a custom event for the parent(s) to catch
+                        const b64Fact = selectedItem.getAttribute('b64fact');
+                        if (b64Fact) {
+                            shadowRoot.dispatchEvent(new CustomEvent('item-selected', {
+                                bubbles: true,
+                                composed: true,
+                                detail: {
+                                    type: 'fact',
+                                    value: JSON.parse(atob(b64Fact))
+                                },
+                            }));
+                        } else {
+                            shadowRoot.dispatchEvent(new CustomEvent('item-selected', {
+                                bubbles: true,
+                                composed: true,
+                                detail: {
+                                    type: 'string',
+                                    value: field.value
+                                },
+                            }));
+                        }
 
                         // Move caret to the end of the inserted text, otherwise it will jump to the end of the input
                         const newCaretStart = field.value.indexOf(',', caretStartTmp);
@@ -324,7 +344,7 @@ class Autocomplete extends HTMLElement {
 
                 // Build a list of items and fill the DOM
                 const self = this;
-                this.newListOfItems(++this.uuid, currentDocument, text, caretStart).then(response => {
+                this.newListOfItems(++this.uuid, text, caretStart).then(response => {
                     if (response && self.uuid === response.uuid) {
 
                         // At last, render the DOM and display the list items
@@ -369,11 +389,34 @@ class Autocomplete extends HTMLElement {
                 const caretEndTmp = caretEnd;
 
                 // Insert the selected item in the input
-                const itemText = selectedItem.getAttribute('value')!;
+                const value = selectedItem.getAttribute('value')!;
 
-                if (itemText !== this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH) {
-                    field.value = Autocomplete.insertSelectedItem(text, caretStart, itemText, selections);
-                    selections.push(itemText);
+                if (value !== this.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH) {
+
+                    field.value = Autocomplete.insertSelectedItem(text, caretStart, value, selections);
+                    selections.push(value);
+
+                    // Catch the click event and creates a custom event for the parent(s) to catch
+                    const b64Fact = selectedItem.getAttribute('b64fact');
+                    if (b64Fact) {
+                        shadowRoot.dispatchEvent(new CustomEvent('item-selected', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                type: 'fact',
+                                value: JSON.parse(atob(b64Fact))
+                            },
+                        }));
+                    } else {
+                        shadowRoot.dispatchEvent(new CustomEvent('item-selected', {
+                            bubbles: true,
+                            composed: true,
+                            detail: {
+                                type: 'string',
+                                value: field.value
+                            },
+                        }));
+                    }
                 }
 
                 // Move caret to the end of the inserted text, otherwise it will jump to the end of the input
@@ -400,15 +443,21 @@ class Autocomplete extends HTMLElement {
      * Create a single `HTMLElement` of type `<li>` to replace the ones displayed in the popup. This `HTMLElement`
      * must represent a single list item.
      *
-     * @param currentDocument the `Document` where the element will be inserted.
-     * @param id the list item identifier.
+     * @param value the list item `value`.
      * @param html the list item visible name.
+     * @param fact an optional fact with additional information.
      * @returns the newly created `HTMLElement`.
      */
-    public newListItem(currentDocument: Document, id: string, html: string): HTMLElement {
-        const listItem = currentDocument.createElement('li');
+    public newListItem(value: string, html: string, fact?: string): HTMLElement {
+
+        const listItem = document.createElement('li');
         listItem.setAttribute('class', 'list-item');
-        listItem.setAttribute('value', id);
+        listItem.setAttribute('value', value);
+
+        if (fact && fact.trim() !== '') {
+            listItem.setAttribute('b64fact', btoa(fact));
+        }
+
         listItem.innerHTML = html;
         return listItem;
     }
@@ -418,12 +467,11 @@ class Autocomplete extends HTMLElement {
      * must represent the full list.
      *
      * @param uuid a unique identifier in order to be able to apply updates in the right order.
-     * @param currentDocument the `Document` where the elements will be inserted.
      * @param text the text in the `<input>` field of the `Autocomplete` component.
      * @param caret the caret position in the text.
      * @returns a `Promise<ListOfItems>`.
      */
-    public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
+    public newListOfItems(uuid: number, text: string, caret: number): Promise<ListOfItems> {
 
         // console.log('text : ' + text);
         // console.log('caret : ' + caret);
@@ -433,7 +481,7 @@ class Autocomplete extends HTMLElement {
             return resolve({
                 uuid: uuid,
                 elements: [
-                    self.newListItem(currentDocument, 'no-results', self.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)
+                    self.newListItem('no-results', self.THERE_ARE_NO_RESULTS_FOR_YOUR_SEARCH)
                 ]
             });
         });
