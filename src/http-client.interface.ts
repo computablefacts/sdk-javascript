@@ -204,7 +204,7 @@ interface HttpClientInterface {
      *     terms: ['passa*'],
      *     sample_size: 15,
      * }).then(response => {
-     *     this.results = response.data
+     *     this.results = response.results
      * }).catch(error => {
      *     console.error('queryMaterializedConcepts error=', error)
      * })

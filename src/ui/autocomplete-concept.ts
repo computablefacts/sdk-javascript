@@ -20,7 +20,8 @@ import {CfInterface} from '../cf.interface';
  *       placeholder="Enter an address..."
  *       concept="address"
  *       filter-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"
- *       display-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"></autocomplete-concept>
+ *       title-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"
+ *       subtitle-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"></autocomplete-concept>
  *   </div>
  *   <div>
  *     The popup will be displayed above this text.
@@ -45,10 +46,11 @@ class AutocompleteConcept extends Autocomplete {
 
     public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
 
-        const sampleSize = parseInt(this.getAttributeOrDefault('popup-max-items', this.UNKNOWN_MAX_ITEMS), 10);
-        const concept = this.getAttributeOrDefault('concept', this.UNKNOWN_CONCEPT);
-        const filterProperties = this.getAttributeOrDefault('filter-properties', this.UNKNOWN_PROPERTIES);
-        const displayProperties = this.getAttributeOrDefault('display-properties', this.UNKNOWN_PROPERTIES);
+        const sampleSize = parseInt(this.getAttributeOrDefault('popup-max-items', this.UNKNOWN_MAX_ITEMS).trim(), 10);
+        const concept = this.getAttributeOrDefault('concept', this.UNKNOWN_CONCEPT).trim();
+        const filterProperties = this.getAttributeOrDefault('filter-properties', this.UNKNOWN_PROPERTIES).trim();
+        const titleProperties = this.getAttributeOrDefault('title-properties', this.UNKNOWN_PROPERTIES).trim();
+        const subtitleProperties = this.getAttributeOrDefault('subtitle-properties', this.UNKNOWN_PROPERTIES).trim();
         const term = Autocomplete.extractTermBeforeCaret(text, caret);
 
         if (concept === this.UNKNOWN_CONCEPT || filterProperties === this.UNKNOWN_PROPERTIES || term.length < 3) {
@@ -68,65 +70,89 @@ class AutocompleteConcept extends Autocomplete {
             sample_size: sampleSize,
         }).then(response => {
 
+            const uuid = parseInt(response.id, 10);
+            const results = response.results;
             const elements: HTMLElement[] = [];
 
-            if (response && self.uuid === parseInt(response.id, 10)) {
+            if (response && self.uuid === uuid) {
 
-                const props = displayProperties && displayProperties !== this.UNKNOWN_PROPERTIES ?
-                    displayProperties.split(',').filter(p => p && p.trim() !== '') :
-                    filterProperties && filterProperties !== this.UNKNOWN_PROPERTIES ?
-                        filterProperties.split(',').filter(p => p && p.trim() !== '') :
-                        [];
+                const titleProps = titleProperties && titleProperties !== this.UNKNOWN_PROPERTIES ?
+                    titleProperties.split(',').filter(p => p && p.trim() !== '') :
+                    [];
+                const subtitleProps = subtitleProperties && subtitleProperties !== this.UNKNOWN_PROPERTIES ?
+                    subtitleProperties.split(',').filter(p => p && p.trim() !== '') :
+                    [];
                 const termUpperCase = term.toUpperCase();
 
-                for (let i = 0; i < response.results.length; i++) {
+                for (let i = 0; i < results.length; i++) {
 
-                    const item = response.results[i];
-                    const footnotes: string[] = [];
-                    let header = '';
-                    let text = '';
+                    const item = results[i];
+                    const title: string[] = [];
+                    const subtitle: string[] = [];
 
-                    for (let k = 0; k < props.length; k++) {
+                    // Build title
+                    for (let k = 0; k < titleProps.length; k++) {
 
-                        const key = props[k];
+                        const key = titleProps[k];
 
                         if (key in item) {
 
-                            const value = item[key].trim();
+                            const value = item[key] ? item[key].trim() : '';
 
-                            if (value && value !== '') {
-
-                                const valueUpperCase = value.toUpperCase();
-                                const index = valueUpperCase.indexOf(termUpperCase);
-
-                                if (index >= 0) {
-                                    const prefix = valueUpperCase.substr(0, index);
-                                    const suffix = valueUpperCase.substr(index + termUpperCase.length);
-                                    header = `${prefix}<span style="background-color: #ededed">${termUpperCase}</span>${suffix}`;
-                                    text = value;
-                                } else {
-                                    const keyLowerCase = key.toLowerCase();
-                                    const valueLowerCase = value.toLowerCase();
-                                    footnotes.push(`${keyLowerCase}: ${valueLowerCase}`);
-                                }
-                            } else {
-                                const keyLowerCase = key.toLowerCase();
-                                footnotes.push(`${keyLowerCase}: n/a`);
+                            if (value && value !== '' && value.indexOf('MASKED_') < 0) {
+                                title.push(value.toUpperCase());
                             }
                         }
                     }
 
-                    if (!header.startsWith('MASKED_')) {
-                        const footer = footnotes.filter(n => n.indexOf('MASKED_') < 0).join(' <span style="font-weight: bold">/</span> ');
+                    // Build subtitle
+                    for (let k = 0; k < subtitleProps.length; k++) {
+
+                        const key = subtitleProps[k];
+
+                        if (key in item) {
+
+                            const value = item[key] ? item[key].trim() : '';
+
+                            if (value && value !== '' && value.indexOf('MASKED_') < 0) {
+
+                                const keyLowerCase = key.toLowerCase();
+                                const valueLowerCase = value.toLowerCase();
+
+                                subtitle.push(`${keyLowerCase}: ${valueLowerCase}`);
+                            }
+                        }
+                    }
+
+                    // Fill HTML template
+                    const titleHtml = title.map(str => {
+
+                        const index = str.indexOf(termUpperCase);
+
+                        if (index < 0) {
+                            return str;
+                        }
+
+                        const prefix = str.substr(0, index);
+                        const suffix = str.substr(index + termUpperCase.length);
+
+                        return `${prefix}<span style="background-color: #ededed">${termUpperCase}</span>${suffix}`;
+                    }).join(' ');
+
+                    const subtitleHtml = subtitle.join(' <span style="font-weight: bold">/</span> ');
+
+                    const id = title.join(' ');
+
+                    if (titleHtml && titleHtml.trim().length > 0) {
                         const listItem = `
                             <div style="color: black">
-                                ${header}
+                                ${titleHtml}
                             </div>
                             <div style="color: #707070">
-                                ${footer}
+                                ${subtitleHtml}
                             </div>
                         `;
-                        const newListItem = self.newListItem(currentDocument, text, listItem);
+                        const newListItem = self.newListItem(currentDocument, id, listItem);
                         elements.push(newListItem);
                     }
                 }
