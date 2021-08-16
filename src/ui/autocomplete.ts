@@ -147,9 +147,9 @@ class Autocomplete extends HTMLElement {
 
     public connectedCallback(): void {
 
-        const placeholder = this.hasAttribute('placeholder') ? this.getAttribute('placeholder') : this.SELECT_VALUE;
-        const popupWidth = this.hasAttribute('popup-width') ? this.getAttribute('popup-width') : this.POPUP_WIDTH;
-        const popupHeight = this.hasAttribute('popup-height') ? this.getAttribute('popup-height') : this.POPUP_HEIGHT;
+        const placeholder = this.getAttributeOrDefault('placeholder', this.SELECT_VALUE);
+        const popupWidth = this.getAttributeOrDefault('popup-width', this.POPUP_WIDTH);
+        const popupHeight = this.getAttributeOrDefault('popup-height', this.POPUP_HEIGHT);
 
         const currentDocument: Document = document.currentScript!.ownerDocument;
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
@@ -437,6 +437,22 @@ class Autocomplete extends HTMLElement {
                 ]
             });
         });
+    }
+
+    /**
+     * Execute `getAttribute` and returns a default value if the attribute does not exist or is `null`
+     * or equals to the empty string.
+     *
+     * @param attribute the attribute name.
+     * @param defaultValue the default value to return.
+     * @protected
+     */
+    protected getAttributeOrDefault(attribute: string, defaultValue: string): string {
+        if (!this.hasAttribute(attribute)) {
+            return defaultValue;
+        }
+        const value = this.getAttribute(attribute);
+        return value && value.trim() !== '' ? value : defaultValue;
     }
 }
 

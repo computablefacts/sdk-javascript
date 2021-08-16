@@ -104,6 +104,11 @@ type autocompleteConceptConfig = {
      *
      */
     format?: 'objects' | 'facts' | 'arrays' | 'arrays_with_header' | 'csv' | 'csv_with_header',
+
+    /**
+     * The maximum number of items that must be returned.
+     */
+    sample_size?: number,
 }
 
 interface HttpClientInterface {
@@ -192,7 +197,17 @@ interface HttpClientInterface {
      *
      * Example:
      * ```javascript
-     *
+     * cf.httpClient.autocompleteConcept({
+     *     uuid: 1,
+     *     concept: 'address',
+     *     properties: ['NUMERO_DE_RUE','RUE','COMPLEMENT_DE_RUE','CODE_POSTAL','VILLE'],
+     *     terms: ['passa*'],
+     *     sample_size: 15,
+     * }).then(response => {
+     *     this.results = response.data
+     * }).catch(error => {
+     *     console.error('queryMaterializedConcepts error=', error)
+     * })
      * ```
      *
      * @param config The parameters needed to trigger autocompletion.

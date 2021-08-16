@@ -16,9 +16,11 @@ import {CfInterface} from '../cf.interface';
  *     <autocomplete-concept
  *       popup-width="600px"
  *       popup-height="auto"
+ *       popup-max-items="15"
  *       placeholder="Enter an address..."
  *       concept="address"
- *       properties="rue,complement_de_rue"></autocomplete-concept>
+ *       filter-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"
+ *       display-properties="NUMERO_DE_RUE,RUE,COMPLEMENT_DE_RUE,CODE_POSTAL,VILLE"></autocomplete-concept>
  *   </div>
  *   <div>
  *     The popup will be displayed above this text.
@@ -35,6 +37,7 @@ class AutocompleteConcept extends Autocomplete {
 
     protected UNKNOWN_CONCEPT = 'unk';
     protected UNKNOWN_PROPERTIES = 'unk';
+    protected UNKNOWN_MAX_ITEMS = '15';
 
     constructor() {
         super();
@@ -42,11 +45,13 @@ class AutocompleteConcept extends Autocomplete {
 
     public newListOfItems(uuid: number, currentDocument: Document, text: string, caret: number): Promise<ListOfItems> {
 
-        const concept = this.hasAttribute('concept') ? this.getAttribute('concept') : this.UNKNOWN_CONCEPT;
-        const properties = this.hasAttribute('properties') ? this.getAttribute('properties') : this.UNKNOWN_PROPERTIES;
+        const sampleSize = parseInt(this.getAttributeOrDefault('popup-max-items', this.UNKNOWN_MAX_ITEMS), 10);
+        const concept = this.getAttributeOrDefault('concept', this.UNKNOWN_CONCEPT);
+        const filterProperties = this.getAttributeOrDefault('filter-properties', this.UNKNOWN_PROPERTIES);
+        const displayProperties = this.getAttributeOrDefault('display-properties', this.UNKNOWN_PROPERTIES);
         const term = Autocomplete.extractTermBeforeCaret(text, caret);
 
-        if (concept === this.UNKNOWN_CONCEPT || properties === this.UNKNOWN_PROPERTIES || term.length < 3) {
+        if (concept === this.UNKNOWN_CONCEPT || filterProperties === this.UNKNOWN_PROPERTIES || term.length < 3) {
             return new Promise(function (resolve) {
                 return resolve({uuid: uuid, elements: []});
             });
@@ -58,15 +63,20 @@ class AutocompleteConcept extends Autocomplete {
         return cf.httpClient.autocompleteConcept({
             uuid: uuid.toString(),
             concept: concept ? concept : '',
-            properties: properties ? properties.split(',').filter(p => p && p.trim() !== '') : [],
-            terms: [term],
+            properties: filterProperties ? filterProperties.split(',').filter(p => p && p.trim() !== '') : [],
+            terms: [term + '*'],
+            sample_size: sampleSize,
         }).then(response => {
 
             const elements: HTMLElement[] = [];
 
             if (response && self.uuid === parseInt(response.id, 10)) {
 
-                const props = properties ? properties.split(',').filter(p => p && p.trim() !== '') : [];
+                const props = displayProperties && displayProperties !== this.UNKNOWN_PROPERTIES ?
+                    displayProperties.split(',').filter(p => p && p.trim() !== '') :
+                    filterProperties && filterProperties !== this.UNKNOWN_PROPERTIES ?
+                        filterProperties.split(',').filter(p => p && p.trim() !== '') :
+                        [];
                 const termUpperCase = term.toUpperCase();
 
                 for (let i = 0; i < response.results.length; i++) {
