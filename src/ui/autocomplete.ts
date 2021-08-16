@@ -238,6 +238,9 @@ class Autocomplete extends HTMLElement {
             text = field.value;
             this.value = field.value;
 
+            // Move to the next search identifier i.e. discard all search that did not return yet
+            ++this.uuid;
+
             // Save the current and previous caret position in order to be able to override
             // the default behavior on ARROW_UP and ARROW_DOWN
             caretStartPrev = caretStart;
@@ -355,7 +358,7 @@ class Autocomplete extends HTMLElement {
 
                 // Build a list of items and fill the DOM
                 const self = this;
-                this.newListOfItems(++this.uuid, text, caretStart).then(response => {
+                this.newListOfItems(self.uuid, text, caretStart).then(response => {
                     if (response && self.uuid === response.uuid) {
 
                         // At last, render the DOM and display the list items
