@@ -87,8 +87,13 @@ type autocompleteConceptConfig = {
 
     /**
      * The terms to match.
+     *
+     * Note that `[["rue", "de"]]` will fuzzy match `("rue" AND "de")` but `[["rue"], ["de"]]` will
+     * fuzzy match `("rue" OR "de")`. Hence, `[["rue", "de"], ["passage", "de"]]` will fuzzy match
+     * `("rue" AND "de") OR ("passage" AND "de")`.
+     *
      */
-    terms: string[],
+    terms: string[][],
 
     /**
      * By default, auto-complete queries on concepts return data in `objects` format, an array of JSON objects.

@@ -67,83 +67,86 @@ class AutocompleteConcept extends Autocomplete {
             uuid: uuid.toString(),
             concept: concept ? concept : '',
             properties: filterProperties ? filterProperties.split(',').filter(p => p && p.trim() !== '') : [],
-            terms: [term + '*'],
+            terms: [[term + '*']],
             sample_size: sampleSize,
         }).then(response => {
 
-            const uuid = parseInt(response.id, 10);
+            if (!response || !response.id || !response.results) {
+                return {
+                    uuid: -1 /* ensure the response is discarded because it is lower than the min. uuid (i.e. 0) */,
+                    elements: []
+                };
+            }
+
             const results = response.results;
             const elements: HTMLElement[] = [];
+            const titleProps = titleProperties && titleProperties !== this.UNKNOWN_PROPERTIES ?
+                titleProperties.split(',').filter(p => p && p.trim() !== '') :
+                [];
+            const subtitleProps = subtitleProperties && subtitleProperties !== this.UNKNOWN_PROPERTIES ?
+                subtitleProperties.split(',').filter(p => p && p.trim() !== '') :
+                [];
+            const termUpperCase = term.toUpperCase();
 
-            if (response && self.uuid === uuid) {
+            for (let i = 0; i < results.length; i++) {
 
-                const titleProps = titleProperties && titleProperties !== this.UNKNOWN_PROPERTIES ?
-                    titleProperties.split(',').filter(p => p && p.trim() !== '') :
-                    [];
-                const subtitleProps = subtitleProperties && subtitleProperties !== this.UNKNOWN_PROPERTIES ?
-                    subtitleProperties.split(',').filter(p => p && p.trim() !== '') :
-                    [];
-                const termUpperCase = term.toUpperCase();
+                const item = results[i];
+                const title: string[] = [];
+                const subtitle: string[] = [];
 
-                for (let i = 0; i < results.length; i++) {
+                // Build title
+                for (let k = 0; k < titleProps.length; k++) {
 
-                    const item = results[i];
-                    const title: string[] = [];
-                    const subtitle: string[] = [];
+                    const key = titleProps[k];
 
-                    // Build title
-                    for (let k = 0; k < titleProps.length; k++) {
+                    if (key in item) {
 
-                        const key = titleProps[k];
+                        const value = item[key] ? item[key].trim() : '';
 
-                        if (key in item) {
-
-                            const value = item[key] ? item[key].trim() : '';
-
-                            if (value && value !== '' && value.indexOf('MASKED_') < 0) {
-                                title.push(value.toUpperCase());
-                            }
+                        if (value && value !== '' && value.indexOf('MASKED_') < 0) {
+                            title.push(value.toUpperCase());
                         }
                     }
+                }
 
-                    // Build subtitle
-                    for (let k = 0; k < subtitleProps.length; k++) {
+                // Build subtitle
+                for (let k = 0; k < subtitleProps.length; k++) {
 
-                        const key = subtitleProps[k];
+                    const key = subtitleProps[k];
 
-                        if (key in item) {
+                    if (key in item) {
 
-                            const value = item[key] ? item[key].trim() : '';
+                        const value = item[key] ? item[key].trim() : '';
 
-                            if (value && value !== '' && value.indexOf('MASKED_') < 0) {
+                        if (value && value !== '' && value.indexOf('MASKED_') < 0) {
 
-                                const keyLowerCase = key.toLowerCase();
-                                const valueLowerCase = value.toLowerCase();
+                            const keyLowerCase = key.toLowerCase();
+                            const valueLowerCase = value.toLowerCase();
 
-                                subtitle.push(`${keyLowerCase}: ${valueLowerCase}`);
-                            }
+                            subtitle.push(`${keyLowerCase}: ${valueLowerCase}`);
                         }
                     }
+                }
 
-                    // Fill HTML template
-                    const titleHtml = title.map(str => {
+                // Fill HTML template
+                const titleHtml = title.map(str => {
 
-                        const index = str.indexOf(termUpperCase);
+                    const index = str.indexOf(termUpperCase);
 
-                        if (index < 0) {
-                            return str;
-                        }
+                    if (index < 0) {
+                        return str;
+                    }
 
-                        const prefix = str.substr(0, index);
-                        const suffix = str.substr(index + termUpperCase.length);
+                    const prefix = str.substr(0, index);
+                    const suffix = str.substr(index + termUpperCase.length);
 
-                        return `${prefix}<span style="background-color: #ededed">${termUpperCase}</span>${suffix}`;
-                    }).join(' ');
+                    return `${prefix}<span style="background-color: #ededed">${termUpperCase}</span>${suffix}`;
+                }).join(' ');
 
-                    const subtitleHtml = subtitle.join(' <span style="font-weight: bold">/</span> ');
+                const subtitleHtml = subtitle.join(' <span style="font-weight: bold">/</span> ');
 
-                    if (titleHtml && titleHtml.trim().length > 0) {
-                        const listItem = `
+                if (titleHtml && titleHtml.trim().length > 0) {
+                    const listItem = `
                             <div style="color: black">
                                 ${titleHtml}
                             </div>
@@ -151,16 +154,18 @@ class AutocompleteConcept extends Autocomplete {
                                 ${subtitleHtml}
                             </div>
                         `;
-                        const fact = {
-                            concept: concept,
-                            properties: item,
-                        };
-                        const newListItem = self.newListItem(title.join(' '), listItem, JSON.stringify(fact));
-                        elements.push(newListItem);
-                    }
+                    const fact = {
+                        concept: concept,
+                        properties: item,
+                    };
+                    const newListItem = self.newListItem(title.join(' '), listItem, JSON.stringify(fact));
+                    elements.push(newListItem);
                 }
             }
-            return {uuid: uuid, elements: elements};
+            return {
+                uuid: parseInt(response.id, 10),
+                elements: elements
+            };
         }).catch(error => {
             console.log(error);
             return {uuid: uuid, elements: []};
