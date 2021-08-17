@@ -38,7 +38,7 @@ class GoogleMaps extends HTMLElement {
 
         const shadowRoot: ShadowRoot = this.attachShadow({mode: 'open'});
         const template: HTMLDivElement = document.createElement('div')!;
-        template.setAttribute('class', 'cf_google-maps_wrapper');
+        template.setAttribute('class', 'wrapper');
         template.setAttribute('style', `width:${width}; height:${height};`)
 
         const node = template.cloneNode(true)!;
@@ -60,7 +60,9 @@ class GoogleMaps extends HTMLElement {
         const apiKey = this.getAttribute('api-key');
         const address = this.getAttribute('address');
         const mapType = this.hasAttribute('type') ? this.getAttribute('type') : 'plan';
-        const card = shadowRoot.querySelector('.cf_google-maps_wrapper');
+        const zoomControl = this.hasAttribute('zoom-control') ? this.getAttribute('zoom-control') === 'true' : true;
+        const gestureHandling = this.hasAttribute('gesture-handling') ? this.getAttribute('gesture-handling') === 'true' : true;
+        const card = shadowRoot.querySelector('.wrapper');
 
         // Get the URL to the Google Maps library
         const cf = (window as any).cf as CfInterface;
@@ -87,6 +89,8 @@ class GoogleMaps extends HTMLElement {
                             mapTypeId: mapType === 'satellite' ? google.maps.MapTypeId.SATELLITE : google.maps.MapTypeId.PLAN,
                             center: results[0].geometry.location,
                             zoom: 17,
+                            gestureHandling: gestureHandling ? 'auto' : 'none',
+                            zoomControl: zoomControl,
                         });
                         // @ts-ignore
                         // error TS2304: Cannot find name 'google'
