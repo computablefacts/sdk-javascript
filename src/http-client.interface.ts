@@ -116,6 +116,48 @@ type autocompleteConceptConfig = {
     sample_size?: number,
 }
 
+/**
+ * Config for concepts instant materialization API request
+ */
+type materializeConceptConfig = {
+
+    /**
+     * A caller-defined unique identifier. This identifier will be set back in the `id` attribute of the response.
+     * This identifier can be used to reorder the responses returned by the server.
+     */
+    uuid: string,
+
+    /**
+     * A concept name as configured in the platform.
+     */
+    concept: string,
+
+    /**
+     * A list of completely or partially materialized concepts.
+     */
+    parameters: string[],
+
+    /**
+     * By default, auto-complete queries on concepts return data in `objects` format, an array of JSON objects.
+     * Each object represents a fact.
+     *
+     * Others formats are :
+     *
+     * - `facts` : each row is a fully-formed ProbLog clause.
+     * - `arrays` : each row is returned as an array.
+     * - `csv` : each row is returned as a string where columns are comma separated (`,`).
+     * - `arrays_with_header` : same as `arrays` but the first array contains column headers.
+     * - `csv_with_header` : same as `csv` but the first string contains comma separated column headers (`,`).
+     *
+     */
+    format?: 'objects' | 'facts' | 'arrays' | 'arrays_with_header' | 'csv' | 'csv_with_header',
+
+    /**
+     * The maximum number of items that must be returned.
+     */
+    sample_size?: number,
+}
+
 interface HttpClientInterface {
 
     /**
@@ -183,7 +225,7 @@ interface HttpClientInterface {
      * }).then(response => {
      *     this.results = response.data
      * }).catch(error => {
-     *     console.error('queryMaterializedConcepts error=', error)
+     *     console.error('materializedConcepts error : ', error)
      * })
      * ```
      *
@@ -211,7 +253,7 @@ interface HttpClientInterface {
      * }).then(response => {
      *     this.results = response.results
      * }).catch(error => {
-     *     console.error('queryMaterializedConcepts error=', error)
+     *     console.error('autocompleteConcept error : ', error)
      * })
      * ```
      *
@@ -219,6 +261,33 @@ interface HttpClientInterface {
      * @see [[`autocompleteConceptConfig`]]
      */
     autocompleteConcept: (config: autocompleteConceptConfig) => Promise<Response>,
+
+    /**
+     * Trigger instant materialization for a completely or partially materialized concept.
+     *
+     * Example:
+     * ```javascript
+     * cf.httpClient.materializeConcept({
+     *     uuid: 1,
+     *     concept: 'address',
+     *     parameters: [{
+     *         CODE_POSTAL: 75008,
+     *         VILLE: 'Paris'
+     *     }, {
+     *         VILLE: 'Nice'
+     *     }],
+     *     sample_size: 15,
+     * }).then(response => {
+     *     this.results = response.results
+     * }).catch(error => {
+     *     console.error('materializeConcept error : ', error)
+     * })
+     * ```
+     *
+     * @param config The parameters needed to trigger instant materialization.
+     * @see [[`materializeConceptConfig`]]
+     */
+    materializeConcept: (config: materializeConceptConfig) => Promise<Response>,
 }
 
-export {HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig}
+export {HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig, materializeConceptConfig}

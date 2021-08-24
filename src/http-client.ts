@@ -2,6 +2,7 @@ import {client} from './fetch-api-client'
 import {
     autocompleteConceptConfig,
     HttpClientInterface,
+    materializeConceptConfig,
     materializedConceptsSqlQueryConfig
 } from './http-client.interface'
 
@@ -128,10 +129,33 @@ const httpClient: HttpClientInterface = (function () {
                 concept: config.concept,
                 properties: config.properties,
                 terms: config.terms,
+                format: config.format,
+                sample_size: config.sample_size,
             },
 
             // @ts-ignore
             // TS2345: Argument of type '{ method: string; body: { uuid: string; query: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            headers: {
+                Authorization: `Bearer ${token_}`
+            }
+        })
+    }
+
+    const materializeConcept = (config: materializeConceptConfig) => {
+        return client(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
+
+            // @ts-ignore
+            method: 'POST',
+
+            body: {
+                uuid: config.uuid,
+                concept: config.concept,
+                parameters: config.parameters,
+                format: config.format,
+                sample_size: config.sample_size,
+            },
+
+            // @ts-ignore
             headers: {
                 Authorization: `Bearer ${token_}`
             }
@@ -152,6 +176,7 @@ const httpClient: HttpClientInterface = (function () {
         queryMaterializedConcepts: queryMaterializedConcepts,
         whoAmI: whoAmI,
         autocompleteConcept: autocompleteConcept,
+        materializeConcept: materializeConcept,
     }
 })();
 
