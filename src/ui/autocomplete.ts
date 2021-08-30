@@ -529,7 +529,7 @@ class Autocomplete extends HTMLElement {
      * @param delay the delay in milliseconds to wait for before executing the function.
      * @private
      */
-    private debounce(func, delay: number): void {
+    private debounce(func: TimerHandler, delay: number): void {
         window.clearTimeout(this.timeout);
         this.timeout = window.setTimeout(func, delay);
     }
