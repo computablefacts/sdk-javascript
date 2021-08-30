@@ -61,6 +61,7 @@ class AutocompleteConcept extends Autocomplete {
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cf = (window as any).cf as CfInterface;
 
         return cf.httpClient.autocompleteConcept({
@@ -71,6 +72,9 @@ class AutocompleteConcept extends Autocomplete {
             sample_size: sampleSize,
         }).then(response => {
 
+            // @ts-ignore
+            // error TS2339: Property 'id' does not exist on type 'Response'
+            // error TS2339: Property 'results' does not exist on type 'Response'
             if (!response || !response.id || !response.results) {
                 return {
                     uuid: -1 /* ensure the response is discarded because it is lower than the min. uuid (i.e. 0) */,
@@ -78,6 +82,8 @@ class AutocompleteConcept extends Autocomplete {
                 };
             }
 
+            // @ts-ignore
+            // error TS2339: Property 'results' does not exist on type 'Response'
             const results = response.results;
             const elements: HTMLElement[] = [];
             const titleProps = titleProperties && titleProperties !== this.UNKNOWN_PROPERTIES ?
@@ -163,6 +169,8 @@ class AutocompleteConcept extends Autocomplete {
                 }
             }
             return {
+                // @ts-ignore
+                // error TS2339: Property 'id' does not exist on type 'Response'
                 uuid: parseInt(response.id, 10),
                 elements: elements
             };

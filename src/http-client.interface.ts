@@ -62,6 +62,14 @@ type materializedConceptsSqlQueryConfig = {
      *
      */
     format?: 'objects' | 'arrays' | 'arrays_with_header' | 'csv' | 'csv_with_header',
+
+    /**
+     * Set this boolean to `true` to query the data catalog.
+     * Set this boolean to `false to query the materialized facts.
+     *
+     * Default value: `false`
+     */
+    catalog?: boolean,
 }
 
 /**

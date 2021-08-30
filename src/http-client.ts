@@ -96,7 +96,8 @@ const httpClient: HttpClientInterface = (function () {
         return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
             body: {
                 query: config.query,
-                format: config.format,
+                format: config.format || 'objects',
+                catalog: config.catalog || false,
             },
 
             // @ts-ignore
