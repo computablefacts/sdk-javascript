@@ -19,6 +19,8 @@ class Autocomplete extends HTMLElement {
     protected POPUP_HEIGHT = 'auto';
     protected uuid = 0;
 
+    private timeout: number | undefined;
+
     protected static extractTermBeforeCaret(text: string, caret: number): string {
 
         const prevComma = text.lastIndexOf(',', caret - 1);
@@ -358,14 +360,15 @@ class Autocomplete extends HTMLElement {
 
                 // Build a list of items and fill the DOM
                 const self = this;
-                this.newListOfItems(self.uuid, text, caretStart).then(response => {
-                    if (response && self.uuid === response.uuid) {
+                this.debounce(() =>
+                    this.newListOfItems(self.uuid, text, caretStart).then(response => {
+                        if (response && self.uuid === response.uuid) {
 
-                        // At last, render the DOM and display the list items
-                        response.elements.forEach(e => list.appendChild(e));
-                        popup.style.display = response.elements.length > 0 ? 'block' : 'none';
-                    }
-                });
+                            // At last, render the DOM and display the list items
+                            response.elements.forEach(e => list.appendChild(e));
+                            popup.style.display = response.elements.length > 0 ? 'block' : 'none';
+                        }
+                    }), 250);
             } else {
 
                 // Close the list
@@ -517,6 +520,18 @@ class Autocomplete extends HTMLElement {
         }
         const value = this.getAttribute(attribute);
         return value && value.trim() !== '' ? value : defaultValue;
+    }
+
+    /**
+     * Ensure calls to `newListOfItems` are not performed on each keystroke.
+     *
+     * @param func the function to execute.
+     * @param delay the delay in milliseconds to wait for before executing the function.
+     * @private
+     */
+    private debounce(func, delay: number): void {
+        window.clearTimeout(this.timeout);
+        this.timeout = window.setTimeout(func, delay);
     }
 }
 
