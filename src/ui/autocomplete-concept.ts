@@ -169,7 +169,7 @@ class AutocompleteConcept extends Autocomplete {
                 }
             }
 
-            // TODO : reorder search list items
+            // TODO : reorder list items
             return {
                 // @ts-ignore
                 // error TS2339: Property 'id' does not exist on type 'Response'
