@@ -397,6 +397,9 @@ class Autocomplete extends HTMLElement {
             event.stopImmediatePropagation();
             event.preventDefault();
 
+            // Move to the next search identifier i.e. discard all search that did not return yet
+            ++this.uuid;
+
             // If a list item has been selected, insert this item at the caret position in the input
             const selectedItem = Autocomplete.selectedItem(shadowRoot);
             if (selectedItem) {
