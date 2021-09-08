@@ -169,6 +169,11 @@ class AutocompleteConcept extends Autocomplete {
                 }
             }
 
+            // Sort list items by title
+            elements.sort(function (a: HTMLElement, b: HTMLElement) {
+                return a.innerHTML.toLowerCase().localeCompare(b.innerHTML.toLowerCase());
+            });
+
             // TODO : reorder list items
             return {
                 // @ts-ignore
