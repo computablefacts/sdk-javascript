@@ -231,6 +231,19 @@ class Autocomplete extends HTMLElement {
         let caretEndPrev2 = 0; // the previous end position of the caret
         const selections: string[] = []; // the user-selected items
 
+        field.onblur = event => {
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+
+            // Move to the next search identifier i.e. discard all search that did not return yet
+            ++this.uuid;
+
+            // If the input loses the focus, close the list and cleanup the DOM
+            selections.length = 0;
+            list.innerHTML = '';
+            popup.style.display = 'none';
+        };
         field.onkeyup = event => {
 
             event.stopImmediatePropagation();
@@ -392,7 +405,7 @@ class Autocomplete extends HTMLElement {
                 Autocomplete.moveSelection(list, curItem, li);
             }
         };
-        list.onclick = event => {
+        list.onmousedown = event => {
 
             event.stopImmediatePropagation();
             event.preventDefault();
