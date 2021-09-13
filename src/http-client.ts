@@ -94,6 +94,9 @@ const httpClient: HttpClientInterface = (function () {
 
     const queryMaterializedConcepts = (config: materializedConceptsSqlQueryConfig) => {
         return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
+            // @ts-ignore
+            // error TS2345: Argument of type '{ method: string; body: { query: string; format: "objects" | "arrays" | "arrays_with_header" | "csv" | "csv_with_header"; catalog: boolean; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            method: 'POST',
             body: {
                 query: config.query,
                 format: config.format || 'objects',
