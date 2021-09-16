@@ -1,10 +1,11 @@
-import {client} from './fetch-api-client'
+import {fetchCfApi} from './fetch-api-client'
 import {
     autocompleteConceptConfig,
     HttpClientInterface,
     materializeConceptConfig,
     materializedConceptsSqlQueryConfig
 } from './http-client.interface'
+import {CfInterface} from './cf.interface';
 
 const httpClient: HttpClientInterface = (function () {
 
@@ -89,11 +90,10 @@ const httpClient: HttpClientInterface = (function () {
         } else {
             setBaseUrl(baseUrl)
         }
-
     }
 
     const queryMaterializedConcepts = (config: materializedConceptsSqlQueryConfig) => {
-        return client(`${baseUrl_}/api/v2/public/materialize/sql`, {
+        return fetchCfApi(`${baseUrl_}/api/v2/public/materialize/sql`, {
             // @ts-ignore
             // error TS2345: Argument of type '{ method: string; body: { query: string; format: "objects" | "arrays" | "arrays_with_header" | "csv" | "csv_with_header"; catalog: boolean; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
             method: 'POST',
@@ -108,21 +108,21 @@ const httpClient: HttpClientInterface = (function () {
             headers: {
                 Authorization: `Bearer ${token_}`
             }
-        })
+        });
     }
 
     const whoAmI = () => {
-        return client(`${baseUrl_}/api/v2/users/whoami`, {
+        return fetchCfApi(`${baseUrl_}/api/v2/users/whoami`, {
             // @ts-ignore
             // error TS2345: Argument of type '{ body: { query: string; format: string; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
             headers: {
                 Authorization: `Bearer ${token_}`
             }
-        })
+        });
     }
 
     const autocompleteConcept = (config: autocompleteConceptConfig) => {
-        return client(`${baseUrl_}/api/v3/coreapi/problog/queries/autocomplete`, {
+        return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/autocomplete`, {
 
             // @ts-ignore
             // TS2345: Argument of type '{ method: string; body: { uuid: string; concept: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
@@ -142,11 +142,28 @@ const httpClient: HttpClientInterface = (function () {
             headers: {
                 Authorization: `Bearer ${token_}`
             }
-        })
+        });
     }
 
     const materializeConcept = (config: materializeConceptConfig) => {
-        return client(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cf = (window as any).cf as CfInterface;
+        const cache = cf.cache;
+        const namespace = 'mc';
+        const cacheKey = config.concept + '¤' +
+            config.format + '¤' +
+            config.sample_size + '¤' +
+            config.parameters.map(param => JSON.stringify(param, Object.keys(param).sort())).join('¤');
+
+        if (cache.hasKey(namespace, cacheKey)) {
+            const result = {
+                id: config.uuid,
+                results: cache.get(namespace, cacheKey).results,
+            }
+            return Promise.resolve(result);
+        }
+        return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
 
             // @ts-ignore
             method: 'POST',
@@ -163,7 +180,10 @@ const httpClient: HttpClientInterface = (function () {
             headers: {
                 Authorization: `Bearer ${token_}`
             }
-        })
+        }).then(results => {
+            cache.put(namespace, cacheKey, results);
+            return results;
+        });
     }
 
     return {

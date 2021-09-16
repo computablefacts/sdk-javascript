@@ -1,6 +1,3 @@
-/**
- * Config for materialized concepts SQL API request
- */
 type materializedConceptsSqlQueryConfig = {
 
     /**
@@ -240,12 +237,12 @@ interface HttpClientInterface {
      * @param config The parameters needed to query materialized concepts.
      * @see [[`materializedConceptsSqlQueryConfig`]]
      */
-    queryMaterializedConcepts: (config: materializedConceptsSqlQueryConfig) => Promise<Response>,
+    queryMaterializedConcepts: (config: materializedConceptsSqlQueryConfig) => Promise<any>,
 
     /**
      * Return the current API user (based on API token).
      */
-    whoAmI: () => Promise<Response>,
+    whoAmI: () => Promise<any>,
 
     /**
      * Trigger autocompletion on a given set of properties of a given concept.
@@ -268,7 +265,7 @@ interface HttpClientInterface {
      * @param config The parameters needed to trigger autocompletion.
      * @see [[`autocompleteConceptConfig`]]
      */
-    autocompleteConcept: (config: autocompleteConceptConfig) => Promise<Response>,
+    autocompleteConcept: (config: autocompleteConceptConfig) => Promise<{ id: string, results: Record<string, any>[] }>,
 
     /**
      * Trigger instant materialization for a completely or partially materialized concept.
@@ -295,7 +292,7 @@ interface HttpClientInterface {
      * @param config The parameters needed to trigger instant materialization.
      * @see [[`materializeConceptConfig`]]
      */
-    materializeConcept: (config: materializeConceptConfig) => Promise<Response>,
+    materializeConcept: (config: materializeConceptConfig) => Promise<{ id: string, results: Record<string, any>[] }>,
 }
 
 export {HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig, materializeConceptConfig}
