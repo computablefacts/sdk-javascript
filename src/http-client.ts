@@ -216,21 +216,22 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const computeRule_ = (formattedType: string, properties: string[]) => {
-        const alea = Math.random().toString(36).substring(2, 8);
+        const alea = Math.random().toString(36).substring(2, 12);
 
         let result = formattedType + '(';
         result += properties.map(prop => prop.toUpperCase()).join(', ');
         result += ') :- ';
-        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
+//        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
+        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/'+alea+'/';
         result += formattedType
-        result += '?alea=' + alea
+//        result += '?alea=' + alea
         result += '", "{{ client }}", "{{ env }}", "{{ sftp_host }}", "{{ sftp_username }}", "{{ sftp_password }}", '
         result += properties.map((prop, i) => '"value_' + i + '", _, ' + prop.toUpperCase()).join(', ');
         result += ').';
 
         console.log('computeRule_ = ', result);
 
-        return result ;
+        return result;
     }
 
     const eventAll = (type: string, properties: string[]) => {
