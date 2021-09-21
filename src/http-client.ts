@@ -215,16 +215,17 @@ const httpClient: HttpClientInterface = (function () {
         });
     }
 
-    const computeRule_ = (formattedType: string, properties: string[]) => {
+    const computeRule_ = (formattedType: string, properties: string[], filters: Record<string, string>) => {
         const alea = Math.random().toString(36).substring(2, 12);
 
         let result = formattedType + '(';
         result += properties.map(prop => prop.toUpperCase()).join(', ');
         result += ') :- ';
-//        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
-        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/'+alea+'/';
+        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
         result += formattedType
-//        result += '?alea=' + alea
+        result += '?alea=' + alea
+        const filtersQuery = Object.entries(filters).map(entry => entry[0] + '=' + entry[1]).join('&');
+        result += filtersQuery ? '&' + filtersQuery : '';
         result += '", "{{ client }}", "{{ env }}", "{{ sftp_host }}", "{{ sftp_username }}", "{{ sftp_password }}", '
         result += properties.map((prop, i) => '"value_' + i + '", _, ' + prop.toUpperCase()).join(', ');
         result += ').';
@@ -235,8 +236,12 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const eventAll = (type: string, properties: string[]) => {
+        return eventFilter(type, properties, {});
+    }
+
+    const eventFilter = (type: string, properties: string[], filters: Record<string, string>) => {
         const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
-        const additionalRule = computeRule_(formattedType, properties);
+        const additionalRule = computeRule_(formattedType, properties, filters);
         const alea = Math.random().toString(36).substring(2, 8);
 
         return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
@@ -246,8 +251,8 @@ const httpClient: HttpClientInterface = (function () {
 
             body: {
                 uuid: '1',
-                concept: alea + formattedType,
-                additional_rule: alea + additionalRule,
+                concept: alea + '_' + formattedType,
+                additional_rule: alea + '_' + additionalRule,
                 parameters: [],
             },
 
@@ -275,6 +280,7 @@ const httpClient: HttpClientInterface = (function () {
         materializeConcept: materializeConcept,
         eventStore: eventStore,
         eventAll: eventAll,
+        eventFilter: eventFilter,
     }
 })();
 
