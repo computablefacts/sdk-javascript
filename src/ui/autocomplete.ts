@@ -153,7 +153,16 @@ class Autocomplete extends HTMLElement {
     }
 
     set value(newValue: string) {
+        //console.log('newValue=', newValue);
+
         this.setAttribute('value', newValue);
+        if (this.shadowRoot) {
+            const field: HTMLInputElement = this.shadowRoot.querySelector('.field')!;
+            if (field.value != newValue) {
+                field.value = newValue
+                //console.log('field value updated to:', newValue);
+            }
+        }
     }
 
     public connectedCallback(): void {
