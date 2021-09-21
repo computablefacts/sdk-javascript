@@ -293,6 +293,9 @@ interface HttpClientInterface {
      * @see [[`materializeConceptConfig`]]
      */
     materializeConcept: (config: materializeConceptConfig) => Promise<{ id: string, results: Record<string, any>[] }>,
+
+    eventStore: (type: string, values: string[]) => Promise<{ id: string, results: Record<string, any>[] }>,
+    eventAll: (type: string, properties: string[]) => Promise<{ id: string, results: Record<string, any>[] }>,
 }
 
 export {HttpClientInterface, materializedConceptsSqlQueryConfig, autocompleteConceptConfig, materializeConceptConfig}

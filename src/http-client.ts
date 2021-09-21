@@ -186,6 +186,73 @@ const httpClient: HttpClientInterface = (function () {
         });
     }
 
+    const eventStore = (type: string, values: string[]) => {
+        const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
+        const startDate = new Date();
+
+        return fetchCfApi(`${baseUrl_}/api/v2/facts`, {
+
+            // @ts-ignore
+            // TS2345: Argument of type '{ method: string; body: { uuid: string; concept: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            method: 'POST',
+
+            body: {
+                data: [
+                    {
+                        type: formattedType,
+                        values: values,
+                        is_valid: true,
+                        start_date: startDate.toISOString(),
+                    }
+                ],
+            },
+
+            // @ts-ignore
+            // TS2345: Argument of type '{ method: string; body: { uuid: string; query: string; properties: string[]; terms: string[]; }; headers: { Authorization: string; }; }' is not assignable to parameter of type '{ body: any; }'.
+            headers: {
+                Authorization: `Bearer ${token_}`
+            }
+        });
+    }
+
+    const computeRule_ = (formattedType: string, properties: string[]) => {
+        let result = formattedType + '(';
+        result += properties.map(prop => prop.toUpperCase()).join(', ');
+        result += ') :- ';
+        result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
+        result += formattedType
+        result += '", "{{ client }}", "{{ env }}", "{{ sftp_host }}", "{{ sftp_username }}", "{{ sftp_password }}", '
+        result += properties.map((prop, i) => '"value_' + i + '", _, ' + prop.toUpperCase()).join(', ');
+        result += ').';
+
+        console.log('computeRule_ = ', result);
+
+        return result ;
+    }
+
+    const eventAll = (type: string, properties: string[]) => {
+        const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
+        const additionalRule = computeRule_(formattedType, properties);
+
+        return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
+
+            // @ts-ignore
+            method: 'POST',
+
+            body: {
+                uuid: '1',
+                concept: 'tmp_'+ formattedType,
+                additional_rule: 'tmp_' + additionalRule,
+                parameters: [],
+            },
+
+            // @ts-ignore
+            headers: {
+                Authorization: `Bearer ${token_}`
+            }
+        });
+    }
+
     return {
         getToken: getToken,
         setToken: setToken,
@@ -201,6 +268,8 @@ const httpClient: HttpClientInterface = (function () {
         whoAmI: whoAmI,
         autocompleteConcept: autocompleteConcept,
         materializeConcept: materializeConcept,
+        eventStore: eventStore,
+        eventAll: eventAll,
     }
 })();
 
