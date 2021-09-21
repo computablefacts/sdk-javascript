@@ -233,6 +233,7 @@ const httpClient: HttpClientInterface = (function () {
     const eventAll = (type: string, properties: string[]) => {
         const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
         const additionalRule = computeRule_(formattedType, properties);
+        const alea = Math.random().toString(36).substring(2, 8);
 
         return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
 
@@ -241,8 +242,8 @@ const httpClient: HttpClientInterface = (function () {
 
             body: {
                 uuid: '1',
-                concept: 'tmp_'+ formattedType,
-                additional_rule: 'tmp_' + additionalRule,
+                concept: alea + formattedType,
+                additional_rule: alea + additionalRule,
                 parameters: [],
             },
 
