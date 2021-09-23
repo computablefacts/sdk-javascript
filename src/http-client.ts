@@ -229,7 +229,7 @@ const httpClient: HttpClientInterface = (function () {
         result += properties.map((prop, i) => '"value_' + i + '", _, ' + prop.toUpperCase()).join(', ');
         result += ').';
 
-        console.log('computeRule_ = ', result);
+        // console.log('computeRule_ = ', result);
 
         return result;
     }
