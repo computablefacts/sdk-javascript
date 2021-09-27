@@ -59,6 +59,7 @@ class AutocompleteConcept extends Autocomplete {
             });
         }
 
+        const context = Autocomplete.extractContextBeforeCaret(text, caret);
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +70,7 @@ class AutocompleteConcept extends Autocomplete {
             concept: concept ? concept : '',
             properties: filterProperties ? filterProperties.split(',').filter(p => p && p.trim() !== '') : [],
             terms: [[term + '*']],
+            context: context,
             sample_size: sampleSize,
         }).then(response => {
 
