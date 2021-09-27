@@ -31,14 +31,13 @@ class Autocomplete extends HTMLElement {
         return text.substr(begin, length).trim();
     }
 
-    protected static extractContextBeforeCaret(text: string, caret: number): string {
+    protected static extractTermsBeforeCaret(text: string, caret: number): string[] {
 
         const prevComma = text.lastIndexOf(',', caret - 1);
-        const prevWhitespace = text.lastIndexOf(' ', caret - 1);
         const begin = prevComma < 0 ? 0 : prevComma;
-        const length = (prevWhitespace > begin ? prevWhitespace : begin) - begin;
+        const length = caret - begin;
 
-        return text.substr(begin, length).trim();
+        return text.substr(begin, length).trim().split(' ').filter(str => str && str.length > 0);
     }
 
     private static moveSelection(wrapper: HTMLElement, curItem: HTMLElement | null, nextItem: HTMLElement | null): void {

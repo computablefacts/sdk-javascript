@@ -101,11 +101,6 @@ type autocompleteConceptConfig = {
     terms: string[][],
 
     /**
-     * Additional context.
-     */
-    context?: string,
-    
-    /**
      * By default, auto-complete queries on concepts return data in `objects` format, an array of JSON objects.
      * Each object represents a fact.
      *

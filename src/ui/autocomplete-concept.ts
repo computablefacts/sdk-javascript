@@ -51,15 +51,15 @@ class AutocompleteConcept extends Autocomplete {
         const filterProperties = this.getAttributeOrDefault('filter-properties', this.UNKNOWN_PROPERTIES).trim();
         const titleProperties = this.getAttributeOrDefault('title-properties', this.UNKNOWN_PROPERTIES).trim();
         const subtitleProperties = this.getAttributeOrDefault('subtitle-properties', this.UNKNOWN_PROPERTIES).trim();
-        const term = Autocomplete.extractTermBeforeCaret(text, caret);
+        const terms = Autocomplete.extractTermsBeforeCaret(text, caret);
+        const term = terms.pop(); // Get and remove the last term in terms : it is the one to complete
 
-        if (concept === this.UNKNOWN_CONCEPT || filterProperties === this.UNKNOWN_PROPERTIES || term.length < 3) {
+        if (concept === this.UNKNOWN_CONCEPT || filterProperties === this.UNKNOWN_PROPERTIES || !term || (term.length < 3 && terms.length <= 0)) {
             return new Promise(function (resolve) {
                 return resolve({uuid: uuid, elements: []});
             });
         }
 
-        const context = Autocomplete.extractContextBeforeCaret(text, caret);
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,8 +69,7 @@ class AutocompleteConcept extends Autocomplete {
             uuid: uuid.toString(),
             concept: concept ? concept : '',
             properties: filterProperties ? filterProperties.split(',').filter(p => p && p.trim() !== '') : [],
-            terms: [[term + '*']],
-            context: context,
+            terms: [terms.concat([term]).map(term => term + '*')],
             sample_size: sampleSize,
         }).then(response => {
 
