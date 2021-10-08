@@ -187,6 +187,7 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const eventStore = (type: string, values: string[]) => {
+
         const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
         const startDate = new Date();
 
@@ -216,6 +217,7 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const computeRule_ = (formattedType: string, properties: string[], filters: Record<string, string>) => {
+
         const alea = Math.random().toString(36).substring(2, 12);
 
         let result = formattedType + '(';
@@ -240,6 +242,7 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const eventFilter = (type: string, properties: string[], filters: Record<string, string>) => {
+
         const formattedType = 'event_' + type.replace(/-/g, '_').toLowerCase();
         const additionalRule = computeRule_(formattedType, properties, filters);
         const alea = Math.random().toString(36).substring(2, 8);

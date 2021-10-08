@@ -49,11 +49,17 @@ const cache: CacheInterface = (function () {
     };
 
     const logStats = (): void => {
+
         console.log('# entries : ' + (hit_ + miss_));
         console.log('# hits : ' + hit_);
         console.log('# misses : ' + miss_);
-        console.log('hit rate : ' + (hit_ / (hit_ + miss_)));
-        console.log('miss rate : ' + (miss_ / (hit_ + miss_)));
+
+        if (hit_ > 0) {
+            console.log('hit rate : ' + (hit_ / (hit_ + miss_)));
+        }
+        if (miss_ > 0) {
+            console.log('miss rate : ' + (miss_ / (hit_ + miss_)));
+        }
     };
 
     return {
