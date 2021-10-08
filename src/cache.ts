@@ -8,17 +8,12 @@ type CacheEntry = {
 
 const cache: CacheInterface = (function () {
 
-    const MAX_ENTRIES = 2500;
-
     let map_: Record<string, Record<string, CacheEntry>> = {};
     let hit_ = 0;
     let miss_ = 0;
 
     const put = (namespace: string, key: string, value: any): void => {
         if (!hasKey(namespace, key)) {
-            if (hit_ + miss_ >= MAX_ENTRIES) {
-                invalidate(); // invalidate cache if we reached the maximum number of entries
-            }
             miss_++;
             map_[namespace] = map_[namespace] || {};
             map_[namespace][key] = {data: value, hit: 0, touchedAt: new Date()};
@@ -37,6 +32,10 @@ const cache: CacheInterface = (function () {
 
     const hasKey = (namespace: string, key: string): boolean => {
         return namespace in map_ && key in map_[namespace];
+    };
+
+    const size = (): number => {
+        return hit_ + miss_;
     };
 
     const invalidate = (): void => {
@@ -66,6 +65,7 @@ const cache: CacheInterface = (function () {
         put: put,
         get: get,
         hasKey: hasKey,
+        size: size,
         invalidate: invalidate,
         logStats: logStats,
     }
