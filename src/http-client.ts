@@ -5,7 +5,6 @@ import {
     materializeConceptConfig,
     materializedConceptsSqlQueryConfig
 } from './http-client.interface'
-import {CfInterface} from './cf.interface';
 
 const httpClient: HttpClientInterface = (function () {
 
@@ -146,23 +145,6 @@ const httpClient: HttpClientInterface = (function () {
     }
 
     const materializeConcept = (config: materializeConceptConfig) => {
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const cf = (window as any).cf as CfInterface;
-        const cache = cf.cache;
-        const namespace = 'mc';
-        const cacheKey = config.concept + '¤' +
-            config.format + '¤' +
-            config.sample_size + '¤' +
-            config.parameters.map(param => JSON.stringify(param, Object.keys(param).sort())).join('¤');
-
-        if (cache.hasKey(namespace, cacheKey)) {
-            const result = {
-                id: config.uuid,
-                results: cache.get(namespace, cacheKey).results,
-            }
-            return Promise.resolve(result);
-        }
         return fetchCfApi(`${baseUrl_}/api/v3/coreapi/problog/queries/execute`, {
 
             // @ts-ignore
@@ -180,9 +162,6 @@ const httpClient: HttpClientInterface = (function () {
             headers: {
                 Authorization: `Bearer ${token_}`
             }
-        }).then(results => {
-            cache.put(namespace, cacheKey, results);
-            return results;
         });
     }
 

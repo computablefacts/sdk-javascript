@@ -1,3 +1,5 @@
+import {MemoizedPromise} from './cache';
+
 interface CacheInterface {
 
     put: (namespace: string, key: string, value: any) => void,
@@ -9,6 +11,10 @@ interface CacheInterface {
     invalidate: () => void,
 
     logStats: () => void,
+
+    temporarilyMemoizedPromise: (fn: (params: any) => Promise<any>) => MemoizedPromise,
+
+    indefinitelyMemoizedPromise: (fn: (params: any) => Promise<any>) => MemoizedPromise,
 }
 
 export {CacheInterface}
