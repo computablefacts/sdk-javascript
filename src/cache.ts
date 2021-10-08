@@ -51,7 +51,7 @@ export class MemoizedPromise {
         return this.cache[cacheKey];
     }
 
-    public logStats() {
+    public logStats(): void {
 
         console.log('# errors : ' + this.error);
         console.log('# entries : ' + (this.hit + this.miss));
