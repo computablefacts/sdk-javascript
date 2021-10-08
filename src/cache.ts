@@ -25,7 +25,7 @@ export class MemoizedPromise {
         this.request = this.request.bind(this);
     }
 
-    request({cacheKey, ...params}: { cacheKey: string }): Promise<any> {
+    public request({cacheKey, ...params}: { cacheKey: string }): Promise<any> {
 
         if (!cacheKey) {
             this.error++;
@@ -51,7 +51,7 @@ export class MemoizedPromise {
         return this.cache[cacheKey];
     }
 
-    logStats() {
+    public logStats() {
 
         console.log('# errors : ' + this.error);
         console.log('# entries : ' + (this.hit + this.miss));
