@@ -16,7 +16,7 @@ import {CfInterface} from '../cf.interface';
  *     width="100%"
  *     height="160px"
  *     type="plan"
- *     address="<your_address>"></google-map>
+ *     address="<your_address_1>,<your_address_2>"></google-map>
  * </body>
  * <script src="https://unpkg.com/@computablefacts/sdk-javascript/dist/bundle/index.js"></script>
  * <script>
@@ -57,8 +57,8 @@ class GoogleMaps extends HTMLElement {
         }
 
         // Load component attributes
-        const apiKey = this.getAttribute('api-key');
-        const address = this.getAttribute('address');
+        const apiKey = this.getAttribute('api-key')!;
+        const address = this.getAttribute('address')!;
         const mapType = this.hasAttribute('type') ? this.getAttribute('type') : 'plan';
         const zoomControl = this.hasAttribute('zoom-control') ? this.getAttribute('zoom-control') === 'true' : true;
         const gestureHandling = this.hasAttribute('gesture-handling') ? this.getAttribute('gesture-handling') === 'true' : true;
@@ -73,33 +73,41 @@ class GoogleMaps extends HTMLElement {
             if (!cf.google.maps.isLoaded) {
                 setTimeout(drawMap, 150);
             } else {
-                // @ts-ignore
-                // error TS2304: Cannot find name 'google'
-                new google.maps.Geocoder().geocode({
-                    'address': address
-                }, function (results: any[], status: string) {
+
+                const maps: any[] = [];
+                address.split(',').forEach(a => {
+
                     // @ts-ignore
                     // error TS2304: Cannot find name 'google'
-                    if (status == google.maps.GeocoderStatus.OK) {
+                    new google.maps.Geocoder().geocode({
+                        'address': a
+                    }, function (results: any[], status: string) {
                         // @ts-ignore
                         // error TS2304: Cannot find name 'google'
-                        const map = new google.maps.Map(card, {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            if (maps.length === 0) {
+                                // @ts-ignore
+                                // error TS2304: Cannot find name 'google'
+                                const map = new google.maps.Map(card, {
+                                    // @ts-ignore
+                                    // error TS2304: Cannot find name 'google'
+                                    mapTypeId: mapType === 'satellite' ? google.maps.MapTypeId.SATELLITE : google.maps.MapTypeId.PLAN,
+                                    center: results[0].geometry.location,
+                                    zoom: 17,
+                                    gestureHandling: gestureHandling ? 'auto' : 'none',
+                                    zoomControl: zoomControl,
+                                });
+                                maps.push(map);
+                            }
                             // @ts-ignore
                             // error TS2304: Cannot find name 'google'
-                            mapTypeId: mapType === 'satellite' ? google.maps.MapTypeId.SATELLITE : google.maps.MapTypeId.PLAN,
-                            center: results[0].geometry.location,
-                            zoom: 17,
-                            gestureHandling: gestureHandling ? 'auto' : 'none',
-                            zoomControl: zoomControl,
-                        });
-                        // @ts-ignore
-                        // error TS2304: Cannot find name 'google'
-                        new google.maps.Marker({
-                            position: results[0].geometry.location,
-                            map: map,
-                            title: `${address}`,
-                        });
-                    }
+                            new google.maps.Marker({
+                                position: results[0].geometry.location,
+                                map: maps[0],
+                                title: `${a}`,
+                            });
+                        }
+                    });
                 });
             }
         };
