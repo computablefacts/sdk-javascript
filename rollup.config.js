@@ -6,13 +6,16 @@ export default [{
   input: 'src/main.js', output: {
     file: 'dist/main.min.js',
     format: 'umd',
-    name: 'cf',
+    name: 'com.computablefacts',
     esModule: false,
     exports: 'named',
     sourcemap: true,
   }, plugins: [nodeResolve(), babel({
     babelHelpers: "bundled",
-  }), compiler()]
+  }), compiler({
+    language_out: 'STABLE',
+    warning_level: 'VERBOSE',
+  })]
 }, {
   input: 'src/main.js', output: [{
     dir: "dist/esm", format: "esm", exports: "named", sourcemap: true,

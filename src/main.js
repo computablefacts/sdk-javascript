@@ -1,1 +1,1 @@
-'use strict'
+export {json} from "./json"
