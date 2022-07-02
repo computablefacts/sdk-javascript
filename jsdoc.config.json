@@ -1,0 +1,27 @@
+{
+  "source": {
+    "include": [
+      "src"
+    ],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "referenceTitle": "ComputableFacts SDK",
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "disableSort": false,
+    "collapse": false
+  },
+  "opts": {
+    "recurse": true,
+    "private": false,
+    "encoding": "utf8",
+    "destination": "./docs/",
+    "readme": "./README.md",
+    "template": "./jsdoc-template"
+  }
+}
