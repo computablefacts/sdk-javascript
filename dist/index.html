@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+  <script src="main.min.js"></script>
+  <title>Test</title>
+</head>
+<body>
+<script>
+  const helpers = com.computablefacts.helpers;
+  console.log('object', helpers.toBase64({id: 1, message: "Hello world!"}));
+  console.log('array', helpers.toBase64([1, 2]));
+  console.log('number', helpers.toBase64(1));
+  console.log('string', helpers.toBase64('1'));
+  // console.log(jzon.fromBase64('eyJpZCI6MSwibWVzc2FnZSI6IkhlbGxvIHdvcmxkISJ9'));
+</script>
+</body>
+</html>
