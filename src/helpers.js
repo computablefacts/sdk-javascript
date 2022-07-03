@@ -407,3 +407,146 @@ helpers.highlight = function (text, patterns) {
 helpers.isNullOrBlank = function (str) {
   return !(str && str.trim() !== '');
 }
+
+/**
+ * Initializes a javascript Date from a string formatted as YYYYMMDD.
+ *
+ * @param {string} str a string formatted as YYYYMMDD.
+ * @return {?Date} a javascript Date.
+ * @memberOf module:helpers
+ */
+helpers.yyyyMmDdToDate = function (str) {
+  const newStr = str ? str.trim() : '';
+  if (newStr.length === 8) {
+    const year = parseInt(newStr.substring(0, 4), 10);
+    const month = parseInt(newStr.substring(4, 6), 10);
+    const day = parseInt(newStr.substring(6, 8), 10);
+    return new Date(year, month - 1, day);
+  }
+  return null;
+}
+
+/**
+ * Initializes a javascript Date from a string formatted as DDMMYYYY.
+ *
+ * @param {string} str a string formatted as DDMMYYYY.
+ * @return {?Date} a javascript Date.
+ * @memberOf module:helpers
+ */
+helpers.ddMmYyyyToDate = function (str) {
+  const newStr = str ? str.trim() : '';
+  if (newStr.length === 8) {
+    const day = parseInt(newStr.substring(0, 2), 10);
+    const month = parseInt(newStr.substring(2, 4), 10);
+    const year = parseInt(newStr.substring(4, 8), 10);
+    return new Date(year, month - 1, day);
+  }
+  return null;
+}
+
+/**
+ * Formats a javascript Date to a string formatted as YYYY-MM-DD.
+ *
+ * @param {Date} date a javascript Date.
+ * @return {string} a string formatted as YYYY-MM-DD.
+ * @memberOf module:helpers
+ */
+helpers.dateToYyyyMmDd = function (date) {
+  return date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '')
+      + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '')
+      + date.getDate();
+}
+
+/**
+ * Formats a javascript Date to a string formatted as DD-MM-YYYY.
+ *
+ * @param {Date} date a javascript Date.
+ * @return {string} a string formatted as DD-MM-YYYY.
+ * @memberOf module:helpers
+ */
+helpers.dateToDdMmYyyy = function (date) {
+  return (date.getDate() < 10 ? '0' : '') + date.getDate() + '-'
+      + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-'
+      + date.getFullYear();
+}
+
+/**
+ * Prepends '0' to a string until a given length is reached.
+ *
+ * @param {string} str a string.
+ * @param {number} targetLength the string target length.
+ * @return {string} a padded string.
+ * @memberOf module:helpers
+ */
+helpers.pad = function (str, targetLength) {
+  str = '' + str; // ensure str is a string, never a number
+  return str.padStart(targetLength, '0');
+}
+
+/**
+ * Removes all '0' from the beginning of a string.
+ *
+ * @param {string} str a string.
+ * @return {string} an unpadded string.
+ * @memberOf module:helpers
+ */
+helpers.unpad = function (str) {
+  str = '' + str; // ensure str is a string, never a number
+  let i = 0;
+  for (; i < str.length && str[i] === '0'; i++) {
+  }
+  return str.substring(i);
+}
+
+/**
+ * Removes 'undefined' elements from an array of strings or numbers and returns distinct values.
+ * This function does not preserve the elements order.
+ *
+ * @param {Array<string|number>} array an array of strings.
+ * @return {Array<string|number>} an array of distinct strings.
+ * @memberOf module:helpers
+ */
+helpers.uniq = function (array) {
+  return Array.from(new Set(array.filter(el => el !== undefined)));
+}
+
+/**
+ * Removes 'undefined' elements from an array of objects and return distinct objects i.e. unique by all properties.
+ * This function does not preserve the elements order.
+ *
+ * @param {Array<Object>} array an array of objects.
+ * @return {Array<Object>} an array of distinct objects.
+ * @memberOf module:helpers
+ */
+helpers.uniqObjects = function (array) {
+  return array
+  .filter(el => el !== undefined)
+  .filter((el1, index, self) => self.findIndex(
+      el2 => (JSON.stringify(el2) === JSON.stringify(el1))) === index);
+}
+
+/**
+ * Computes the intersection of two arrays of strings or numbers.
+ *
+ * @param {Array<string|number>} array1 the first array.
+ * @param {Array<string|number>} array2 the second array.
+ * @return {Array<string|number>} the intersection of the two arrays.
+ * @memberOf module:helpers
+ */
+helpers.intersect = function (array1, array2) {
+  return array1.filter(el => array2.includes(el));
+}
+
+/**
+ * Checks if a string represents a numeric value.
+ *
+ * @param {string} str the string to check.
+ * @return {boolean} true if the string is a number, false otherwise.
+ * @memberOf module:helpers
+ * @preserve The code is extracted from https://stackoverflow.com/a/175787.
+ */
+helpers.isNumeric = function (str) {
+  return typeof str != 'string' ? false : !isNaN(str) && !isNaN(
+      parseFloat(str));
+}
+
