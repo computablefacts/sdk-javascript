@@ -42,7 +42,7 @@ strings.toRegExp = function (str, flags) {
  * @param {boolean} preserveStringLength true iif the original string length must be preserved.
  * @return {string} the cleaned text i.e. without diacritical marks.
  * @memberOf module:strings
- * @preserve The code is (mostly) extracted from https://web.archive.org/web/20121231230126/http://lehelk.com:80/2011/05/06/script-to-remove-diacritics/.
+ * @preserve The code is extracted from https://web.archive.org/web/20121231230126/http://lehelk.com:80/2011/05/06/script-to-remove-diacritics/.
  */
 strings.removeDiacritics = function (str, preserveStringLength) {
 

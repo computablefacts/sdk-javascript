@@ -36,7 +36,7 @@ helpers.fromBase64 = function (str) {
  * @param value the value to stringify.
  * @returns {string} the stringified value.
  * @memberOf module:helpers
- * @preserve The code is (mostly) extracted from https://github.com/mirkokiefer/canonical-json.
+ * @preserve The code is extracted from https://github.com/mirkokiefer/canonical-json.
  */
 helpers.stringify = function (value) {
 
@@ -71,7 +71,7 @@ helpers.stringify = function (value) {
  * @param {number} seed a seed.
  * @return {number} the hashed value.
  * @memberOf module:helpers
- * @preserve The code is (mostly) extracted from https://stackoverflow.com/a/52171480.
+ * @preserve The code is extracted from https://stackoverflow.com/a/52171480.
  */
 helpers.goodFastHash = function (obj, seed) {
 
