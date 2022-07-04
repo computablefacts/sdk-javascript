@@ -28,6 +28,43 @@ helpers.fromBase64 = function (str) {
 }
 
 /**
+ * A version of {@link JSON.stringify} that returns a canonical JSON format.
+ *
+ * 'Canonical JSON' means that the same object should always be stringified to the exact same string.
+ * JavaScripts native {@link JSON.stringify} does not guarantee any order for object keys when serializing.
+ *
+ * @param value the value to stringify.
+ * @returns {string} the stringified value.
+ * @memberOf module:helpers
+ * @preserve The code is (mostly) extracted from https://github.com/mirkokiefer/canonical-json.
+ */
+helpers.stringify = function (value) {
+
+  function isObject(object) {
+    return Object.prototype.toString.call(object) === '[object Object]'
+  }
+
+  function copyObjectWithSortedKeys(object) {
+    if (isObject(object)) {
+      const newObj = {}
+      const keysSorted = Object.keys(object).sort()
+      let key
+      for (let i = 0, len = keysSorted.length; i < len; i++) {
+        key = keysSorted[i]
+        newObj[key] = copyObjectWithSortedKeys(object[key])
+      }
+      return newObj
+    } else if (Array.isArray(object)) {
+      return object.map(copyObjectWithSortedKeys)
+    } else {
+      return object
+    }
+  }
+
+  return JSON.stringify(copyObjectWithSortedKeys(value))
+}
+
+/**
  * A simple 53-bits hashing algorithm with good enough distribution.
  *
  * @param {*} obj the value to hash.
@@ -38,7 +75,7 @@ helpers.fromBase64 = function (str) {
  */
 helpers.goodFastHash = function (obj, seed) {
 
-  const newStr = obj ? JSON.stringify(obj) : ''; // ensure newStr is a string, never a number
+  const newStr = obj ? helpers.stringify(obj) : '';
   const newSeed = seed ? seed : 0;
   let h1 = 0xdeadbeef ^ newSeed;
   let h2 = 0x41c6ce57 ^ newSeed;
