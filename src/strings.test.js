@@ -103,16 +103,18 @@ test('highlight', () => {
       {snippets: [], text: ""});
 
   const text = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
-  const textHighlighted = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, <mark style="border-radius:3px;background:#fffec8">Gmail</mark> and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
+  const textHighlighted = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, <mark style="border-radius:3px;background:#fffec8">Gmail and Hotmail</mark>/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
+  const pattern = {
+    regexp: /gmail\s+[A-Za-z]+\s+hotmail/gims, color: "#fffec8"
+  };
   const snippet = {
-    highlighted: '<mark style="border-radius:3px;background:#fffec8">Gmail</mark> and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.',
-    match: "Gmail",
-    page: 1,
-    raw: "he most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook."
+    matchedText: "Gmail and Hotmail",
+    matchedPage: 1,
+    rawSnippet: "he most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.",
+    highlightedSnippet: 'he most popular webmail services including Yahoo, <mark style="border-radius:3px;background:#fffec8">Gmail and Hotmail</mark>/MSN as well as popular desktop address books such as Mac Address Book and Outlook.',
   };
 
-  expect(
-      strings.highlight(text, [{pattern: "gmail", color: "#fffec8"}])).toEqual({
+  expect(strings.highlight(text, [pattern])).toEqual({
     snippets: [snippet], text: textHighlighted
   });
 })

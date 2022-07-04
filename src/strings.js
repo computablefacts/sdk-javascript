@@ -221,35 +221,36 @@ strings.removeDiacritics = function (str, preserveStringLength) {
 /**
  * The Pattern type.
  *
- * @param {string} pattern the pattern to match.
+ * @param {RegExp} regexp the pattern to match.
  * @param {string} color the highlight color as a hexadecimal string.
  * @memberOf module:strings
  * @constructor
  * @struct
  * @final
  */
-strings.Pattern = function (pattern, color) {
-  this.pattern = pattern;
+strings.Pattern = function (regexp, color) {
+  this.regexp = regexp;
   this.color = color;
 }
 
 /**
  * The Highlight type.
  *
- * @param {string} match the matched text fragment.
- * @param {string} raw a snippet of text surrounding the matched text fragment (about 300 characters).
- * @param {string} highlighted a snippet of text surrounding the matched and highlighted text fragment (about 300 characters).
- * @param {number} page the page number (1-based) from which the snippet was extracted.
+ * @param {string} matchedText the matched text fragment.
+ * @param {number} matchedPage the page number (1-based) from which the snippet was extracted.
+ * @param {string} rawSnippet a snippet of text surrounding the matched text fragment (about 300 characters).
+ * @param {string} highlightedSnippet a snippet of text surrounding the matched and highlighted text fragment (about 300 characters).
  * @memberOf module:strings
  * @constructor
  * @struct
  * @final
  */
-strings.Highlight = function (match, raw, highlighted, page) {
-  this.match = match;
-  this.raw = raw;
-  this.highlighted = highlighted;
-  this.page = page;
+strings.Highlight = function (matchedText, matchedPage, rawSnippet,
+    highlightedSnippet) {
+  this.matchedText = matchedText;
+  this.matchedPage = matchedPage;
+  this.rawSnippet = rawSnippet
+  this.highlightedSnippet = highlightedSnippet;
 }
 
 /**
@@ -287,14 +288,7 @@ strings.highlight = function (text, patterns) {
   text = strings.removeDiacritics(text, true);
   const highlights = patterns.flatMap(pattern => {
 
-    // Split use a regex as a parameter and join a string.
-    // Here we split the string on one or more whitespace (or non-breakable) so that we can join each word.
-    // '[^]*' means 'any number of any character'. It will match your full string, and then back-track until
-    // the following expressions match. Adding '?' stops the greediness.
-    const newPattern = strings.escapeCharactersWithSpecialMeaningInRegExp(
-        strings.removeDiacritics(pattern.pattern, true));
-    const regex = newPattern.split(/[\s\u00a0]+/g).join('\\s*');
-    const matcher = new RegExp(regex, 'gims');
+    const matcher = pattern.regexp;
     const matches = [];
     let match = null;
 
@@ -317,10 +311,9 @@ strings.highlight = function (text, patterns) {
   }).map(position => {
 
     // TODO : deal with overlaps?
-    const prefix = highlightedText.substr(0, position.start);
-    const infix = highlightedText.substr(position.start,
-        position.end - position.start);
-    const suffix = highlightedText.substr(position.end);
+    const prefix = highlightedText.substring(0, position.start);
+    const infix = highlightedText.substring(position.start, position.end);
+    const suffix = highlightedText.substring(position.end);
 
     highlightedText = `${prefix}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix}`;
 
@@ -328,13 +321,15 @@ strings.highlight = function (text, patterns) {
     const end = Math.min(150, suffix.length);
     const rawSnippet = `${prefix.substring(begin)}${infix}${suffix.substring(0,
         end)}`;
-    const highlightedSnippet = `<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(
+    const highlightedSnippet = `${prefix.substring(
+        begin)}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(
         0, end)}`;
     const pages = prefix.split('\f' /* page separator */).map(
         (page, index) => index);
 
-    return new strings.Highlight(infix, rawSnippet, highlightedSnippet,
-        pages.length);
+    // matchedText, rawSnippet, highlightedSnippet, page
+    return new strings.Highlight(infix, pages.length, rawSnippet,
+        highlightedSnippet);
   });
   return new strings.HighlightedText(highlightedText, highlights);
 }
