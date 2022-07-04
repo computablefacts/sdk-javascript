@@ -39,14 +39,15 @@ test('pad', () => {
   expect(strings.pad(null, 5)).toBe('00000');
   expect(strings.pad('', 5)).toBe('00000');
   expect(strings.pad('123', 5)).toBe('00123');
+  expect(strings.pad('123', 2)).toBe('123');
   expect(strings.pad(123, 5)).toBe('00123');
   expect(strings.pad(1.23, 5)).toBe('01.23');
   expect(strings.pad(.123, 5)).toBe('0.123');
-
 });
 
 test('unpad', () => {
   expect(strings.unpad('00123')).toBe('123');
+  expect(strings.unpad('123')).toBe('123');
 });
 
 test('is_numeric', () => {
@@ -58,4 +59,37 @@ test('is_numeric', () => {
   expect(strings.isNumeric('.123')).toBe(true);
   expect(strings.isNumeric(123)).toBe(false);
   expect(strings.isNumeric(1.23)).toBe(false);
+});
+
+test('is_null_or_blank', () => {
+  expect(strings.isNullOrBlank(null)).toBe(true);
+  expect(strings.isNullOrBlank('')).toBe(true);
+  expect(strings.isNullOrBlank('     ')).toBe(true);
+  expect(strings.isNullOrBlank('\u00a0\u00a0\u00a0\u00a0\u00a0')).toBe(true);
+  expect(strings.isNullOrBlank('Hello world!')).toBe(false);
+  expect(strings.isNullOrBlank(123)).toBe(true);
+  expect(strings.isNullOrBlank(1.23)).toBe(true);
+  expect(strings.isNullOrBlank(.123)).toBe(true);
+});
+
+test('format_null_or_blank', () => {
+  expect(strings.formatNullOrBlank(null, '-')).toBe('-');
+  expect(strings.formatNullOrBlank('', '-')).toBe('-');
+  expect(strings.formatNullOrBlank('     ', '-')).toBe('-');
+  expect(strings.formatNullOrBlank('\u00a0\u00a0\u00a0\u00a0\u00a0', '-')).toBe(
+      '-');
+  expect(strings.formatNullOrBlank('Hello world!', '-')).toBe('Hello world!');
+  expect(strings.formatNullOrBlank(123, '-')).toBe('123');
+  expect(strings.formatNullOrBlank(1.23, '-')).toBe('1.23');
+  expect(strings.formatNullOrBlank(.123, '-')).toBe('0.123');
+});
+
+test('is_masked', () => {
+  expect(strings.isMasked(null)).toBe(false);
+  expect(strings.isMasked('')).toBe(false);
+  expect(strings.isMasked('MASKED_0123456789')).toBe(true);
+  expect(strings.isMasked('masked_0123456789')).toBe(true);
+  expect(strings.isMasked(123)).toBe(false);
+  expect(strings.isMasked(1.23)).toBe(false);
+  expect(strings.isMasked(.123)).toBe(false);
 });

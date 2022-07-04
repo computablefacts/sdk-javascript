@@ -414,7 +414,7 @@ strings.formatNullOrBlank = function (str, defaultValue) {
  * @return {boolean} true iif the string starts with 'MASKED_', false otherwise.
  */
 strings.isMasked = function (str) {
-  return typeof str === 'string' ? str.trim().startsWith('MASKED_') : false;
+  return typeof str === 'string' ? str.trim().toUpperCase().startsWith('MASKED_') : false;
 }
 
 
