@@ -13,7 +13,7 @@ export const dates = {};
  * @memberOf module:dates
  */
 dates.yyyyMmDdToDate = function (str) {
-  str = str ? '' + str.trim() : '';
+  str = str ? ('' + str).trim() : '';
   if (str.length === 8) {
     const year = parseInt(str.substring(0, 4), 10);
     const month = parseInt(str.substring(4, 6), 10);
@@ -31,7 +31,7 @@ dates.yyyyMmDdToDate = function (str) {
  * @memberOf module:dates
  */
 dates.ddMmYyyyToDate = function (str) {
-  str = str ? '' + str.trim() : '';
+  str = str ? ('' + str).trim() : '';
   if (str.length === 8) {
     const day = parseInt(str.substring(0, 2), 10);
     const month = parseInt(str.substring(2, 4), 10);
