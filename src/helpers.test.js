@@ -22,3 +22,18 @@ test('good_fast_hash_of_object', () => {
   expect(helpers.goodFastHash({msg: 'Hello world!', id: 1})).toBe(
       8256987331838298);
 });
+
+test('stringify_number', () => {
+  expect(helpers.stringify(1)).toBe('1');
+});
+
+test('stringify_string', () => {
+  expect(helpers.stringify('Hello world!')).toBe('"Hello world!"');
+});
+
+test('stringify_object', () => {
+  expect(helpers.stringify({id: 1, msg: 'Hello world!'})).toBe(
+      '{"id":1,"msg":"Hello world!"}');
+  expect(helpers.stringify({msg: 'Hello world!', id: 1})).toBe(
+      '{"id":1,"msg":"Hello world!"}');
+});
