@@ -189,27 +189,27 @@ strings.removeDiacritics = function (str, preserveStringLength) {
   }];
 
   if (preserveStringLength === undefined || preserveStringLength === true) {
-    diacritics.push({base: 'AA', letters: /[\uA732]/g},
+    diacritics.push({base: 'AA', letters: /\uA732/g},
         {base: 'AE', letters: /[\u00C6\u01FC\u01E2]/g},
-        {base: 'AO', letters: /[\uA734]/g}, {base: 'AU', letters: /[\uA736]/g},
+        {base: 'AO', letters: /\uA734/g}, {base: 'AU', letters: /\uA736/g},
         {base: 'AV', letters: /[\uA738\uA73A]/g},
-        {base: 'AY', letters: /[\uA73C]/g},
+        {base: 'AY', letters: /\uA73C/g},
         {base: 'DZ', letters: /[\u01F1\u01C4]/g},
         {base: 'Dz', letters: /[\u01F2\u01C5]/g},
-        {base: 'LJ', letters: /[\u01C7]/g}, {base: 'Lj', letters: /[\u01C8]/g},
-        {base: 'NJ', letters: /[\u01CA]/g}, {base: 'Nj', letters: /[\u01CB]/g},
-        {base: 'OI', letters: /[\u01A2]/g}, {base: 'OO', letters: /[\uA74E]/g},
-        {base: 'OU', letters: /[\u0222]/g}, {base: 'TZ', letters: /[\uA728]/g},
-        {base: 'VY', letters: /[\uA760]/g}, {base: 'aa', letters: /[\uA733]/g},
+        {base: 'LJ', letters: /\u01C7/g}, {base: 'Lj', letters: /\u01C8/g},
+        {base: 'NJ', letters: /\u01CA/g}, {base: 'Nj', letters: /\u01CB/g},
+        {base: 'OI', letters: /\u01A2/g}, {base: 'OO', letters: /\uA74E/g},
+        {base: 'OU', letters: /\u0222/g}, {base: 'TZ', letters: /\uA728/g},
+        {base: 'VY', letters: /\uA760/g}, {base: 'aa', letters: /\uA733/g},
         {base: 'ae', letters: /[\u00E6\u01FD\u01E3]/g},
-        {base: 'ao', letters: /[\uA735]/g}, {base: 'au', letters: /[\uA737]/g},
+        {base: 'ao', letters: /\uA735/g}, {base: 'au', letters: /\uA737/g},
         {base: 'av', letters: /[\uA739\uA73B]/g},
-        {base: 'ay', letters: /[\uA73D]/g},
+        {base: 'ay', letters: /\uA73D/g},
         {base: 'dz', letters: /[\u01F3\u01C6]/g},
-        {base: 'hv', letters: /[\u0195]/g}, {base: 'lj', letters: /[\u01C9]/g},
-        {base: 'nj', letters: /[\u01CC]/g}, {base: 'oi', letters: /[\u01A3]/g},
-        {base: 'ou', letters: /[\u0223]/g}, {base: 'oo', letters: /[\uA74F]/g},
-        {base: 'tz', letters: /[\uA729]/g}, {base: 'vy', letters: /[\uA761]/g});
+        {base: 'hv', letters: /\u0195/g}, {base: 'lj', letters: /\u01C9/g},
+        {base: 'nj', letters: /\u01CC/g}, {base: 'oi', letters: /\u01A3/g},
+        {base: 'ou', letters: /\u0223/g}, {base: 'oo', letters: /\uA74F/g},
+        {base: 'tz', letters: /\uA729/g}, {base: 'vy', letters: /\uA761/g});
   }
 
   for (let i = 0; i < diacritics.length; i++) {
@@ -414,7 +414,8 @@ strings.formatNullOrBlank = function (str, defaultValue) {
  * @return {boolean} true iif the string starts with 'MASKED_', false otherwise.
  */
 strings.isMasked = function (str) {
-  return typeof str === 'string' ? str.trim().toUpperCase().startsWith('MASKED_') : false;
+  return typeof str === 'string' ? str.trim().toUpperCase().startsWith(
+      'MASKED_') : false;
 }
 
 
