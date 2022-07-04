@@ -45,24 +45,28 @@ dates.ddMmYyyyToDate = function (str) {
  * Formats a javascript {@link Date} to a string formatted as YYYY-MM-DD.
  *
  * @param {Date} date a javascript {@link Date}.
- * @return {string} a string formatted as YYYY-MM-DD.
+ * @param {?string} separator a separator that will be inserted between the date parts.
+ * @return {?string} a string formatted as YYYY-MM-DD.
  * @memberOf module:dates
  */
-dates.dateToYyyyMmDd = function (date) {
-  return date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '')
-      + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '')
-      + date.getDate();
+dates.dateToYyyyMmDd = function (date, separator) {
+  separator = separator || separator === '' ? separator : '-';
+  return date instanceof Date ? date.getFullYear() + separator
+      + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + separator
+      + (date.getDate() < 10 ? '0' : '') + date.getDate() : null;
 }
 
 /**
  * Formats a javascript {@link Date} to a string formatted as DD-MM-YYYY.
  *
  * @param {Date} date a javascript {@link Date}.
- * @return {string} a string formatted as DD-MM-YYYY.
+ * @param {?string} separator a separator that will be inserted between the date parts.
+ * @return {?string} a string formatted as DD-MM-YYYY.
  * @memberOf module:dates
  */
-dates.dateToDdMmYyyy = function (date) {
-  return (date.getDate() < 10 ? '0' : '') + date.getDate() + '-'
-      + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-'
-      + date.getFullYear();
+dates.dateToDdMmYyyy = function (date, separator) {
+  separator = separator || separator === '' ? separator : '-';
+  return date instanceof Date ? (date.getDate() < 10 ? '0' : '')
+      + date.getDate() + separator + (date.getMonth() < 9 ? '0' : '')
+      + (date.getMonth() + 1) + separator + date.getFullYear() : null;
 }
