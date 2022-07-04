@@ -322,19 +322,14 @@ strings.highlight = function (text, patterns) {
         position.end - position.start);
     const suffix = highlightedText.substr(position.end);
 
-    highlightedText = `
-      ${prefix}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix}
-    `;
+    highlightedText = `${prefix}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix}`;
 
     const begin = Math.max(0, prefix.length - 50);
     const end = Math.min(150, suffix.length);
-    const rawSnippet = `
-      ${prefix.substring(begin)}${infix}${suffix.substring(0, end)}
-    `;
-    const highlightedSnippet = `
-      <mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(
-        0, end)}
-    `;
+    const rawSnippet = `${prefix.substring(begin)}${infix}${suffix.substring(0,
+        end)}`;
+    const highlightedSnippet = `<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(
+        0, end)}`;
     const pages = prefix.split('\f' /* page separator */).map(
         (page, index) => index);
 

@@ -93,3 +93,26 @@ test('is_masked', () => {
   expect(strings.isMasked(1.23)).toBe(false);
   expect(strings.isMasked(.123)).toBe(false);
 });
+
+test('highlight', () => {
+
+  expect(
+      strings.highlight(null, [{pattern: "gmail", color: "#fffec8"}])).toEqual(
+      {snippets: [], text: ""});
+  expect(strings.highlight('', [{pattern: "gmail", color: "#fffec8"}])).toEqual(
+      {snippets: [], text: ""});
+
+  const text = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
+  const textHighlighted = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, <mark style="border-radius:3px;background:#fffec8">Gmail</mark> and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
+  const snippet = {
+    highlighted: '<mark style="border-radius:3px;background:#fffec8">Gmail</mark> and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.',
+    match: "Gmail",
+    page: 1,
+    raw: "he most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook."
+  };
+
+  expect(
+      strings.highlight(text, [{pattern: "gmail", color: "#fffec8"}])).toEqual({
+    snippets: [snippet], text: textHighlighted
+  });
+})
