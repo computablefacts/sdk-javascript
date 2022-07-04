@@ -23,6 +23,10 @@ test('good_fast_hash_of_object', () => {
       8256987331838298);
 });
 
+test('stringify_null', () => {
+  expect(helpers.stringify(null)).toBe('null');
+});
+
 test('stringify_number', () => {
   expect(helpers.stringify(1)).toBe('1');
 });
