@@ -36,7 +36,7 @@ promises.Memoize = function (maxCacheSize, fn) {
    */
   this.promise = function (...args) {
 
-    const cacheKey = '' + helpers.goodFastHash(Array.from(args), 123);
+    const cacheKey = helpers.goodFastHash(Array.from(args), 123).toString(10);
 
     if (cache_.contains(cacheKey)) {
       hit_++;
