@@ -71,7 +71,7 @@ observers.Subject = function () {
    * Notify all observers listening to a given message type.
    *
    * @param {string} message the message type.
-   * @param {arguments} args a list of arguments to pass to each callback.
+   * @param {...*} args a list of arguments to pass to each callback.
    */
   this.notify = function (message, ...args) {
     if (message && typeof message === 'string' && args

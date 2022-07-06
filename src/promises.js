@@ -31,8 +31,9 @@ promises.Memoize = function (maxCacheSize, fn) {
   /**
    * Either read the cache or call the user-defined function and get a new promise.
    *
-   * @param {arguments} args a list of arguments to pass to the user-defined function.
+   * @param {...*} args a list of arguments to pass to the user-defined function.
    * @return {Promise} a promise to be resolved at a later stage.
+   * @suppress {checkTypes}
    */
   this.promise = function (...args) {
 
