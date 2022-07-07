@@ -4,3 +4,4 @@ export {dates} from "./dates"
 export {helpers} from "./helpers"
 export {promises} from "./promises"
 export {strings} from "./strings"
+export {webcomponents} from "./webcomponents";
