@@ -16,7 +16,7 @@ export default [{
   }), jsdoc({
     config: 'jsdoc.config.json',
   }), compiler({
-    language_out: 'STABLE', warning_level: 'VERBOSE',
+    language_out: 'STABLE', warning_level: 'DEFAULT',
   })]
 }, {
   input: 'src/main.js', output: [{
