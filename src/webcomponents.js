@@ -361,4 +361,54 @@ webcomponents.WebComponent = class extends HTMLElement {
       el.appendChild(element);
     }
   }
+
+  /**
+   * Load scripts from a list of URL.
+   *
+   * @param urls a list of URL.
+   * @return a {Promise<*>}.
+   * @name loadScripts
+   * @function
+   * @protected
+   */
+  loadScripts(urls) {
+
+    let promise = null;
+
+    for (let i = 0; i < urls.length; i++) {
+      if (promise) {
+        promise = promise.then(() => this.loadScript(urls[i]));
+      } else {
+        promise = this.loadScript(urls[i]);
+      }
+    }
+    return promise;
+  }
+
+  /**
+   * Load a script from a given URL.
+   *
+   * @param url a single URL.
+   * @return a {Promise<*>}.
+   * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
+   * @name loadScript
+   * @function
+   * @protected
+   */
+  loadScript(url) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      script.onerror = function (err) {
+        console.log('Script failed : ' + url, err);
+        reject(url, script, err);
+      }
+      script.onload = function () {
+        console.log('Script loaded : ' + url);
+        resolve(url, script)
+      }
+      document.head.appendChild(script);
+    });
+  }
 }
