@@ -411,4 +411,48 @@ webcomponents.WebComponent = class extends HTMLElement {
       document.head.appendChild(script);
     });
   }
+
+  /**
+   * Load styles from a list of URL.
+   *
+   * @param urls a list of URL.
+   * @return a {Promise<*>}.
+   * @name loadStyles
+   * @function
+   * @protected
+   */
+  loadStyles(urls) {
+
+    let promise = null;
+
+    for (let i = 0; i < urls.length; i++) {
+      if (promise) {
+        promise = promise.then(() => this.loadStyle(urls[i]));
+      } else {
+        promise = this.loadStyle(urls[i]);
+      }
+    }
+    return promise;
+  }
+
+  /**
+   * Load a stylesheet from a given URL.
+   *
+   * @param url a single URL.
+   * @return a {Promise<*>}.
+   * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
+   * @name loadStyle
+   * @function
+   * @protected
+   */
+  loadStyle(url) {
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.href = url;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+      console.log('Stylesheet loaded : ' + url);
+      resolve(url, link);
+    });
+  }
 }
