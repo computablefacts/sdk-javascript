@@ -191,7 +191,7 @@ platform.HttpClient = function () {
    * @preserve The specification can be found at https://www.jsonrpc.org/specification.
    */
   this.fetch = function (payload) {
-    return fetch(`${baseUrl_}/api/v2/public/json-rpc?api_token=${apiKey}`,
+    return fetch(`${baseUrl_}/api/v2/public/json-rpc?api_token=${token_}`,
         {body: payload, method: 'POST'}).then(response => {
       if ('error' in response) {
         const error = response['error'];
