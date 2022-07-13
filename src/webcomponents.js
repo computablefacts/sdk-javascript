@@ -17,6 +17,7 @@ webcomponents.WebComponent = class extends HTMLElement {
    */
   constructor() {
     super();
+    this.attachShadow({mode: 'open'});
   }
 
   /**
@@ -28,10 +29,46 @@ webcomponents.WebComponent = class extends HTMLElement {
    * @override
    */
   connectedCallback() {
-    this.attachShadow({mode: 'open'});
-    this.beforeRender();
-    this.render();
-    this.afterRender();
+
+    const styles = this.externalStyles();
+    const scripts = this.externalScripts();
+    const template = this.template();
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'wcw'; // wcw = Web Component Wrapper
+    this.shadowRoot.appendChild(wrapper);
+
+    if (styles && styles.length > 0 && scripts && scripts.length > 0) {
+      this.injectStyles('#' + wrapper.id, styles).then(() => {
+        this.injectScripts('#' + wrapper.id, scripts).then(() => {
+          if (template !== '') {
+            wrapper.insertAdjacentHTML('beforeend', template);
+          }
+          this.renderedCallback();
+        });
+      });
+    } else if ((!styles || styles.length === 0) && scripts && scripts.length
+        > 0) {
+      this.injectScripts('#' + wrapper.id, scripts).then(() => {
+        if (template !== '') {
+          wrapper.insertAdjacentHTML('beforeend', template);
+        }
+        this.renderedCallback();
+      });
+    } else if (styles && styles.length > 0 && (!scripts || scripts.length
+        === 0)) {
+      this.injectStyles('#' + wrapper.id, styles).then(() => {
+        if (template !== '') {
+          wrapper.insertAdjacentHTML('beforeend', template);
+        }
+        this.renderedCallback();
+      });
+    } else {
+      if (template !== '') {
+        wrapper.insertAdjacentHTML('beforeend', template);
+      }
+      this.renderedCallback();
+    }
   }
 
   /**
@@ -46,27 +83,40 @@ webcomponents.WebComponent = class extends HTMLElement {
   }
 
   /**
-   * Returns the component Javascript.
+   * Called after the `template` has been added to the DOM.
    *
-   * @return {string} the Javascript.
-   * @name js
+   * @name renderedCallback
    * @function
    * @protected
+   * @override
    */
-  js() {
-    return ``;
+  renderedCallback() {
   }
 
   /**
-   * Returns the component CSS.
+   * A list of stylesheets URL.
    *
-   * @return {string} the CSS.
-   * @name css
+   * @return {Array<string>} an array of URL.
+   * @name externalStyles
    * @function
    * @protected
+   * @override
    */
-  css() {
-    return ``;
+  externalStyles() {
+    return [];
+  }
+
+  /**
+   * A list of scripts URL.
+   *
+   * @return {Array<string>} an array of URL.
+   * @name externalScripts
+   * @function
+   * @protected
+   * @override
+   */
+  externalScripts() {
+    return [];
   }
 
   /**
@@ -79,41 +129,6 @@ webcomponents.WebComponent = class extends HTMLElement {
    */
   template() {
     return ``;
-  }
-
-  /**
-   * Executed before rendering the DOM.
-   *
-   * @name beforeRender
-   * @function
-   * @protected
-   */
-  beforeRender() {
-  }
-
-  /**
-   * Render the DOM.
-   *
-   * @name render
-   * @function
-   * @protected
-   */
-  render() {
-    this.shadowRoot.innerHTML = `
-        ${this.css()}
-        ${this.template()}
-        ${this.js()}
-    `;
-  }
-
-  /**
-   * Executed after rendering the DOM.
-   *
-   * @name afterRender
-   * @function
-   * @protected
-   */
-  afterRender() {
   }
 
   /**
@@ -363,40 +378,43 @@ webcomponents.WebComponent = class extends HTMLElement {
   }
 
   /**
-   * Load scripts from a list of URL.
+   * Inject multiple scripts.
    *
-   * @param urls a list of URL.
+   * @param {string} idOrClassName the identifier or class name to match.
+   * @param {Array<string>} urls the scripts URL.
    * @return a {Promise<*>}.
-   * @name loadScripts
+   * @name injectScripts
    * @function
-   * @protected
+   * @private
    */
-  loadScripts(urls) {
+  injectScripts(idOrClassName, urls) {
 
     let promise = null;
 
     for (let i = 0; i < urls.length; i++) {
       if (promise) {
-        promise = promise.then(() => this.loadScript(urls[i]));
+        promise = promise.then(() => this.injectScript(idOrClassName, urls[i]));
       } else {
-        promise = this.loadScript(urls[i]);
+        promise = this.injectScript(idOrClassName, urls[i]);
       }
     }
     return promise;
   }
 
   /**
-   * Load a script from a given URL.
+   * Inject a single script.
    *
-   * @param url a single URL.
+   * @param {string} idOrClassName the identifier or class name to match.
+   * @param {string} url the script URL.
    * @return a {Promise<*>}.
    * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
-   * @name loadScript
+   * @name injectScript
    * @function
-   * @protected
+   * @private
    */
-  loadScript(url) {
-    return new Promise((resolve, reject) => {
+  injectScript(idOrClassName, url) {
+    const el = this.getElement(idOrClassName);
+    return el ? new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = url;
       script.async = true;
@@ -408,51 +426,54 @@ webcomponents.WebComponent = class extends HTMLElement {
         console.log('Script loaded : ' + url);
         resolve(url, script)
       }
-      document.head.appendChild(script);
-    });
+      el.appendChild(script);
+    }) : Promise.reject('invalid id or class name : ' + idOrClassName);
   }
 
   /**
-   * Load styles from a list of URL.
+   * Inject multiple stylesheets.
    *
-   * @param urls a list of URL.
+   * @param {string} idOrClassName the identifier or class name to match.
+   * @param {Array<String>} urls the stylesheets URL.
    * @return a {Promise<*>}.
-   * @name loadStyles
+   * @name injectStyles
    * @function
-   * @protected
+   * @private
    */
-  loadStyles(urls) {
+  injectStyles(idOrClassName, urls) {
 
     let promise = null;
 
     for (let i = 0; i < urls.length; i++) {
       if (promise) {
-        promise = promise.then(() => this.loadStyle(urls[i]));
+        promise = promise.then(() => this.injectStyle(idOrClassName, urls[i]));
       } else {
-        promise = this.loadStyle(urls[i]);
+        promise = this.injectStyle(idOrClassName, urls[i]);
       }
     }
     return promise;
   }
 
   /**
-   * Load a stylesheet from a given URL.
+   * Inject a single stylesheet.
    *
-   * @param url a single URL.
+   * @param {string} idOrClassName the identifier or class name to match.
+   * @param {string} url the stylesheet URL.
    * @return a {Promise<*>}.
    * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
-   * @name loadStyle
+   * @name injectStyle
    * @function
-   * @protected
+   * @private
    */
-  loadStyle(url) {
-    return new Promise((resolve, reject) => {
+  injectStyle(idOrClassName, url) {
+    const el = this.getElement(idOrClassName);
+    return el ? new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.href = url;
       link.rel = 'stylesheet';
-      document.head.appendChild(link);
+      el.appendChild(link);
       console.log('Stylesheet loaded : ' + url);
       resolve(url, link);
-    });
+    }) : Promise.reject('invalid id or class name : ' + idOrClassName);
   }
 }
