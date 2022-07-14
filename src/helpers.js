@@ -93,3 +93,89 @@ helpers.goodFastHash = function (obj, seed) {
 
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
+
+/**
+ * Inject multiple scripts.
+ *
+ * @param {Element} el the root node where the scripts will be injected.
+ * @param {Array<string>} urls the scripts URL.
+ * @return a {Promise<*>}.
+ */
+helpers.injectScripts = function (el, urls) {
+
+  let promise = null;
+
+  for (let i = 0; i < urls.length; i++) {
+    if (promise) {
+      promise = promise.then(() => this.injectScript(el, urls[i]));
+    } else {
+      promise = this.injectScript(el, urls[i]);
+    }
+  }
+  return promise;
+}
+
+/**
+ * Inject a single script.
+ *
+ * @param {Element} el the root node where the script will be injected.
+ * @param {string} url the script URL.
+ * @return a {Promise<*>}.
+ * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
+ */
+helpers.injectScript = function (el, url) {
+  return el ? new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    script.async = true;
+    script.onerror = function (err) {
+      console.log('Script failed : ' + url, err);
+      reject(url, script, err);
+    }
+    script.onload = function () {
+      console.log('Script loaded : ' + url);
+      resolve(url, script)
+    }
+    el.appendChild(script);
+  }) : Promise.reject('invalid node');
+}
+
+/**
+ * Inject multiple stylesheets.
+ *
+ * @param {Element} el the root node where the scripts will be injected.
+ * @param {Array<String>} urls the stylesheets URL.
+ * @return a {Promise<*>}.
+ */
+helpers.injectStyles = function (el, urls) {
+
+  let promise = null;
+
+  for (let i = 0; i < urls.length; i++) {
+    if (promise) {
+      promise = promise.then(() => this.injectStyle(el, urls[i]));
+    } else {
+      promise = this.injectStyle(el, urls[i]);
+    }
+  }
+  return promise;
+}
+
+/**
+ * Inject a single stylesheet.
+ *
+ * @param {Element} el the root node where the script will be injected.
+ * @param {string} url the stylesheet URL.
+ * @return a {Promise<*>}.
+ * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
+ */
+helpers.injectStyle = function (el, url) {
+  return el ? new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.href = url;
+    link.rel = 'stylesheet';
+    el.appendChild(link);
+    console.log('Stylesheet loaded : ' + url);
+    resolve(url, link);
+  }) : Promise.reject('invalid node');
+}

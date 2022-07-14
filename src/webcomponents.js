@@ -1,5 +1,7 @@
 'use strict'
 
+import {helpers} from "./helpers";
+
 /**
  * @module webcomponents
  */
@@ -39,8 +41,8 @@ webcomponents.WebComponent = class extends HTMLElement {
     this.shadowRoot.appendChild(wrapper);
 
     if (styles && styles.length > 0 && scripts && scripts.length > 0) {
-      this.injectStyles('#' + wrapper.id, styles).then(() => {
-        this.injectScripts('#' + wrapper.id, scripts).then(() => {
+      helpers.injectStyles(wrapper, styles).then(() => {
+        helpers.injectScripts(wrapper, scripts).then(() => {
           if (template !== '') {
             wrapper.insertAdjacentHTML('beforeend', template);
           }
@@ -49,7 +51,7 @@ webcomponents.WebComponent = class extends HTMLElement {
       });
     } else if ((!styles || styles.length === 0) && scripts && scripts.length
         > 0) {
-      this.injectScripts('#' + wrapper.id, scripts).then(() => {
+      helpers.injectScripts(wrapper, scripts).then(() => {
         if (template !== '') {
           wrapper.insertAdjacentHTML('beforeend', template);
         }
@@ -57,7 +59,7 @@ webcomponents.WebComponent = class extends HTMLElement {
       });
     } else if (styles && styles.length > 0 && (!scripts || scripts.length
         === 0)) {
-      this.injectStyles('#' + wrapper.id, styles).then(() => {
+      helpers.injectStyles(wrapper, styles).then(() => {
         if (template !== '') {
           wrapper.insertAdjacentHTML('beforeend', template);
         }
@@ -375,105 +377,5 @@ webcomponents.WebComponent = class extends HTMLElement {
       el.innerHTML = '';
       el.appendChild(element);
     }
-  }
-
-  /**
-   * Inject multiple scripts.
-   *
-   * @param {string} idOrClassName the identifier or class name to match.
-   * @param {Array<string>} urls the scripts URL.
-   * @return a {Promise<*>}.
-   * @name injectScripts
-   * @function
-   * @private
-   */
-  injectScripts(idOrClassName, urls) {
-
-    let promise = null;
-
-    for (let i = 0; i < urls.length; i++) {
-      if (promise) {
-        promise = promise.then(() => this.injectScript(idOrClassName, urls[i]));
-      } else {
-        promise = this.injectScript(idOrClassName, urls[i]);
-      }
-    }
-    return promise;
-  }
-
-  /**
-   * Inject a single script.
-   *
-   * @param {string} idOrClassName the identifier or class name to match.
-   * @param {string} url the script URL.
-   * @return a {Promise<*>}.
-   * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
-   * @name injectScript
-   * @function
-   * @private
-   */
-  injectScript(idOrClassName, url) {
-    const el = this.getElement(idOrClassName);
-    return el ? new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.async = true;
-      script.onerror = function (err) {
-        console.log('Script failed : ' + url, err);
-        reject(url, script, err);
-      }
-      script.onload = function () {
-        console.log('Script loaded : ' + url);
-        resolve(url, script)
-      }
-      el.appendChild(script);
-    }) : Promise.reject('invalid id or class name : ' + idOrClassName);
-  }
-
-  /**
-   * Inject multiple stylesheets.
-   *
-   * @param {string} idOrClassName the identifier or class name to match.
-   * @param {Array<String>} urls the stylesheets URL.
-   * @return a {Promise<*>}.
-   * @name injectStyles
-   * @function
-   * @private
-   */
-  injectStyles(idOrClassName, urls) {
-
-    let promise = null;
-
-    for (let i = 0; i < urls.length; i++) {
-      if (promise) {
-        promise = promise.then(() => this.injectStyle(idOrClassName, urls[i]));
-      } else {
-        promise = this.injectStyle(idOrClassName, urls[i]);
-      }
-    }
-    return promise;
-  }
-
-  /**
-   * Inject a single stylesheet.
-   *
-   * @param {string} idOrClassName the identifier or class name to match.
-   * @param {string} url the stylesheet URL.
-   * @return a {Promise<*>}.
-   * @preserve The code is extracted from https://gist.github.com/james2doyle/28a59f8692cec6f334773007b31a1523.
-   * @name injectStyle
-   * @function
-   * @private
-   */
-  injectStyle(idOrClassName, url) {
-    const el = this.getElement(idOrClassName);
-    return el ? new Promise((resolve, reject) => {
-      const link = document.createElement('link');
-      link.href = url;
-      link.rel = 'stylesheet';
-      el.appendChild(link);
-      console.log('Stylesheet loaded : ' + url);
-      resolve(url, link);
-    }) : Promise.reject('invalid id or class name : ' + idOrClassName);
   }
 }
