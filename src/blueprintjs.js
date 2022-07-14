@@ -232,6 +232,37 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     });
   }
 
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(Array<Object>): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (regions) => {
+      // console.log('Selected regions are ', regions);
+      if (callback) {
+
+        const cells = [];
+
+        for (let i = 0; i < regions.length; i++) {
+
+          const rows = regions[i].rows;
+          const columns = regions[i].cols;
+
+          for (let j = rows[0]; j <= rows[1]; j++) {
+            for (let k = columns[0]; k <= columns[1]; k++) {
+              cells.push({row_idx: j, col_idx: k, value: this.rows[j][k]});
+            }
+          }
+        }
+        callback(cells);
+      }
+    });
+  }
+
   _render() {
     ReactDOM.render(this._newTable(), this.container_);
   }
@@ -289,6 +320,9 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
       children: this.columns.map(column => this._newColumn(this, column)),
       enableColumnReordering: true,
       loadingOptions: this.loadingOptions,
+      onSelection: (regions) => {
+        this.observers_.notify('selection-change', regions);
+      },
       onVisibleCellsChange: (rowIndex, columnIndex) => {
         if (rowIndex.rowIndexEnd + 1 >= this.rows.length) {
           this.observers_.notify('fetch-next-rows', this.rows.length);
