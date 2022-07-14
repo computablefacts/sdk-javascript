@@ -1,4 +1,5 @@
 export {arrays} from "./arrays"
+export {blueprintjs} from "./blueprintjs";
 export {caches} from "./caches"
 export {dates} from "./dates"
 export {helpers} from "./helpers"

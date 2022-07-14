@@ -10,6 +10,8 @@ export const webcomponents = {};
 /**
  * A skeleton to ease the creation of web components.
  *
+ * @memberOf module:webcomponents
+ * @type {webcomponents.WebComponent}
  * @extends {HTMLElement}
  */
 webcomponents.WebComponent = class extends HTMLElement {
