@@ -94,6 +94,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     this.container_ = container;
     this.observers_ = new observers.Subject();
     this.columns_ = [];
+    this.columnTypes_ = [];
     this.rows_ = [];
     this.loadingOptions_ = [];
     this._render();
@@ -153,6 +154,15 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     this._render();
   }
 
+  get columnTypes() {
+    return this.columnTypes_;
+  }
+
+  set columnTypes(values) {
+    this.columnTypes_ = values;
+    this._render();
+  }
+
   get rows() {
     return this.rows_;
   }
@@ -160,6 +170,10 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   set rows(values) {
     this.rows_ = values;
     this._render();
+  }
+
+  get loadingOptions() {
+    return this.loadingOptions_;
   }
 
   set loadingOptions(values) {
@@ -170,7 +184,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   /**
    * Listen to the `sort` event.
    *
-   * @param {Function} callback the callback to call when the event is triggered.
+   * @param {function(string, string): void} callback the callback to call when the event is triggered.
    * @name onSortColumn
    * @function
    * @public
@@ -187,7 +201,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   /**
    * Listen to the `fetch-next-rows` event.
    *
-   * @param {Function} callback the callback to call when the event is triggered.
+   * @param {function(number): void} callback the callback to call when the event is triggered.
    * @name onFetchNextRows
    * @function
    * @public
@@ -201,15 +215,37 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     });
   }
 
+  /**
+   * Listen to the `render-cell` event.
+   *
+   * @param {function(number, number, *): void} callback the callback to call when the event is triggered.
+   * @name onRenderCell
+   * @function
+   * @public
+   */
+  onRenderCell(callback) {
+    this.observers_.register('render-cell', (rowIdx, colIdx, value) => {
+      // console.log('Next cell to render is "' + value + '" at position (' + rowIdx + ', ' + colIdx + ')');
+      if (callback) {
+        callback(rowIdx, colIdx, value);
+      }
+    });
+  }
+
   _render() {
     ReactDOM.render(this._newTable(), this.container_);
   }
 
   _newCell(self, rowIdx, colIdx) {
+    self.observers_.notify('render-cell', rowIdx, colIdx,
+        self.rows[rowIdx][colIdx]);
     return React.createElement(Blueprint.Table.Cell, {
       rowIndex: rowIdx,
       columnIndex: colIdx,
-      children: React.createElement('div', {}, self.rows_[rowIdx][colIdx]),
+      style: {
+        'text-align': self.columnTypes[colIdx] === 'number' ? 'right' : 'left'
+      },
+      children: React.createElement('div', {}, self.rows[rowIdx][colIdx]),
     });
   }
 
@@ -249,13 +285,13 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   _newTable() {
     return React.createElement(Blueprint.Table.Table2, {
-      numRows: this.rows_.length,
-      children: this.columns_.map(column => this._newColumn(this, column)),
+      numRows: this.rows.length,
+      children: this.columns.map(column => this._newColumn(this, column)),
       enableColumnReordering: true,
-      loadingOptions: this.loadingOptions_,
+      loadingOptions: this.loadingOptions,
       onVisibleCellsChange: (rowIndex, columnIndex) => {
-        if (rowIndex.rowIndexEnd + 1 >= this.rows_.length) {
-          this.observers_.notify('fetch-next-rows', this.rows_.length);
+        if (rowIndex.rowIndexEnd + 1 >= this.rows.length) {
+          this.observers_.notify('fetch-next-rows', this.rows.length);
         }
       },
       onColumnsReordered: (oldIndex, newIndex, length) => {
@@ -263,30 +299,40 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
         this.loadingOptions = [Blueprint.Table.TableLoadingOption.CELLS];
 
         // First, reorder the rows header
-        const oldOrder = this.columns_;
-        const newOrder = [];
+        const oldColumnsOrder = this.columns;
+        const newColumnsOrder = [];
 
-        for (let i = 0; i < oldOrder.length; i++) {
+        const oldColumnTypes = this.columnTypes;
+        const newColumnTypes = [];
+
+        for (let i = 0; i < oldColumnsOrder.length; i++) {
           if (!(oldIndex <= i && i < oldIndex + length)) {
-            newOrder.push(oldOrder[i]);
+            newColumnsOrder.push(oldColumnsOrder[i]);
+            newColumnTypes.push(oldColumnTypes[i]);
           }
         }
         for (let k = oldIndex; k < oldIndex + length; k++) {
-          newOrder.splice(newIndex + k - oldIndex, 0, oldOrder[k]);
+          newColumnsOrder.splice(newIndex + k - oldIndex, 0,
+              oldColumnsOrder[k]);
+          newColumnTypes.splice(newIndex + k - oldIndex, 0,
+              oldColumnTypes[k]);
         }
 
-        // console.log('Previous column order was [' + oldOrder.join(', ') + ']');
-        // console.log('New column order is [' + newOrder.join(', ') + ']');
+        // console.log('Previous column order was [' + oldColumnsOrder.join(', ') + ']');
+        // console.log('New column order is [' + newColumnsOrder.join(', ') + ']');
+
+        // console.log('Previous column types were [' + oldColumnTypes.join(', ') + ']');
+        // console.log('New column types is [' + newColumnTypes.join(', ') + ']');
 
         // Then, reorder the rows data
         const oldColumnsIndex = {};
         const newColumnsIndex = {};
 
-        for (let i = 0; i < oldOrder.length; i++) {
-          oldColumnsIndex[oldOrder[i]] = i;
+        for (let i = 0; i < oldColumnsOrder.length; i++) {
+          oldColumnsIndex[oldColumnsOrder[i]] = i;
         }
-        for (let i = 0; i < newOrder.length; i++) {
-          newColumnsIndex[i] = newOrder[i];
+        for (let i = 0; i < newColumnsOrder.length; i++) {
+          newColumnsIndex[i] = newColumnsOrder[i];
         }
 
         const oldRows = this.rows;
@@ -303,7 +349,8 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
         }
 
         // Next, redraw the table
-        this.columns = newOrder;
+        this.columns = newColumnsOrder;
+        this.columnTypes = newColumnTypes;
         this.rows = newRows;
         this.loadingOptions = [];
       },
