@@ -609,3 +609,231 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     });
   }
 }
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs slider element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalSlider}
+ */
+blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {number} min the minimum value.
+   * @param {number} max the maximum value.
+   * @param {number} increment the internal increment.
+   * @param {number} displayIncrement the display increment.
+   * @constructor
+   */
+  constructor(container, min, max, increment, displayIncrement) {
+    super();
+    this.container_ = container;
+    this.min_ = min;
+    this.max_ = max;
+    this.increment_ = increment;
+    this.displayIncrement_ = displayIncrement;
+    this.value_ = min;
+    this.observers_ = new observers.Subject();
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs slider-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs slider-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  get value() {
+    return this.value_;
+  }
+
+  set value(value) {
+    this.value_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(number): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected value is ', item);
+      if (callback) {
+        callback(value);
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newSlider(), this.container_);
+  }
+
+  _newSlider() {
+    return React.createElement(Blueprint.Core.Slider, {
+      min: this.min_,
+      max: this.max_,
+      stepSize: this.increment_,
+      labelStepSize: this.displayIncrement_,
+      value: this.value,
+      onChange: (value) => {
+        this.value = value;
+        this.observers_.notify('selection-change', value);
+      },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs drawer element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalDrawer}
+ */
+blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {string} width the drawer width in pixels or percents (optional).
+   * @constructor
+   */
+  constructor(container, width) {
+    super();
+    this.container_ = container;
+    this.observers_ = new observers.Subject();
+    this.show_ = false;
+    this.width_ = width ? width : '75%';
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  get show() {
+    return this.show_;
+  }
+
+  set show(value) {
+    this.show_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `opening` event.
+   *
+   * @param {function(HTMLElement): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onOpen(callback) {
+    this.observers_.register('opening', (el) => {
+      if (callback) {
+        callback(el);
+      }
+    });
+  }
+
+  /**
+   * Listen to the `closing` event.
+   *
+   * @param {function(HTMLElement): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onClose(callback) {
+    this.observers_.register('closing', (el) => {
+      if (callback) {
+        callback(el);
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newDrawer(), this.container_);
+  }
+
+  _newDrawer() {
+    return React.createElement(Blueprint.Core.Drawer, {
+      isOpen: this.show,
+      size: this.width_,
+      position: Blueprint.Core.Position.RIGHT,
+      onClose: () => this.show = false,
+      onOpening: (el) => this.observers_.notify('opening', el),
+      onClosed: (el) => this.observers_.notify('closing', el),
+    });
+  }
+}
