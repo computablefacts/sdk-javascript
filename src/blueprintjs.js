@@ -57,6 +57,7 @@ blueprintjs.Blueprintjs = class {
       'https://unpkg.com/normalize.css@^8.0.1',
       'https://unpkg.com/@blueprintjs/icons@^4.0.0/lib/css/blueprint-icons.css',
       'https://unpkg.com/@blueprintjs/core@^4.0.0/lib/css/blueprint.css',
+      'https://unpkg.com/@blueprintjs/popover2@^1.4.2/lib/css/blueprint-popover2.css',
     ];
   }
 
@@ -72,12 +73,13 @@ blueprintjs.Blueprintjs = class {
       'https://unpkg.com/react-popper@^2.2.4/dist/index.umd.min.js',
       'https://unpkg.com/@blueprintjs/icons@^4.0.0',
       'https://unpkg.com/@blueprintjs/core@^4.0.0',
+      'https://unpkg.com/@blueprintjs/popover2@^1.4.2',
     ];
   }
 }
 
 /**
- * A skeleton to ease the creation of a minimal Blueprintjs table.
+ * A skeleton to ease the creation of a minimal Blueprintjs table component.
  *
  * @memberOf module:blueprintjs
  * @extends {blueprintjs.Blueprintjs}
@@ -372,6 +374,238 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
         this.rows = newRows;
         this.loadingOptions = [];
       },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs select element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalSelect}
+ */
+blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
+   * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
+   * @constructor
+   */
+  constructor(container, itemToText, itemToLabel) {
+    super();
+    this.container_ = container;
+    this.itemToText_ = itemToText;
+    this.itemToLabel_ = itemToLabel;
+    this.observers_ = new observers.Subject();
+    this.activeItem_ = null;
+    this.selectedItem_ = null;
+    this.fillContainer_ = true;
+    this.disabled_ = false;
+    this.filterable_ = true;
+    this.items_ = [];
+    this.defaultText_ = 'Sélectionnez un élément...';
+    this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs select-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.selectStylesInjected ? Promise.resolve()
+        : blueprintjs.Blueprintjs.injectStyles(el).then(
+            () => helpers.injectStyle(el,
+                'https://unpkg.com/@blueprintjs/select@^4.0.0/lib/css/blueprint-select.css')).then(
+            () => blueprintjs.selectStylesInjected = true);
+  }
+
+  /**
+   * Injects Blueprintjs select-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.selectScriptsInjected ? Promise.resolve()
+        : blueprintjs.Blueprintjs.injectScripts(el).then(
+            () => helpers.injectScript(el,
+                'https://unpkg.com/@blueprintjs/select@^4.0.0')).then(
+            () => blueprintjs.selectScriptsInjected = true);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this._render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this._render();
+  }
+
+  get filterable() {
+    return this.filterable_;
+  }
+
+  set filterable(value) {
+    this.filterable_ = value;
+    this._render();
+  }
+
+  get items() {
+    return this.items_;
+  }
+
+  set items(values) {
+    this.items_ = values;
+    this._render();
+  }
+
+  get selectedItem() {
+    return this.selectedItem_;
+  }
+
+  set selectedItem(value) {
+    this.selectedItem_ = value;
+    this._render();
+  }
+
+  get defaultText() {
+    return this.defaultText_;
+  }
+
+  set defaultText(value) {
+    this.defaultText_ = value;
+    this._render();
+  }
+
+  get noResults() {
+    return this.noResults_;
+  }
+
+  set noResults(value) {
+    this.noResults_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (item) => {
+      // console.log('Selected item is ', item);
+      if (callback) {
+        callback(item);
+      }
+    });
+  }
+
+  /**
+   * Listen to the `filter-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onFilterChange
+   * @function
+   * @public
+   */
+  onFilterChange(callback) {
+    this.observers_.register('filter-change', (filter) => {
+      // console.log('Filter is ', filter);
+      if (callback) {
+        callback(filter);
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newSelect(), this.container_);
+  }
+
+  _newButton() {
+    return React.createElement(Blueprint.Core.Button, {
+      text: this.selectedItem ? this.itemToText_ ? this.itemToText_(
+          this.selectedItem) : this.selectedItem : this.defaultText,
+      alignText: 'left',
+      rightIcon: 'double-caret-vertical',
+      fill: this.fillContainer,
+      disabled: this.disabled,
+    });
+  }
+
+  _newSelect() {
+    return React.createElement(Blueprint.Select.Select2, {
+      fill: this.fillContainer,
+      disabled: this.disabled,
+      children: [this._newButton()],
+      items: this.items,
+      filterable: this.filterable,
+      activeItem: this.activeItem_,
+      onActiveItemChange: (item) => {
+        this.activeItem_ = item;
+        this._render();
+      },
+      onItemSelect: (item) => {
+        this.selectedItem = item;
+        this.observers_.notify('selection-change', item);
+      },
+      onQueryChange: (query) => {
+        this.observers_.notify('filter-change', query);
+      },
+      itemRenderer: (item, props) => {
+        if (!props.modifiers.matchesPredicate) {
+          return null;
+        }
+        return React.createElement(Blueprint.Core.MenuItem, {
+          key: props.index,
+          selected: props.modifiers.active,
+          text: this.itemToText_ ? this.itemToText_(item) : item,
+          label: this.itemToLabel_ ? this.itemToLabel_(item) : '',
+          onFocus: props.handleFocus,
+          onClick: props.handleClick,
+        });
+      },
+      noResults: React.createElement(Blueprint.Core.MenuItem, {
+        text: this.noResults,
+        disabled: true,
+      }),
+      popoverProps: {
+        matchTargetWidth: true,
+      }
     });
   }
 }
