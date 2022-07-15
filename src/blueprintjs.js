@@ -87,11 +87,13 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   /**
    * @param {Element} container the element where the table will be inserted.
+   * @param {function(number, number, *): ReactElement} cellRenderer a function in charge of rendering a single cell (optional).
    * @constructor
    */
-  constructor(container) {
+  constructor(container, cellRenderer) {
     super();
     this.container_ = container;
+    this.cellRenderer_ = cellRenderer;
     this.observers_ = new observers.Subject();
     this.columns_ = [];
     this.columnTypes_ = [];
@@ -216,23 +218,6 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   /**
-   * Listen to the `render-cell` event.
-   *
-   * @param {function(number, number, *): void} callback the callback to call when the event is triggered.
-   * @name onRenderCell
-   * @function
-   * @public
-   */
-  onRenderCell(callback) {
-    this.observers_.register('render-cell', (rowIdx, colIdx, value) => {
-      // console.log('Next cell to render is "' + value + '" at position (' + rowIdx + ', ' + colIdx + ')');
-      if (callback) {
-        callback(rowIdx, colIdx, value);
-      }
-    });
-  }
-
-  /**
    * Listen to the `selection-change` event.
    *
    * @param {function(Array<Object>): void} callback the callback to call when the event is triggered.
@@ -268,9 +253,8 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   _newCell(self, rowIdx, colIdx) {
-    self.observers_.notify('render-cell', rowIdx, colIdx,
-        self.rows[rowIdx][colIdx]);
-    return React.createElement(Blueprint.Table.Cell, {
+    return self.cellRenderer_ ? self.cellRenderer_(rowIdx, colIdx,
+        self.rows[rowIdx][colIdx]) : React.createElement(Blueprint.Table.Cell, {
       rowIndex: rowIdx,
       columnIndex: colIdx,
       style: {
