@@ -854,7 +854,6 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
   constructor(container) {
     super();
     this.container_ = container;
-    this.observers_ = new observers.Subject();
     this.tabs_ = [];
     this._render();
   }
@@ -900,7 +899,10 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    * Add a single tab to the nav bar.
    *
    * @param {string} name the tab name.
-   * @param {HTMLElement} panel the tap content.
+   * @param {HTMLElement} panel the tab content.
+   * @name addTab
+   * @function
+   * @public
    */
   addTab(name, panel) {
     this.tabs_.push({
@@ -917,6 +919,9 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    * Remove a single tab from the nav bar.
    *
    * @param {string} name the tab name.
+   * @name removeTab
+   * @function
+   * @public
    */
   removeTab(name) {
     this.tabs_ = this.tabs_.filter(tab => tab.name !== name);
@@ -927,6 +932,9 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    * Select the tab to display.
    *
    * @param {string} name the tab name.
+   * @name selectTab
+   * @function
+   * @public
    */
   selectTab(name) {
     let selectedTab = null;
@@ -966,6 +974,422 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
       children: this.tabs_.map(tab => this._newTab(tab)),
       selectedTabId: selectedTab ? selectedTab.name : null,
       onChange: (newTabId, oldTabId) => this.selectTab(newTabId),
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs spinner element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalSpinner}
+ */
+blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {string} size the spinner size in {'small', 'standard', 'large'}
+   * @constructor
+   */
+  constructor(container, size) {
+    super();
+    this.container_ = container;
+    this.value_ = null;
+    if (size === 'small') {
+      this.size_ = Blueprint.Core.SpinnerSize.SMALL;
+    } else if (size === 'large') {
+      this.size_ = Blueprint.Core.SpinnerSize.LARGE;
+    } else {
+      this.size_ = Blueprint.Core.SpinnerSize.STANDARD;
+    }
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  /**
+   * Represents how far along an operation is.
+   *
+   * @param {number} value a value between 0 and 1 (inclusive) representing how far along an operation is.
+   * @name advance
+   * @function
+   * @public
+   */
+  advance(value) {
+    this.value_ = value;
+    this._render();
+  }
+
+  _render() {
+    ReactDOM.render(this._newSpinner(), this.container_);
+  }
+
+  _newSpinner() {
+    return React.createElement(Blueprint.Core.Spinner, {
+      value: this.value_,
+      size: this.size_,
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs switch element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalSwitch}
+ */
+blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {boolean} checked true iif the control should initially be checked, false otherwise (optional).
+   * @param {string} label the switch label (optional).
+   * @param {string} labelPosition the switch label position (in {left, right}) in respect to the element (optional).
+   * @param {string} labelChecked the text to display inside the switch indicator when checked (optional).
+   * @param {string} labelUnchecked the text to display inside the switch indicator when unchecked (optional).
+   * @constructor
+   */
+  constructor(container, checked, label, labelPosition, labelChecked,
+      labelUnchecked) {
+    super();
+    this.container_ = container;
+    this.checked_ = checked;
+    this.label_ = label;
+    this.switchPosition_ = labelPosition === 'left'
+        ? Blueprint.Core.Alignment.RIGHT : Blueprint.Core.Alignment.LEFT;
+    this.labelChecked_ = labelChecked;
+    this.labelUnchecked_ = labelUnchecked;
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this._render();
+  }
+
+  get checked() {
+    return this.checked_;
+  }
+
+  set checked(value) {
+    this.checked_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(boolean): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected option is ' + (value ? 'checked' : 'unchecked'));
+      if (callback) {
+        callback(value ? 'checked' : 'unchecked');
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newSwitch(), this.container_);
+  }
+
+  _newSwitch() {
+    return React.createElement(Blueprint.Core.Switch, {
+      disabled: this.disabled_,
+      checked: this.checked_,
+      label: this.label_,
+      alignIndicator: this.switchPosition_,
+      innerLabel: this.labelUnchecked_,
+      innerLabelChecked: this.labelChecked_,
+      onChange: () => {
+        this.checked = !this.checked;
+        this.observers_.notify('selection-change', this.checked);
+      },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs toast element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalToast}
+ */
+blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @param {string} message the message to display.
+   * @param {string} intent the message intent in {none, primary, success, warning, danger} (optional).
+   * @param {number} timeout the number of milliseconds to wait before automatically dismissing the toast (optional).
+   * @constructor
+   */
+  constructor(container, message, intent, timeout) {
+    super();
+    this.container_ = container;
+    this.timeout_ = timeout;
+    this.message_ = message;
+    if (intent === 'primary') {
+      this.intent_ = Blueprint.Core.Intent.PRIMARY;
+      this.icon_ = null;
+    } else if (intent === 'success') {
+      this.intent_ = Blueprint.Core.Intent.SUCCESS;
+      this.icon_ = 'tick';
+    } else if (intent === 'warning') {
+      this.intent_ = Blueprint.Core.Intent.WARNING;
+      this.icon_ = 'warning-sign';
+    } else if (intent === 'danger') {
+      this.intent_ = Blueprint.Core.Intent.DANGER;
+      this.icon_ = 'warning-sign';
+    } else {
+      this.intent_ = Blueprint.Core.Intent.NONE;
+      this.icon_ = null;
+    }
+    this.observers_ = new observers.Subject();
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  /**
+   * Listen to the `dismiss` event.
+   *
+   * @param {function(void): void} callback the callback to call when the event is triggered.
+   * @name onDismiss
+   * @function
+   * @public
+   */
+  onDismiss(callback) {
+    this.observers_.register('dismiss', (self) => {
+      // console.log('Toast dismissed!');
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newToast(), this.container_);
+  }
+
+  _newToast() {
+    return React.createElement(Blueprint.Core.Toast, {
+      intent: this.intent_,
+      icon: this.icon_,
+      message: React.createElement('div', {}, this.message_),
+      timeout: this.timeout_,
+      onDismiss: () => this.observers_.notify('dismiss', this),
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs toaster element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalToaster}
+ */
+blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @constructor
+   */
+  constructor(container) {
+    super();
+    this.container_ = container;
+    this.toasts_ = [];
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  /**
+   * Create and display a new toast.
+   *
+   * @param {string} message the message to display.
+   * @param {string} intent the message intent in {none, primary, success, warning, danger} (optional).
+   * @param {number} timeout the number of milliseconds to wait before automatically dismissing the toast (optional).
+   * @name toast
+   * @function
+   * @public
+   */
+  toast(message, intent, timeout) {
+    const toast = new blueprintjs.MinimalToast(this.container_, message, intent,
+        timeout);
+    toast.el_ = toast._newToast();
+    toast.onDismiss(() => {
+      this.toasts_ = this.toasts_.filter(t => t !== toast);
+      this._render();
+    });
+    this.toasts_.push(toast);
+    this._render();
+  }
+
+  _render() {
+    ReactDOM.render(this._newToaster(), this.container_);
+  }
+
+  _newToaster() {
+    return React.createElement(Blueprint.Core.Toaster, {
+      children: this.toasts_.map(toast => toast.el_),
+      position: Blueprint.Core.Position.TOP,
     });
   }
 }
