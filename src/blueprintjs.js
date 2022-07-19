@@ -837,3 +837,135 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
     });
   }
 }
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs tabs element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalTabs}
+ */
+blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the element where the table will be inserted.
+   * @constructor
+   */
+  constructor(container) {
+    super();
+    this.container_ = container;
+    this.observers_ = new observers.Subject();
+    this.tabs_ = [];
+    this._render();
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific styles to the DOM.
+   *
+   * @param {Element} el the element where the styles will be injected.
+   * @return {Promise<void>}
+   * @name injectStyles
+   * @function
+   * @public
+   */
+  static injectStyles(el) {
+    return blueprintjs.Blueprintjs.injectStyles(el);
+  }
+
+  /**
+   * Injects Blueprintjs drawer-specific scripts to the DOM.
+   *
+   * @param {Element} el the element where the scripts will be injected.
+   * @return {Promise<void>}
+   * @name injectScripts
+   * @function
+   * @public
+   */
+  static injectScripts(el) {
+    return blueprintjs.Blueprintjs.injectScripts(el);
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  /**
+   * Add a single tab to the nav bar.
+   *
+   * @param {string} name the tab name.
+   * @param {HTMLElement} panel the tap content.
+   */
+  addTab(name, panel) {
+    this.tabs_.push({
+      name: name,
+      panel: panel,
+      disabled: false,
+      is_selected: false,
+      ref: React.createRef(),
+    });
+    this._render();
+  }
+
+  /**
+   * Remove a single tab from the nav bar.
+   *
+   * @param {string} name the tab name.
+   */
+  removeTab(name) {
+    this.tabs_ = this.tabs_.filter(tab => tab.name !== name);
+    this._render();
+  }
+
+  /**
+   * Select the tab to display.
+   *
+   * @param {string} name the tab name.
+   */
+  selectTab(name) {
+    let selectedTab = null;
+    this.tabs_.forEach(tab => {
+      if (tab.name !== name) {
+        tab.is_selected = false;
+      } else {
+        tab.is_selected = true;
+        selectedTab = tab;
+      }
+    });
+    if (selectedTab) {
+      selectedTab.ref.current.appendChild(selectedTab.panel);
+    }
+    this._render();
+  }
+
+  _render() {
+    ReactDOM.render(this._newTabs(), this.container_);
+  }
+
+  _newTab(tab) {
+    return React.createElement(Blueprint.Core.Tab, {
+      id: tab.name,
+      title: tab.name,
+      panel: React.createElement('div', {
+        ref: tab.ref,
+      }),
+      disabled: tab.disabled,
+    });
+  }
+
+  _newTabs() {
+    const selectedTab = this.tabs_.find(tab => tab.is_selected);
+    return React.createElement(Blueprint.Core.Tabs, {
+      id: 'tabs',
+      children: this.tabs_.map(tab => this._newTab(tab)),
+      selectedTabId: selectedTab ? selectedTab.name : null,
+      onChange: (newTabId, oldTabId) => this.selectTab(newTabId),
+    });
+  }
+}
