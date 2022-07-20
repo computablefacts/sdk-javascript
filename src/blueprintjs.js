@@ -741,7 +741,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
   /**
    * Listen to the `opening` event.
    *
-   * @param {function(HTMLElement): void} callback the callback to call when the event is triggered.
+   * @param {function(Element): void} callback the callback to call when the event is triggered.
    * @name onSelectionChange
    * @function
    * @public
@@ -757,7 +757,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
   /**
    * Listen to the `closing` event.
    *
-   * @param {function(HTMLElement): void} callback the callback to call when the event is triggered.
+   * @param {function(Element): void} callback the callback to call when the event is triggered.
    * @name onSelectionChange
    * @function
    * @public
@@ -821,7 +821,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    * Add a single tab to the nav bar.
    *
    * @param {string} name the tab name.
-   * @param {HTMLElement} panel the tab content.
+   * @param {Element} panel the tab content.
    * @name addTab
    * @function
    * @public
@@ -1223,7 +1223,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
 
   /**
    * @param {Element} container the parent element.
-   * @param {HTMLElement} body the card body.
+   * @param {Element} body the card body.
    * @constructor
    */
   constructor(container, body) {
