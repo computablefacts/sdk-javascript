@@ -88,7 +88,7 @@ blueprintjs.Blueprintjs = class {
 blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {function(number, number, *): ReactElement} cellRenderer a function in charge of rendering a single cell (optional).
    * @constructor
    */
@@ -388,7 +388,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
    * @constructor
@@ -620,7 +620,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {number} min the minimum value.
    * @param {number} max the maximum value.
    * @param {number} increment the internal increment.
@@ -637,32 +637,6 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
     this.value_ = min;
     this.observers_ = new observers.Subject();
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs slider-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs slider-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -731,7 +705,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {string} width the drawer width in pixels or percents (optional).
    * @constructor
    */
@@ -742,32 +716,6 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
     this.show_ = false;
     this.width_ = width ? width : '75%';
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -848,7 +796,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @constructor
    */
   constructor(container) {
@@ -856,32 +804,6 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     this.container_ = container;
     this.tabs_ = [];
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -988,7 +910,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {string} size the spinner size in {'small', 'standard', 'large'}
    * @constructor
    */
@@ -1004,32 +926,6 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
       this.size_ = Blueprint.Core.SpinnerSize.STANDARD;
     }
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -1078,7 +974,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {boolean} checked true iif the control should initially be checked, false otherwise (optional).
    * @param {string} label the switch label (optional).
    * @param {string} labelPosition the switch label position (in {left, right}) in respect to the element (optional).
@@ -1099,32 +995,6 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
     this.observers_ = new observers.Subject();
     this.disabled_ = false;
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -1203,7 +1073,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @param {string} message the message to display.
    * @param {string} intent the message intent in {none, primary, success, warning, danger} (optional).
    * @param {number} timeout the number of milliseconds to wait before automatically dismissing the toast (optional).
@@ -1232,32 +1102,6 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
     }
     this.observers_ = new observers.Subject();
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -1313,7 +1157,7 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
 blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
 
   /**
-   * @param {Element} container the element where the table will be inserted.
+   * @param {Element} container the parent element.
    * @constructor
    */
   constructor(container) {
@@ -1321,32 +1165,6 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
     this.container_ = container;
     this.toasts_ = [];
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.Blueprintjs.injectStyles(el);
-  }
-
-  /**
-   * Injects Blueprintjs drawer-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.Blueprintjs.injectScripts(el);
   }
 
   /**
@@ -1390,6 +1208,94 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
     return React.createElement(Blueprint.Core.Toaster, {
       children: this.toasts_.map(toast => toast.el_),
       position: Blueprint.Core.Position.TOP,
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs card element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalCard}
+ */
+blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {HTMLElement} body the card body.
+   * @constructor
+   */
+  constructor(container, body) {
+    super();
+    this.container_ = container;
+    this.elevation_ = 0;
+    this.interactive_ = false;
+    this.observers_ = new observers.Subject();
+    this.body_ = React.createElement('div', {
+      ref: React.createRef(),
+    });
+    this._render(); // this.body_ must be rendered first!
+    this.body_.ref.current.appendChild(body);
+    this._render();
+  }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  get elevation() {
+    return this.elevation_;
+  }
+
+  set elevation(value) {
+    this.elevation_ = !value ? 0 : value > 4 ? 4 : value;
+    this._render();
+  }
+
+  get interactive() {
+    return this.interactive_;
+  }
+
+  set interactive(value) {
+    this.interactive_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `click` event.
+   *
+   * @param {function(void): void} callback the callback to call when the event is triggered.
+   * @name onClick
+   * @function
+   * @public
+   */
+  onClick(callback) {
+    this.observers_.register('click', (self) => {
+      // console.log('Card clicked!');
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  _render() {
+    ReactDOM.render(this._newCard(), this.container_);
+  }
+
+  _newCard() {
+    return React.createElement(Blueprint.Core.Card, {
+      children: [this.body_],
+      elevation: this.elevation_,
+      interactive: this.interactive_,
+      onClick: () => this.observers_.notify('click', this),
     });
   }
 }
