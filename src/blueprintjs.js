@@ -17,9 +17,11 @@ export const blueprintjs = {};
 blueprintjs.Blueprintjs = class {
 
   /**
+   * @param {Element} container the parent element.
    * @constructor
    */
-  constructor() {
+  constructor(container) {
+    this.container_ = container;
   }
 
   /**
@@ -76,6 +78,43 @@ blueprintjs.Blueprintjs = class {
       'https://unpkg.com/@blueprintjs/popover2@^1.4.2',
     ];
   }
+
+  /**
+   * In order to avoid a memory leak, properly remove the element from the DOM.
+   *
+   * @name destroy
+   * @function
+   * @public
+   */
+  destroy() {
+    ReactDOM.unmountComponentAtNode(this.container_);
+  }
+
+  /**
+   * Renders the component.
+   *
+   * @name _render
+   * @function
+   * @protected
+   */
+  _render() {
+    const element = this._newElement();
+    if (element) {
+      ReactDOM.render(element, this.container_);
+    }
+  }
+
+  /**
+   * Initializes the component.
+   *
+   * @return {ReactElement|null}
+   * @name _newElement
+   * @function
+   * @protected
+   */
+  _newElement() {
+    return null;
+  }
 }
 
 /**
@@ -93,8 +132,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, cellRenderer) {
-    super();
-    this.container_ = container;
+    super(container);
     this.cellRenderer_ = cellRenderer;
     this.observers_ = new observers.Subject();
     this.columns_ = [];
@@ -136,17 +174,6 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
             () => helpers.injectScript(el,
                 'https://unpkg.com/@blueprintjs/table@^4.0.0')).then(
             () => blueprintjs.tableScriptsInjected = true);
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get columns() {
@@ -236,6 +263,13 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
         for (let i = 0; i < regions.length; i++) {
 
+          if (!regions[i].hasOwnProperty('rows')) {
+            continue; // ignore the region if a whole column has been selected
+          }
+          if (!regions[i].hasOwnProperty('cols')) {
+            continue; // ignore the region if a whole row has been selected
+          }
+
           const rows = regions[i].rows;
           const columns = regions[i].cols;
 
@@ -248,10 +282,6 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
         callback(cells);
       }
     });
-  }
-
-  _render() {
-    ReactDOM.render(this._newTable(), this.container_);
   }
 
   _newCell(self, rowIdx, colIdx) {
@@ -300,7 +330,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _newTable() {
+  _newElement() {
     return React.createElement(Blueprint.Table.Table2, {
       numRows: this.rows.length,
       children: this.columns.map(column => this._newColumn(this, column)),
@@ -394,8 +424,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, itemToText, itemToLabel) {
-    super();
-    this.container_ = container;
+    super(container);
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
     this.observers_ = new observers.Subject();
@@ -442,17 +471,6 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
             () => helpers.injectScript(el,
                 'https://unpkg.com/@blueprintjs/select@^4.0.0')).then(
             () => blueprintjs.selectScriptsInjected = true);
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get fillContainer() {
@@ -552,10 +570,6 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newSelect(), this.container_);
-  }
-
   _newButton() {
     return React.createElement(Blueprint.Core.Button, {
       text: this.selectedItem ? this.itemToText_ ? this.itemToText_(
@@ -567,7 +581,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _newSelect() {
+  _newElement() {
     return React.createElement(Blueprint.Select.Select2, {
       fill: this.fillContainer,
       disabled: this.disabled,
@@ -628,8 +642,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, min, max, increment, displayIncrement) {
-    super();
-    this.container_ = container;
+    super(container);
     this.min_ = min;
     this.max_ = max;
     this.increment_ = increment;
@@ -637,17 +650,6 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
     this.value_ = min;
     this.observers_ = new observers.Subject();
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get value() {
@@ -676,11 +678,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newSlider(), this.container_);
-  }
-
-  _newSlider() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Slider, {
       min: this.min_,
       max: this.max_,
@@ -710,23 +708,11 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, width) {
-    super();
-    this.container_ = container;
+    super(container);
     this.observers_ = new observers.Subject();
     this.show_ = false;
     this.width_ = width ? width : '75%';
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get show() {
@@ -770,11 +756,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newDrawer(), this.container_);
-  }
-
-  _newDrawer() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Drawer, {
       isOpen: this.show,
       size: this.width_,
@@ -800,21 +782,9 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container) {
-    super();
-    this.container_ = container;
+    super(container);
     this.tabs_ = [];
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   /**
@@ -874,10 +844,6 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     this._render();
   }
 
-  _render() {
-    ReactDOM.render(this._newTabs(), this.container_);
-  }
-
   _newTab(tab) {
     return React.createElement(Blueprint.Core.Tab, {
       id: tab.name,
@@ -889,7 +855,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _newTabs() {
+  _newElement() {
     const selectedTab = this.tabs_.find(tab => tab.is_selected);
     return React.createElement(Blueprint.Core.Tabs, {
       id: 'tabs',
@@ -915,8 +881,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, size) {
-    super();
-    this.container_ = container;
+    super(container);
     this.value_ = null;
     if (size === 'small') {
       this.size_ = Blueprint.Core.SpinnerSize.SMALL;
@@ -926,17 +891,6 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
       this.size_ = Blueprint.Core.SpinnerSize.STANDARD;
     }
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   /**
@@ -952,11 +906,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
     this._render();
   }
 
-  _render() {
-    ReactDOM.render(this._newSpinner(), this.container_);
-  }
-
-  _newSpinner() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Spinner, {
       value: this.value_,
       size: this.size_,
@@ -984,8 +934,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
    */
   constructor(container, checked, label, labelPosition, labelChecked,
       labelUnchecked) {
-    super();
-    this.container_ = container;
+    super(container);
     this.checked_ = checked;
     this.label_ = label;
     this.switchPosition_ = labelPosition === 'left'
@@ -995,17 +944,6 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
     this.observers_ = new observers.Subject();
     this.disabled_ = false;
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get disabled() {
@@ -1043,11 +981,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newSwitch(), this.container_);
-  }
-
-  _newSwitch() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Switch, {
       disabled: this.disabled_,
       checked: this.checked_,
@@ -1080,8 +1014,7 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, message, intent, timeout) {
-    super();
-    this.container_ = container;
+    super(container);
     this.timeout_ = timeout;
     this.message_ = message;
     if (intent === 'primary') {
@@ -1105,17 +1038,6 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
   }
 
   /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
-  }
-
-  /**
    * Listen to the `dismiss` event.
    *
    * @param {function(void): void} callback the callback to call when the event is triggered.
@@ -1132,11 +1054,7 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newToast(), this.container_);
-  }
-
-  _newToast() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Toast, {
       intent: this.intent_,
       icon: this.icon_,
@@ -1161,21 +1079,9 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container) {
-    super();
-    this.container_ = container;
+    super(container);
     this.toasts_ = [];
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   /**
@@ -1191,7 +1097,7 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
   toast(message, intent, timeout) {
     const toast = new blueprintjs.MinimalToast(this.container_, message, intent,
         timeout);
-    toast.el_ = toast._newToast();
+    toast.el_ = toast._newElement();
     toast.onDismiss(() => {
       this.toasts_ = this.toasts_.filter(t => t !== toast);
       this._render();
@@ -1200,11 +1106,7 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
     this._render();
   }
 
-  _render() {
-    ReactDOM.render(this._newToaster(), this.container_);
-  }
-
-  _newToaster() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Toaster, {
       children: this.toasts_.map(toast => toast.el_),
       position: Blueprint.Core.Position.TOP,
@@ -1227,8 +1129,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
    * @constructor
    */
   constructor(container, body) {
-    super();
-    this.container_ = container;
+    super(container);
     this.elevation_ = 0;
     this.interactive_ = false;
     this.observers_ = new observers.Subject();
@@ -1238,17 +1139,6 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
     this._render(); // this.body_ must be rendered first!
     this.body_.ref.current.appendChild(body);
     this._render();
-  }
-
-  /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
-   *
-   * @name destroy
-   * @function
-   * @public
-   */
-  destroy() {
-    ReactDOM.unmountComponentAtNode(this.container_);
   }
 
   get elevation() {
@@ -1286,11 +1176,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
     });
   }
 
-  _render() {
-    ReactDOM.render(this._newCard(), this.container_);
-  }
-
-  _newCard() {
+  _newElement() {
     return React.createElement(Blueprint.Core.Card, {
       children: [this.body_],
       elevation: this.elevation_,
