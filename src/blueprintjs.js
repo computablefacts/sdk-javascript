@@ -57,25 +57,25 @@ blueprintjs.Blueprintjs = class {
   static _styles() {
     return [
       'https://unpkg.com/normalize.css@^8.0.1',
-      'https://unpkg.com/@blueprintjs/icons@^4.0.0/lib/css/blueprint-icons.css',
-      'https://unpkg.com/@blueprintjs/core@^4.0.0/lib/css/blueprint.css',
-      'https://unpkg.com/@blueprintjs/popover2@^1.4.2/lib/css/blueprint-popover2.css',
+      'https://unpkg.com/@blueprintjs/icons@4.0.0/lib/css/blueprint-icons.css',
+      'https://unpkg.com/@blueprintjs/core@4.6.1/lib/css/blueprint.css',
+      'https://unpkg.com/@blueprintjs/popover2@1.4.3/lib/css/blueprint-popover2.css',
     ];
   }
 
   static _scripts() {
     return [
-      'https://unpkg.com/classnames@^2.2',
-      'https://unpkg.com/dom4@^2.1',
-      'https://unpkg.com/tslib@~2.3.1',
-      'https://unpkg.com/react@^16.14.0/umd/react.production.min.js',
-      'https://unpkg.com/react-dom@^16.14.0/umd/react-dom.production.min.js',
-      'https://unpkg.com/react-transition-group@^4.4.1/dist/react-transition-group.min.js',
-      'https://unpkg.com/@popperjs/core@^2.5.4/dist/umd/popper.js',
-      'https://unpkg.com/react-popper@^2.2.4/dist/index.umd.min.js',
-      'https://unpkg.com/@blueprintjs/icons@^4.0.0',
-      'https://unpkg.com/@blueprintjs/core@^4.0.0',
-      'https://unpkg.com/@blueprintjs/popover2@^1.4.2',
+      'https://unpkg.com/classnames@2.3.1',
+      'https://unpkg.com/dom4@2.1.6',
+      'https://unpkg.com/tslib@2.3.1',
+      'https://unpkg.com/react@16.14.0/umd/react.production.min.js',
+      'https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js',
+      'https://unpkg.com/react-transition-group@4.4.2/dist/react-transition-group.min.js',
+      'https://unpkg.com/@popperjs/core@2.11.5/dist/umd/popper.min.js',
+      'https://unpkg.com/react-popper@2.3.0/dist/index.umd.min.js',
+      'https://unpkg.com/@blueprintjs/icons@4.4.0',
+      'https://unpkg.com/@blueprintjs/core@4.6.1',
+      'https://unpkg.com/@blueprintjs/popover2@1.4.3',
     ];
   }
 
@@ -172,7 +172,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     return blueprintjs.tableScriptsInjected ? Promise.resolve()
         : blueprintjs.Blueprintjs.injectScripts(el).then(
             () => helpers.injectScript(el,
-                'https://unpkg.com/@blueprintjs/table@^4.0.0')).then(
+                'https://unpkg.com/@blueprintjs/table@4.4.0')).then(
             () => blueprintjs.tableScriptsInjected = true);
   }
 
@@ -452,7 +452,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     return blueprintjs.selectStylesInjected ? Promise.resolve()
         : blueprintjs.Blueprintjs.injectStyles(el).then(
             () => helpers.injectStyle(el,
-                'https://unpkg.com/@blueprintjs/select@^4.0.0/lib/css/blueprint-select.css')).then(
+                'https://unpkg.com/@blueprintjs/select@4.5.0/lib/css/blueprint-select.css')).then(
             () => blueprintjs.selectStylesInjected = true);
   }
 
@@ -469,7 +469,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     return blueprintjs.selectScriptsInjected ? Promise.resolve()
         : blueprintjs.Blueprintjs.injectScripts(el).then(
             () => helpers.injectScript(el,
-                'https://unpkg.com/@blueprintjs/select@^4.0.0')).then(
+                'https://unpkg.com/@blueprintjs/select@4.5.0')).then(
             () => blueprintjs.selectScriptsInjected = true);
   }
 
@@ -728,7 +728,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
    * Listen to the `opening` event.
    *
    * @param {function(Element): void} callback the callback to call when the event is triggered.
-   * @name onSelectionChange
+   * @name onOpen
    * @function
    * @public
    */
@@ -741,10 +741,26 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
   }
 
   /**
+   * Listen to the `opened` event.
+   *
+   * @param {function(Element): void} callback the callback to call when the event is triggered.
+   * @name onOpened
+   * @function
+   * @public
+   */
+  onOpened(callback) {
+    this.observers_.register('opened', (el) => {
+      if (callback) {
+        callback(el);
+      }
+    });
+  }
+
+  /**
    * Listen to the `closing` event.
    *
    * @param {function(Element): void} callback the callback to call when the event is triggered.
-   * @name onSelectionChange
+   * @name onClose
    * @function
    * @public
    */
@@ -761,8 +777,9 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
       isOpen: this.show,
       size: this.width_,
       position: Blueprint.Core.Position.RIGHT,
-      onClose: () => this.show = false,
       onOpening: (el) => this.observers_.notify('opening', el),
+      onOpened: (el) => this.observers_.notify('opened', el),
+      onClose: () => this.show = false,
       onClosed: (el) => this.observers_.notify('closing', el),
     });
   }
