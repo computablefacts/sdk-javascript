@@ -136,6 +136,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     this.cellRenderer_ = cellRenderer;
     this.observers_ = new observers.Subject();
     this.columns_ = [];
+    this.columnWidths_ = [];
     this.columnTypes_ = [];
     this.rows_ = [];
     this.loadingOptions_ = [];
@@ -191,6 +192,15 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set columnTypes(values) {
     this.columnTypes_ = values;
+    this._render();
+  }
+
+  get columnWidths() {
+    return this.columnWidths_;
+  }
+
+  set columnWidths(values) {
+    this.columnWidths_ = values;
     this._render();
   }
 
@@ -336,6 +346,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
       children: this.columns.map(column => this._newColumn(this, column)),
       enableColumnReordering: true,
       loadingOptions: this.loadingOptions,
+      columnWidths: this.columnWidths.length <= 0 ? null : this.columnWidths,
       onSelection: (regions) => {
         this.observers_.notify('selection-change', regions);
       },
