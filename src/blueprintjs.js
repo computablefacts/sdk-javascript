@@ -800,6 +800,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    */
   constructor(container) {
     super(container);
+    this.observers_ = new observers.Subject();
     this.tabs_ = [];
     this._render();
   }
@@ -861,6 +862,23 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     this._render();
   }
 
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (oldTabId, newTabId) => {
+      // console.log('Selected tab is ' + newTabId);
+      if (callback) {
+        callback(oldTabId, newTabId);
+      }
+    });
+  }
+
   _newTab(tab) {
     return React.createElement(Blueprint.Core.Tab, {
       id: tab.name,
@@ -878,7 +896,10 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
       id: 'tabs',
       children: this.tabs_.map(tab => this._newTab(tab)),
       selectedTabId: selectedTab ? selectedTab.name : null,
-      onChange: (newTabId, oldTabId) => this.selectTab(newTabId),
+      onChange: (newTabId, oldTabId) => {
+        this.selectTab(newTabId);
+        this.observers_.notify('selection-change', oldTabId, newTabId);
+      },
     });
   }
 }
