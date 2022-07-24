@@ -1234,3 +1234,167 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
     });
   }
 }
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs icon element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalIcon}
+ */
+blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} icon the icon name.
+   * @param {string} intent the icon intent in {none, primary, success, warning, danger} (optional).
+   * @constructor
+   */
+  constructor(container, icon, intent) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.icon_ = icon;
+    this.size_ = 20;
+    if (intent === 'primary') {
+      this.intent_ = Blueprint.Core.Intent.PRIMARY;
+    } else if (intent === 'success') {
+      this.intent_ = Blueprint.Core.Intent.SUCCESS;
+    } else if (intent === 'warning') {
+      this.intent_ = Blueprint.Core.Intent.WARNING;
+    } else if (intent === 'danger') {
+      this.intent_ = Blueprint.Core.Intent.DANGER;
+    } else {
+      this.intent_ = Blueprint.Core.Intent.NONE;
+    }
+    this._render();
+  }
+
+  get icon() {
+    return this.icon_;
+  }
+
+  set icon(value) {
+    this.icon_ = value;
+    this._render();
+  }
+
+  get size() {
+    return this.size_;
+  }
+
+  set size(value) {
+    this.size_ = value;
+    this._render();
+  }
+
+  get intent() {
+    return this.intent_;
+  }
+
+  set intent(value) {
+    this.intent_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `click` event.
+   *
+   * @param {function(void): void} callback the callback to call when the event is triggered.
+   * @name onClick
+   * @function
+   * @public
+   */
+  onClick(callback) {
+    this.observers_.register('click', (self) => {
+      console.log('Icon clicked!');
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(Blueprint.Core.Icon, {
+      icon: this.icon_,
+      size: this.size_,
+      intent: this.intent_,
+      onClick: () => this.observers_.notify('click', this),
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs checkbox element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalCheckbox}
+ */
+blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {boolean} checked true iif the control should initially be checked, false otherwise (optional).
+   * @param {string} label the switch label (optional).
+   * @param {string} labelPosition the switch label position (in {left, right}) in respect to the element (optional).
+   * @constructor
+   */
+  constructor(container, checked, label, labelPosition) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.checked_ = checked;
+    this.label_ = label;
+    this.boxPosition_ = labelPosition === 'left'
+        ? Blueprint.Core.Alignment.RIGHT : Blueprint.Core.Alignment.LEFT;
+    this.disabled_ = false;
+    this._render();
+  }
+
+  get checked() {
+    return this.checked_;
+  }
+
+  set checked(value) {
+    this.checked_ = value;
+    this._render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(string): void} callback the callback to call when the event is triggered.
+   * @name onClick
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected option is ' + (value ? 'checked' : 'unchecked'));
+      if (callback) {
+        callback(value ? 'checked' : 'unchecked');
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(Blueprint.Core.Checkbox, {
+      checked: this.checked_,
+      disabled: this.disabled_,
+      label: this.label_,
+      alignIndicator: this.boxPosition_,
+      onChange: () => {
+        this.checked = !this.checked;
+        this.observers_.notify('selection-change', this.checked);
+      },
+    });
+  }
+}
