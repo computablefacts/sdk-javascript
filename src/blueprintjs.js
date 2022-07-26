@@ -660,6 +660,16 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
     this.displayIncrement_ = displayIncrement;
     this.value_ = min;
     this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this._render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
     this._render();
   }
 
@@ -696,6 +706,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
       stepSize: this.increment_,
       labelStepSize: this.displayIncrement_,
       value: this.value,
+      disabled: this.disabled,
       onChange: (value) => {
         this.value = value;
         this.observers_.notify('selection-change', value);
