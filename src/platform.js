@@ -176,7 +176,7 @@ platform.HttpClient = function () {
    * @return {Promise<Object>} the user permissions and authorizations.
    */
   this.whoAmI = function () {
-    return fetch(`${baseUrl_}/api/v2/users/whoami`, {
+    return fetch(`${baseUrl_}/api/v2/public/whoami`, {
       headers: {
         Authorization: `Bearer ${token_}`
       }
