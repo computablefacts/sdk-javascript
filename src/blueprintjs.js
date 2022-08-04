@@ -1,7 +1,39 @@
 'use strict'
 
 import {observers} from "./observers";
-import {helpers} from "./helpers";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {
+  Alignment,
+  Button,
+  Card,
+  Checkbox,
+  Drawer,
+  Icon,
+  Intent,
+  Menu,
+  MenuItem,
+  Position,
+  Slider,
+  Spinner,
+  SpinnerSize,
+  Switch,
+  Tab,
+  Tabs,
+  Toast,
+  Toaster
+} from '@blueprintjs/core';
+import {
+  Cell,
+  Column,
+  ColumnHeaderCell,
+  Table2,
+  TableLoadingOption
+} from '@blueprintjs/table';
+import {Select2} from '@blueprintjs/select';
+import {TimePrecision} from '@blueprintjs/datetime';
+import {DateInput2, DateRangeInput2} from '@blueprintjs/datetime2';
+import {add, format, parse, sub} from "date-fns";
 
 /**
  * @module blueprintjs
@@ -22,61 +54,6 @@ blueprintjs.Blueprintjs = class {
    */
   constructor(container) {
     this.container_ = container;
-  }
-
-  /**
-   * Injects Blueprintjs base styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.baseStylesInjected ? Promise.resolve()
-        : helpers.injectStyles(el, blueprintjs.Blueprintjs._styles()).then(
-            () => blueprintjs.baseStylesInjected = true);
-  }
-
-  /**
-   * Injects Blueprintjs base scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.baseScriptsInjected ? Promise.resolve()
-        : helpers.injectScripts(el, blueprintjs.Blueprintjs._scripts()).then(
-            () => blueprintjs.baseScriptsInjected = true);
-  }
-
-  static _styles() {
-    return [
-      'https://unpkg.com/normalize.css@^8.0.1',
-      'https://unpkg.com/@blueprintjs/icons@4.0.0/lib/css/blueprint-icons.css',
-      'https://unpkg.com/@blueprintjs/core@4.6.1/lib/css/blueprint.css',
-      'https://unpkg.com/@blueprintjs/popover2@1.4.3/lib/css/blueprint-popover2.css',
-    ];
-  }
-
-  static _scripts() {
-    return [
-      'https://unpkg.com/classnames@2.3.1',
-      'https://unpkg.com/dom4@2.1.6',
-      'https://unpkg.com/tslib@2.3.1',
-      'https://unpkg.com/react@16.14.0/umd/react.production.min.js',
-      'https://unpkg.com/react-dom@16.14.0/umd/react-dom.production.min.js',
-      'https://unpkg.com/react-transition-group@4.4.2/dist/react-transition-group.min.js',
-      'https://unpkg.com/@popperjs/core@2.11.5/dist/umd/popper.min.js',
-      'https://unpkg.com/react-popper@2.3.0/dist/index.umd.min.js',
-      'https://unpkg.com/@blueprintjs/icons@4.4.0',
-      'https://unpkg.com/@blueprintjs/core@4.6.1',
-      'https://unpkg.com/@blueprintjs/popover2@1.4.3',
-    ];
   }
 
   /**
@@ -141,40 +118,6 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     this.rows_ = [];
     this.loadingOptions_ = [];
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs table-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.tableStylesInjected ? Promise.resolve()
-        : blueprintjs.Blueprintjs.injectStyles(el).then(
-            () => helpers.injectStyle(el,
-                'https://unpkg.com/@blueprintjs/table@^4.0.0/lib/css/table.css')).then(
-            () => blueprintjs.tableStylesInjected = true);
-  }
-
-  /**
-   * Injects Blueprintjs table-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.tableScriptsInjected ? Promise.resolve()
-        : blueprintjs.Blueprintjs.injectScripts(el).then(
-            () => helpers.injectScript(el,
-                'https://unpkg.com/@blueprintjs/table@4.4.0')).then(
-            () => blueprintjs.tableScriptsInjected = true);
   }
 
   get columns() {
@@ -296,7 +239,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   _newCell(self, rowIdx, colIdx) {
     return self.cellRenderer_ ? self.cellRenderer_(rowIdx, colIdx,
-        self.rows[rowIdx][colIdx]) : React.createElement(Blueprint.Table.Cell, {
+        self.rows[rowIdx][colIdx]) : React.createElement(Cell, {
       rowIndex: rowIdx,
       columnIndex: colIdx,
       style: {
@@ -307,25 +250,25 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   _newColumnHeader(self, column) {
-    return React.createElement(Blueprint.Table.ColumnHeaderCell, {
+    return React.createElement(ColumnHeaderCell, {
       name: column,
       menuRenderer: () => {
 
         // Menu item for sorting the column in ascending order
-        const menuItemSortAsc = React.createElement(Blueprint.Core.MenuItem, {
+        const menuItemSortAsc = React.createElement(MenuItem, {
           icon: 'sort-asc',
           text: 'Sort Asc',
           onClick: () => self.observers_.notify('sort', column, 'ASC'),
         });
 
         // Menu item for sorting the column in descending order
-        const menuItemSortDesc = React.createElement(Blueprint.Core.MenuItem, {
+        const menuItemSortDesc = React.createElement(MenuItem, {
           icon: 'sort-desc',
           text: 'Sort Desc',
           onClick: () => self.observers_.notify('sort', column, 'DESC'),
         });
 
-        return React.createElement(Blueprint.Core.Menu, {
+        return React.createElement(Menu, {
           children: [menuItemSortAsc, menuItemSortDesc]
         });
       }
@@ -333,7 +276,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   _newColumn(self, column) {
-    return React.createElement(Blueprint.Table.Column, {
+    return React.createElement(Column, {
       name: column,
       cellRenderer: (rowIdx, colIdx) => self._newCell(self, rowIdx, colIdx),
       columnHeaderCellRenderer: () => self._newColumnHeader(self, column),
@@ -341,7 +284,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Table.Table2, {
+    return React.createElement(Table2, {
       numRows: this.rows.length,
       children: this.columns.map(column => this._newColumn(this, column)),
       enableColumnReordering: true,
@@ -357,7 +300,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
       },
       onColumnsReordered: (oldIndex, newIndex, length) => {
 
-        this.loadingOptions = [Blueprint.Table.TableLoadingOption.CELLS];
+        this.loadingOptions = [TableLoadingOption.CELLS];
 
         // First, reorder the rows header
         const oldColumnsOrder = this.columns;
@@ -448,40 +391,6 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     this.defaultText_ = 'Sélectionnez un élément...';
     this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
     this._render();
-  }
-
-  /**
-   * Injects Blueprintjs select-specific styles to the DOM.
-   *
-   * @param {Element} el the element where the styles will be injected.
-   * @return {Promise<void>}
-   * @name injectStyles
-   * @function
-   * @public
-   */
-  static injectStyles(el) {
-    return blueprintjs.selectStylesInjected ? Promise.resolve()
-        : blueprintjs.Blueprintjs.injectStyles(el).then(
-            () => helpers.injectStyle(el,
-                'https://unpkg.com/@blueprintjs/select@4.5.0/lib/css/blueprint-select.css')).then(
-            () => blueprintjs.selectStylesInjected = true);
-  }
-
-  /**
-   * Injects Blueprintjs select-specific scripts to the DOM.
-   *
-   * @param {Element} el the element where the scripts will be injected.
-   * @return {Promise<void>}
-   * @name injectScripts
-   * @function
-   * @public
-   */
-  static injectScripts(el) {
-    return blueprintjs.selectScriptsInjected ? Promise.resolve()
-        : blueprintjs.Blueprintjs.injectScripts(el).then(
-            () => helpers.injectScript(el,
-                'https://unpkg.com/@blueprintjs/select@4.5.0')).then(
-            () => blueprintjs.selectScriptsInjected = true);
   }
 
   get fillContainer() {
@@ -582,7 +491,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
   }
 
   _newButton() {
-    return React.createElement(Blueprint.Core.Button, {
+    return React.createElement(Button, {
       text: this.selectedItem ? this.itemToText_ ? this.itemToText_(
           this.selectedItem) : this.selectedItem : this.defaultText,
       alignText: 'left',
@@ -593,7 +502,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Select.Select2, {
+    return React.createElement(Select2, {
       fill: this.fillContainer,
       disabled: this.disabled,
       children: [this._newButton()],
@@ -615,7 +524,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
         if (!props.modifiers.matchesPredicate) {
           return null;
         }
-        return React.createElement(Blueprint.Core.MenuItem, {
+        return React.createElement(MenuItem, {
           key: props.index,
           selected: props.modifiers.active,
           text: this.itemToText_ ? this.itemToText_(item) : item,
@@ -624,7 +533,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
           onClick: props.handleClick,
         });
       },
-      noResults: React.createElement(Blueprint.Core.MenuItem, {
+      noResults: React.createElement(MenuItem, {
         text: this.noResults,
         disabled: true,
       }),
@@ -700,7 +609,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Slider, {
+    return React.createElement(Slider, {
       min: this.min_,
       max: this.max_,
       stepSize: this.increment_,
@@ -795,10 +704,10 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Drawer, {
+    return React.createElement(Drawer, {
       isOpen: this.show,
       size: this.width_,
-      position: Blueprint.Core.Position.RIGHT,
+      position: Position.RIGHT,
       onOpening: (el) => this.observers_.notify('opening', el),
       onOpened: (el) => this.observers_.notify('opened', el),
       onClose: () => this.show = false,
@@ -902,7 +811,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
   }
 
   _newTab(tab) {
-    return React.createElement(Blueprint.Core.Tab, {
+    return React.createElement(Tab, {
       id: tab.name,
       title: tab.name,
       panel: React.createElement('div', {
@@ -914,7 +823,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
 
   _newElement() {
     const selectedTab = this.tabs_.find(tab => tab.is_selected);
-    return React.createElement(Blueprint.Core.Tabs, {
+    return React.createElement(Tabs, {
       id: 'tabs',
       children: this.tabs_.map(tab => this._newTab(tab)),
       selectedTabId: selectedTab ? selectedTab.name : null,
@@ -944,11 +853,11 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
     super(container);
     this.value_ = null;
     if (size === 'small') {
-      this.size_ = Blueprint.Core.SpinnerSize.SMALL;
+      this.size_ = SpinnerSize.SMALL;
     } else if (size === 'large') {
-      this.size_ = Blueprint.Core.SpinnerSize.LARGE;
+      this.size_ = SpinnerSize.LARGE;
     } else {
-      this.size_ = Blueprint.Core.SpinnerSize.STANDARD;
+      this.size_ = SpinnerSize.STANDARD;
     }
     this._render();
   }
@@ -967,7 +876,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Spinner, {
+    return React.createElement(Spinner, {
       value: this.value_,
       size: this.size_,
     });
@@ -997,8 +906,8 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
     super(container);
     this.checked_ = checked;
     this.label_ = label;
-    this.switchPosition_ = labelPosition === 'left'
-        ? Blueprint.Core.Alignment.RIGHT : Blueprint.Core.Alignment.LEFT;
+    this.switchPosition_ = labelPosition === 'left' ? Alignment.RIGHT
+        : Alignment.LEFT;
     this.labelChecked_ = labelChecked;
     this.labelUnchecked_ = labelUnchecked;
     this.observers_ = new observers.Subject();
@@ -1042,7 +951,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Switch, {
+    return React.createElement(Switch, {
       disabled: this.disabled_,
       checked: this.checked_,
       label: this.label_,
@@ -1078,19 +987,19 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
     this.timeout_ = timeout;
     this.message_ = message;
     if (intent === 'primary') {
-      this.intent_ = Blueprint.Core.Intent.PRIMARY;
+      this.intent_ = Intent.PRIMARY;
       this.icon_ = null;
     } else if (intent === 'success') {
-      this.intent_ = Blueprint.Core.Intent.SUCCESS;
+      this.intent_ = Intent.SUCCESS;
       this.icon_ = 'tick';
     } else if (intent === 'warning') {
-      this.intent_ = Blueprint.Core.Intent.WARNING;
+      this.intent_ = Intent.WARNING;
       this.icon_ = 'warning-sign';
     } else if (intent === 'danger') {
-      this.intent_ = Blueprint.Core.Intent.DANGER;
+      this.intent_ = Intent.DANGER;
       this.icon_ = 'warning-sign';
     } else {
-      this.intent_ = Blueprint.Core.Intent.NONE;
+      this.intent_ = Intent.NONE;
       this.icon_ = null;
     }
     this.observers_ = new observers.Subject();
@@ -1115,7 +1024,7 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Toast, {
+    return React.createElement(Toast, {
       intent: this.intent_,
       icon: this.icon_,
       message: React.createElement('div', {}, this.message_),
@@ -1167,9 +1076,9 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Toaster, {
+    return React.createElement(Toaster, {
       children: this.toasts_.map(toast => toast.el_),
-      position: Blueprint.Core.Position.TOP,
+      position: Position.TOP,
     });
   }
 }
@@ -1237,7 +1146,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Card, {
+    return React.createElement(Card, {
       children: [this.body_],
       elevation: this.elevation_,
       interactive: this.interactive_,
@@ -1267,15 +1176,15 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
     this.icon_ = icon;
     this.size_ = 20;
     if (intent === 'primary') {
-      this.intent_ = Blueprint.Core.Intent.PRIMARY;
+      this.intent_ = Intent.PRIMARY;
     } else if (intent === 'success') {
-      this.intent_ = Blueprint.Core.Intent.SUCCESS;
+      this.intent_ = Intent.SUCCESS;
     } else if (intent === 'warning') {
-      this.intent_ = Blueprint.Core.Intent.WARNING;
+      this.intent_ = Intent.WARNING;
     } else if (intent === 'danger') {
-      this.intent_ = Blueprint.Core.Intent.DANGER;
+      this.intent_ = Intent.DANGER;
     } else {
-      this.intent_ = Blueprint.Core.Intent.NONE;
+      this.intent_ = Intent.NONE;
     }
     this._render();
   }
@@ -1317,7 +1226,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
    */
   onClick(callback) {
     this.observers_.register('click', (self) => {
-      console.log('Icon clicked!');
+      // console.log('Icon clicked!');
       if (callback) {
         callback();
       }
@@ -1325,7 +1234,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Icon, {
+    return React.createElement(Icon, {
       icon: this.icon_,
       size: this.size_,
       intent: this.intent_,
@@ -1355,8 +1264,8 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
     this.observers_ = new observers.Subject();
     this.checked_ = checked;
     this.label_ = label;
-    this.boxPosition_ = labelPosition === 'left'
-        ? Blueprint.Core.Alignment.RIGHT : Blueprint.Core.Alignment.LEFT;
+    this.boxPosition_ = labelPosition === 'left' ? Alignment.RIGHT
+        : Alignment.LEFT;
     this.disabled_ = false;
     this._render();
   }
@@ -1383,7 +1292,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
    * Listen to the `selection-change` event.
    *
    * @param {function(string): void} callback the callback to call when the event is triggered.
-   * @name onClick
+   * @name onSelectionChange
    * @function
    * @public
    */
@@ -1397,7 +1306,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
   }
 
   _newElement() {
-    return React.createElement(Blueprint.Core.Checkbox, {
+    return React.createElement(Checkbox, {
       checked: this.checked_,
       disabled: this.disabled_,
       label: this.label_,
@@ -1406,6 +1315,332 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
         this.checked = !this.checked;
         this.observers_.notify('selection-change', this.checked);
       },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs date element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalDate}
+ */
+blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} format the date format (optional). Default is 'yyyy-MM-dd'.
+   * @param {Date} minDate the earliest date the user can select (optional).
+   * @param {Date} maxDate the latest date the user can select (optional).
+   * @constructor
+   */
+  constructor(container, format, minDate, maxDate) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.value_ = null;
+    this.disabled_ = false;
+    this.format_ = format ? format : 'yyyy-MM-dd';
+    this.fillContainer_ = true;
+    this.shortcuts_ = false;
+    this.showActionsBar_ = false;
+    this.minDate_ = minDate ? minDate : sub(new Date(), {years: 10});
+    this.maxDate_ = maxDate ? maxDate : add(new Date(), {years: 10});
+    this._render();
+  }
+
+  get date() {
+    return this.value_;
+  }
+
+  set date(value) {
+    this.value_ = value;
+    this._render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this._render();
+  }
+
+  get shortcuts() {
+    return this.shortcuts_;
+  }
+
+  set shortcuts(value) {
+    this.shortcuts_ = value;
+    this._render();
+  }
+
+  get showActionsBar() {
+    return this.showActionsBar_;
+  }
+
+  set showActionsBar(value) {
+    this.showActionsBar_ = value;
+    this._render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this._render();
+  }
+
+  get minDate() {
+    return this.minDate_;
+  }
+
+  set minDate(value) {
+    this.minDate_ = value;
+    this._render();
+  }
+
+  get maxDate() {
+    return this.maxDate_;
+  }
+
+  set maxDate(value) {
+    this.maxDate_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(string): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected date is ' + value);
+      if (callback) {
+        callback(value);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(DateInput2, {
+      formatDate: (date) => format(date, this.format_),
+      parseDate: (str) => parse(str, this.format_, new Date()),
+      value: this.date,
+      disabled: this.disabled,
+      placeholder: this.format_,
+      fill: this.fillContainer,
+      minDate: this.minDate,
+      maxDate: this.maxDate,
+      shortcuts: this.shortcuts,
+      showActionsBar: this.showActionsBar,
+      showTimezoneSelect: this._showTimezone(),
+      disableTimezoneSelect: this._disableTimezone(),
+      timePrecision: this._timePrecision(),
+      defaultTimezone: this._defaultTimezone(),
+      onChange: (value) => {
+        this.date = value;
+        this.observers_.notify('selection-change', this.date);
+      }
+    });
+  }
+
+  /* Time-specific functions */
+
+  _showTimezone() {
+    return false;
+  }
+
+  _timePrecision() {
+    return null;
+  }
+
+  _defaultTimezone() {
+    return null;
+  }
+
+  _disableTimezone() {
+    return true;
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs datetime element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalDatetime}
+ */
+blueprintjs.MinimalDatetime = class extends blueprintjs.MinimalDate {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} format the date format (optional). Default is 'yyyy-MM-dd HH:mm'.
+   * @param {Date} minDate the earliest date the user can select (optional).
+   * @param {Date} maxDate the latest date the user can select (optional).
+   * @param {string} timePrecision the time precision in {'hours', 'minutes', 'seconds'} (optional). Default is 'minutes'.
+   * @param {string} defaultTimezone the default time zone (optional). Default is 'UTC'.
+   * @constructor
+   */
+  constructor(container, format, minDate, maxDate, timePrecision,
+      defaultTimezone) {
+    super(container, format ? format : 'yyyy-MM-dd HH:mm', minDate, maxDate);
+    this.timePrecision_ = timePrecision === 'hours' ? TimePrecision.HOUR_24
+        : timePrecision === 'seconds' ? TimePrecision.SECOND
+            : TimePrecision.MINUTE;
+    this.defaultTimezone_ = defaultTimezone ? defaultTimezone : 'Etc/UTC';
+    this.disableTimezone_ = false;
+    this._render();
+  }
+
+  get disableTimezone() {
+    return this.disableTimezone_;
+  }
+
+  set disableTimezone(value) {
+    this.disableTimezone_ = value;
+    this._render();
+  }
+
+  _showTimezone() {
+    return true;
+  }
+
+  _timePrecision() {
+    return this.timePrecision_;
+  }
+
+  _defaultTimezone() {
+    return this.defaultTimezone_;
+  }
+
+  _disableTimezone() {
+    return this.disableTimezone;
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs date range element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalDateRange}
+ */
+blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} format the date format (optional). Default is 'yyyy-MM-dd'.
+   * @param {Date} minDate the earliest date the user can select (optional).
+   * @param {Date} maxDate the latest date the user can select (optional).
+   * @constructor
+   */
+  constructor(container, format, minDate, maxDate) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this.shortcuts_ = true;
+    this.dateMin_ = null;
+    this.dateMax_ = null;
+    this.format_ = format ? format : 'yyyy-MM-dd';
+    this.minDate_ = minDate ? minDate : sub(new Date(), {years: 10});
+    this.maxDate_ = maxDate ? maxDate : add(new Date(), {years: 10});
+    this._render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this._render();
+  }
+
+  get shortcuts() {
+    return this.shortcuts_;
+  }
+
+  set shortcuts(value) {
+    this.shortcuts_ = value;
+    this._render();
+  }
+
+  get dateMin() {
+    return this.dateMin_;
+  }
+
+  set dateMin(value) {
+    this.dateMin_ = value;
+    this._render();
+  }
+
+  get dateMax() {
+    return this.dateMax_;
+  }
+
+  set dateMax(value) {
+    this.dateMax_ = value;
+    this._render();
+  }
+
+  get minDate() {
+    return this.minDate_;
+  }
+
+  set minDate(value) {
+    this.minDate_ = value;
+    this._render();
+  }
+
+  get maxDate() {
+    return this.maxDate_;
+  }
+
+  set maxDate(value) {
+    this.maxDate_ = value;
+    this._render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(Date, Date): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (range) => {
+      // console.log('Selected range is ' + range);
+      if (callback) {
+        callback(range[0], range[1]);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(DateRangeInput2, {
+      formatDate: (date) => format(date, this.format_),
+      parseDate: (str) => parse(str, this.format_, new Date()),
+      value: [this.dateMin, this.dateMax],
+      disabled: this.disabled,
+      placeholder: this.format_,
+      shortcuts: this.shortcuts,
+      minDate: this.minDate,
+      maxDate: this.maxDate,
+      onChange: (range) => {
+        this.dateMin = range[0];
+        this.dateMax = range[1];
+        this.observers_.notify('selection-change', range);
+      }
     });
   }
 }

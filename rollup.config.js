@@ -1,7 +1,9 @@
-import {nodeResolve} from "@rollup/plugin-node-resolve";
-import babel from "@rollup/plugin-babel";
-import compiler from '@ampproject/rollup-plugin-closure-compiler';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import {terser} from 'rollup-plugin-terser';
+import babel from '@rollup/plugin-babel';
 import jsdoc from 'rollup-plugin-jsdoc';
+import exclude from "rollup-plugin-exclude-dependencies-from-bundle";
 
 export default [{
   input: 'src/main.js', output: {
@@ -11,17 +13,19 @@ export default [{
     esModule: false,
     exports: 'named',
     sourcemap: true,
-  }, plugins: [nodeResolve(), babel({
-    babelHelpers: "bundled",
+  }, plugins: [exclude({
+    peerDependencies: true, dependencies: false
+  }), resolve(), commonjs(), babel({
+    babelHelpers: 'bundled',
   }), jsdoc({
     config: 'jsdoc.config.json',
-  }), compiler({
-    language_out: 'STABLE', warning_level: 'DEFAULT',
-  })]
+  }), terser()]
 }, {
-  input: 'src/main.js', output: [{
-    dir: "dist/esm", format: "esm", exports: "named", sourcemap: true,
-  }, {
-    dir: "dist/cjs", format: "cjs", exports: "named", sourcemap: true,
-  }]
+  input: 'src/main.js', output: {
+    dir: 'dist/esm', format: 'esm', exports: 'named', sourcemap: true
+  }
+}, {
+  input: 'src/main.js', output: {
+    dir: 'dist/cjs', format: 'cjs', exports: 'named', sourcemap: true
+  }
 }]
