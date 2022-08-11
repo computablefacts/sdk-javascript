@@ -1,4 +1,4 @@
-import resolve from '@rollup/plugin-node-resolve';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
@@ -15,7 +15,7 @@ export default [{
     sourcemap: true,
   }, plugins: [exclude({
     peerDependencies: true, dependencies: false
-  }), resolve(), commonjs(), babel({
+  }), nodeResolve(), commonjs(), babel({
     babelHelpers: 'bundled',
   }), jsdoc({
     config: 'jsdoc.config.json',
