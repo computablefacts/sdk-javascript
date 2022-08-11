@@ -4,6 +4,7 @@ import {helpers} from "./helpers";
 
 /**
  * @module webcomponents
+ * @deprecated
  */
 export const webcomponents = {};
 
