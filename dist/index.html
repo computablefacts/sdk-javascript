@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="https://unpkg.com/normalize.css@8.0.1" rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/icons@4.0.0/lib/css/blueprint-icons.css"
+        rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/core@4.6.1/lib/css/blueprint.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/popover2@1.4.3/lib/css/blueprint-popover2.css"
+        rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/table@4.0.0/lib/css/table.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/select@4.5.0/lib/css/blueprint-select.css"
+        rel="stylesheet"/>
+  <link href="https://unpkg.com/@blueprintjs/datetime@4.0.0/lib/css/blueprint-datetime.css"
+        rel="stylesheet"/>
+</head>
+<body>
+<div id="daterange" style="width:500px"></div>
+<div id="datetime" style="width:250px"></div>
+<div id="date" style="width:200px"></div>
+<div id="checkbox"></div>
+<div id="icon"></div>
+<div id="card"></div>
+<div id="toaster"></div>
+<div id="switch"></div>
+<div id="spinner"></div>
+<div id="tabs"></div>
+<div id="drawer"></div>
+<a href="#" onclick="window.showDrawer()">Show drawer!</a>
+<div id="slider"></div>
+<div id="select-with-filter"></div>
+<div id="select-without-filter"></div>
+<div id="table">
+  Loading...
+  <noscript>JavaScript is required.</noscript>
+</div>
+<script src="https://unpkg.com/react@^16.14.0/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@^16.14.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/react-is@^17.0.2/umd/react-is.production.min.js"></script>
+<script>
+  /*
+   * Fix Blueprintjs issue.
+   *
+   * https://adambien.blog/roller/abien/entry/uncaught_referenceerror_process_is_not
+   */
+  window.process = {
+    env: {
+      NODE_ENV: 'production'
+    }
+  }
+</script>
+<script src="main.min.js"></script>
+<script>
+
+  const env = 'dev';
+  const client = 'ista';
+  const apiKey = '1RKxppgC4eGPa9GWK4uxssYPlYQXfhtzHa9iuzS0bky92zHDovEqZn13AfGu';
+  const baseUrl = `https://${env}.${client}.computablefacts.com`;
+  const url = `https://${env}.${client}.computablefacts.com/api/v2/public/json-rpc?api_token=${apiKey}`;
+
+  function testWhoAmI() {
+    const httpClient = new com.computablefacts.platform.HttpClient();
+    httpClient.init(baseUrl, apiKey);
+    httpClient.whoAmI().then(response => console.log(response));
+  }
+
+  function testTable() {
+
+    const root = document.getElementById('table');
+    root.style.height = window.innerHeight + 'px';
+    root.style.width = (window.innerWidth / 3) + 'px';
+
+    let columnsOrder = [
+      ['NIDEAD', 'ASC'],
+      ['CAGCOM', 'ASC'],
+      ['NESCAL', 'ASC'],
+      ['NUEXPL', 'ASC'],
+      ['CSOCTE', 'ASC'],
+      ['ATYPEP', 'ASC'],
+      ['NBATIM', 'ASC'],
+      ['CAGEXP', 'ASC']
+    ];
+
+    const query = (projection, order, nextRow) => `
+        SELECT ${projection.join(', ')}
+        FROM (SELECT * FROM tmp_babatp)
+        ORDER BY ${order.map(cols => cols.join(' ')).join(', ')} LIMIT ${nextRow}, 100
+    `;
+
+    const tbl = new com.computablefacts.blueprintjs.MinimalTable(root);
+    tbl.columns = [
+      'NIDEAD',
+      'CAGCOM',
+      'NESCAL',
+      'NUEXPL',
+      'CSOCTE',
+      'ATYPEP',
+      'NBATIM',
+      'CAGEXP'
+    ];
+    tbl.columnTypes = [
+      'text',
+      'number',
+      'number',
+      'text',
+      'text',
+      'text',
+      'number',
+      'number'
+    ];
+
+    const httpClient = new com.computablefacts.platform.HttpClient();
+    httpClient.init(baseUrl, apiKey);
+    httpClient.executeSqlQuery({
+      format: "arrays_with_header",
+      sql_query: query(tbl.columns, columnsOrder, 0)
+    }).then(response => response.data).then(array => {
+      array.shift(); // remove header
+      tbl.rows = array;
+    }).catch(err => console.log(err))
+
+    tbl.onSortColumn((column, order) => {
+      tbl.rows = []; // force table rendering (an update on the number of rows trigger a refresh)
+      columnsOrder = [[column, order]];
+      tbl.columns.forEach(col => {
+        if (col !== column) {
+          columnsOrder.push([col, 'ASC']);
+        }
+      });
+      httpClient.executeSqlQuery({
+        format: "arrays_with_header",
+        sql_query: query(tbl.columns, columnsOrder, 0)
+      }).then(response => response.data).then(array => {
+        array.shift(); // remove header
+        tbl.rows = array;
+      }).catch(err => console.log(err));
+    });
+
+    tbl.onFetchNextRows((nextRow) => {
+      httpClient.executeSqlQuery({
+        format: "arrays_with_header",
+        sql_query: query(tbl.columns, columnsOrder, nextRow)
+      }).then(response => response.data).then(array => {
+        array.shift(); // remove header
+        tbl.rows = tbl.rows.concat(array);
+      }).catch(err => console.log(err))
+    });
+
+    tbl.onSelectionChange((cells => {
+      console.log(cells);
+    }));
+  }
+
+  function testSelect1() {
+
+    const root = document.getElementById('select-with-filter');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const items = ['A', 'B', 'C'];
+
+    const selectWithFilter = new com.computablefacts.blueprintjs.MinimalSelect(root);
+    selectWithFilter.items = items;
+    // selectWithFilter.selectedItem = 'B'
+
+    selectWithFilter.onSelectionChange((item) => {
+      console.log(item);
+    });
+
+    selectWithFilter.onFilterChange((query) => {
+      const itemz = [];
+      for (let i = 0; i < items.length; i++) {
+        if (query === '' || items[i].toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          itemz.push(items[i])
+        }
+      }
+      selectWithFilter.items = itemz;
+    });
+  }
+
+  function testSelect2() {
+
+    const root = document.getElementById('select-without-filter');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const items = ['A', 'B', 'C'];
+
+    const selectWithoutFilter = new com.computablefacts.blueprintjs.MinimalSelect(root);
+    selectWithoutFilter.filterable = false;
+    selectWithoutFilter.items = items;
+    // selectWithoutFilter.selectedItem = 'B'
+
+    selectWithoutFilter.onSelectionChange((item) => {
+      console.log(item);
+    });
+  }
+
+  function testSlider() {
+
+    const root = document.getElementById('slider');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const slider = new com.computablefacts.blueprintjs.MinimalSlider(root, 0, 100, 1, 10);
+
+    slider.onSelectionChange((value) => {
+      console.log(value);
+    });
+  }
+
+  function testDrawer() {
+
+    const root = document.getElementById('drawer');
+
+    const drawer = new com.computablefacts.blueprintjs.MinimalDrawer(root);
+
+    drawer.onOpen((el) => {
+      const div = document.createElement('div');
+      div.style.textAlign = 'center';
+      div.style.color = 'red';
+      div.style.padding = '20px';
+      div.innerText = 'Hello world!';
+      el.appendChild(div);
+    });
+
+    drawer.onClose((el) => {
+      console.log('Drawer closed!');
+    });
+
+    window.showDrawer = function () {
+      drawer.show = true;
+    }
+  }
+
+  function testTabs() {
+
+    const root = document.getElementById('tabs');
+
+    const tabs = new com.computablefacts.blueprintjs.MinimalTabs(root);
+
+    const tab1 = document.createElement('div');
+    tab1.innerText = 'First tab!';
+    tab1.style.paddingBottom = '20px';
+    tab1.style.backgroundColor = 'red';
+    tab1.style.color = 'white';
+
+    const tab2 = document.createElement('div');
+    tab2.innerText = 'Second tab!';
+    tab2.style.paddingBottom = '20px';
+    tab2.style.backgroundColor = 'green';
+    tab2.style.color = 'white';
+
+    const tab3 = document.createElement('div');
+    tab3.innerText = 'Thirds tab!';
+    tab3.style.paddingBottom = '20px';
+    tab3.style.backgroundColor = 'blue';
+    tab3.style.color = 'white';
+
+    tabs.addTab('Tab n°1', tab1);
+    tabs.addTab('Tab n°2', tab2);
+    tabs.addTab('Tab n°3', tab3);
+    tabs.selectTab('Tab n°2');
+  }
+
+  function testSpinner() {
+
+    const root = document.getElementById('spinner');
+
+    const spinner = new com.computablefacts.blueprintjs.MinimalSpinner(root);
+
+    // for (let i = 0; i < 100; i++) {
+    // spinner.advance(i / 100);
+    //}
+  }
+
+  function testSwitch() {
+
+    const root = document.getElementById('switch');
+    root.style.width = '200px';
+
+    const switchz = new com.computablefacts.blueprintjs.MinimalSwitch(root, true, 'Sort by name',
+        'left', 'ASC', 'DESC');
+
+    switchz.onSelectionChange((status) => {
+      console.log('Selection changed to \'' + status + '\'!')
+    });
+  }
+
+  function testToaster() {
+
+    const root = document.getElementById('toaster');
+
+    const toaster = new com.computablefacts.blueprintjs.MinimalToaster(root);
+    toaster.toast('An error occurred!', 'danger');
+    toaster.toast('Everything is fine!');
+  }
+
+  function testCard() {
+
+    const root = document.getElementById('card');
+    root.style.padding = '30px';
+
+    const body = document.createElement('div');
+    body.style.textAlign = 'center';
+    body.style.backgroundColor = 'yellow';
+    body.style.padding = '10px';
+    body.innerText = 'Hello world!';
+
+    const card = new com.computablefacts.blueprintjs.MinimalCard(root, body);
+    // card.elevation = 2;
+    card.interactive = true;
+
+    card.onClick(() => {
+      console.log('Card clicked!');
+    });
+  }
+
+  function testIcon() {
+
+    const root = document.getElementById('icon');
+
+    const icon = new com.computablefacts.blueprintjs.MinimalIcon(root, 'globe', 'danger');
+    icon.icon = 'graph';
+
+    icon.onClick(() => {
+      console.log('Icon clicked!');
+    });
+  }
+
+  function testCheckbox() {
+
+    const root = document.getElementById('checkbox');
+
+    const checkbox = new com.computablefacts.blueprintjs.MinimalCheckbox(root, false, 'Ma checkbox',
+        'right');
+    // checkbox.disabled = true;
+
+    checkbox.onSelectionChange((status) => {
+      console.log('Checkbox clicked!');
+    });
+  }
+
+  function testDate() {
+
+    const root = document.getElementById('date');
+
+    const date = new com.computablefacts.blueprintjs.MinimalDate(root, 'dd/MM/yyyy');
+    date.shortcuts = true;
+    date.showActionsBar = true;
+
+    date.onSelectionChange((date) => {
+      console.log(date);
+    });
+  }
+
+  function testDatetime() {
+
+    const root = document.getElementById('datetime');
+
+    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm', null, null, 'UTC');
+    // datetime.shortcuts = true;
+    // datetime.showActionsBar = true;
+    datetime.disableTimezone = true;
+
+    datetime.onSelectionChange((datetime) => {
+      console.log(datetime);
+    });
+  }
+
+  function testDateRange() {
+
+    const root = document.getElementById('daterange');
+
+    const daterange = new com.computablefacts.blueprintjs.MinimalDateRange(root);
+    daterange.shortcuts = false;
+    // daterange.disabled = true;
+    daterange.dateMin = new Date();
+
+    const date = new Date();
+    date.setDate(new Date().getDate() + 3); // add three days to today
+
+    daterange.dateMax = date;
+
+    daterange.onSelectionChange((minDate, maxDate) => {
+      console.log(minDate, maxDate);
+    });
+  }
+
+  testWhoAmI();
+  testTable();
+  testSelect1();
+  testSelect2();
+  testSlider();
+  testDrawer();
+  testTabs();
+  testSpinner();
+  testSwitch();
+  testToaster();
+  testCard();
+  testIcon();
+  testCheckbox();
+  testDate();
+  testDatetime();
+  testDateRange();
+
+</script>
+</body>
+</html>
