@@ -17,6 +17,7 @@
         rel="stylesheet"/>
 </head>
 <body>
+<div id="list"></div>
 <div id="daterange" style="width:500px"></div>
 <div id="datetime" style="width:250px"></div>
 <div id="date" style="width:200px"></div>
@@ -56,7 +57,7 @@
 
   const env = 'dev';
   const client = 'ista';
-  const apiKey = '1RKxppgC4eGPa9GWK4uxssYPlYQXfhtzHa9iuzS0bky92zHDovEqZn13AfGu';
+  const apiKey = 'xxx';
   const baseUrl = `https://${env}.${client}.computablefacts.com`;
   const url = `https://${env}.${client}.computablefacts.com/api/v2/public/json-rpc?api_token=${apiKey}`;
 
@@ -360,7 +361,8 @@
 
     const root = document.getElementById('datetime');
 
-    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm', null, null, 'UTC');
+    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm',
+        null, null, 'UTC');
     // datetime.shortcuts = true;
     // datetime.showActionsBar = true;
     datetime.disableTimezone = true;
@@ -389,6 +391,59 @@
     });
   }
 
+  function testList() {
+
+    const root = document.getElementById('list');
+
+    const Item = class extends com.computablefacts.widgets.Widget {
+
+      constructor(container, data) {
+        super(container);
+        this.data = data; // Triggers rendering
+      }
+
+      _newElement() {
+        if (this.data) {
+          const wrapper = document.createElement('span');
+          wrapper.innerHTML = `<b>${this.data.id}:</b> ${this.data.name}`;
+          return wrapper;
+        }
+        return null;
+      }
+    }
+
+    const List = class extends com.computablefacts.widgets.Widget {
+
+      constructor(container, data) {
+        super(container);
+        this.data = data; // Triggers rendering
+      }
+
+      append(array) {
+        this.data = this.data.concat(array);
+      }
+
+      _newElement() {
+        if (this.data) {
+
+          const list = document.createElement('ul');
+
+          for (let i = 0; i < this.data.length; i++) {
+            const item = document.createElement('li');
+            list.appendChild(item);
+            this._register(new Item(item, this.data[i]));
+          }
+          return list;
+        }
+        return null;
+      }
+    }
+
+    const list = new List(root, [{id: 1, name: 'first'}, {id: 2, name: 'second'}]);
+
+    setTimeout(() => list.append([{id: 3, name: 'third'}, {id: 4, name: 'fourth'}]), 5000);
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -405,6 +460,7 @@
   testDate();
   testDatetime();
   testDateRange();
+  testList();
 
 </script>
 </body>

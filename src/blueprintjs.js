@@ -1,6 +1,7 @@
 'use strict'
 
 import {observers} from "./observers";
+import {widgets} from "./widgets";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -46,24 +47,34 @@ export const blueprintjs = {};
  * @memberOf module:blueprintjs
  * @type {blueprintjs.Blueprintjs}
  */
-blueprintjs.Blueprintjs = class {
+blueprintjs.Blueprintjs = class extends widgets.Widget {
 
   /**
    * @param {Element} container the parent element.
    * @constructor
    */
   constructor(container) {
-    this.container_ = container;
+    super(container);
   }
 
   /**
-   * In order to avoid a memory leak, properly remove the element from the DOM.
+   * In order to avoid a memory leak, properly remove the component from the DOM.
    *
-   * @name destroy
+   * @name _destroy
    * @function
-   * @public
+   * @protected
    */
-  destroy() {
+  _destroy() {
+
+    if (this.widgets_) {
+
+      // Remove registered widgets
+      for (let i = 0; i < this.widgets_.length; i++) {
+        this.widgets_[i]._destroy();
+      }
+      this.widgets_ = [];
+    }
+
     ReactDOM.unmountComponentAtNode(this.container_);
   }
 

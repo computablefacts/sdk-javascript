@@ -8,3 +8,4 @@ export {platform} from "./platform"
 export {promises} from "./promises"
 export {strings} from "./strings"
 export {webcomponents} from "./webcomponents";
+export {widgets} from "./widgets";
