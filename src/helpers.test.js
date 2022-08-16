@@ -25,3 +25,17 @@ test('stringify', () => {
   expect(helpers.stringify({msg: 'Hello world!', id: 1})).toBe(
       '{"id":1,"msg":"Hello world!"}');
 });
+
+test('for-each', () => {
+
+  const array = [1, 2, 3, 4, 5];
+  const actual = [];
+
+  helpers.forEach(array);
+
+  expect(actual).toStrictEqual([]);
+
+  helpers.forEach(array, i => actual.push(2 * i));
+
+  expect(actual).toStrictEqual([2, 4, 6, 8, 10]);
+});

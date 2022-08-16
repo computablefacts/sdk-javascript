@@ -179,3 +179,42 @@ helpers.injectStyle = function (el, url) {
     resolve(url, link);
   }) : Promise.reject('invalid node');
 }
+
+/**
+ * Chunk a list and gives the UI thread a chance to process any pending UI events between each chunk (keeps the UI active).
+ *
+ * @param {Array<Object>} array the array to chunk and process.
+ * @param {function(Object, Object): void} callback the callback to call for each array element.
+ * @param {Object} context misc. contextual information (optional).
+ * @param {number} maxTimePerChunk the maximum time to spend (guidance) in the callback for each chunk (optional).
+ *
+ * @preserve The code is extracted from https://stackoverflow.com/a/10344560.
+ */
+helpers.forEach = function (array, callback, context, maxTimePerChunk) {
+
+  array = array || [];
+  context = context || {};
+  callback = callback || function (item, context) {
+  };
+  maxTimePerChunk = maxTimePerChunk || 200;
+  let index = 0;
+
+  function now() {
+    return new Date().getTime();
+  }
+
+  function doChunk() {
+
+    const startTime = now();
+
+    while (index < array.length && (now() - startTime) <= maxTimePerChunk) {
+      callback(array[index], context);
+      ++index;
+    }
+    if (index < array.length) {
+      setTimeout(doChunk, 1);
+    }
+  }
+
+  doChunk();
+}
