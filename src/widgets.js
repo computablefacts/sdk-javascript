@@ -21,24 +21,41 @@ widgets.Widget = class {
     this.container_ = container;
   }
 
-  get data() {
-    return this.data_;
+  /**
+   * Returns the widget parent element.
+   *
+   * @return {Element} the parent element.
+   * @name container
+   * @function
+   * @public
+   */
+  get container() {
+    return this.container_;
   }
 
-  set data(values) {
-    this.data_ = values;
-    this._render();
+  /**
+   * Sets the widget parent element.
+   *
+   * @param container
+   * @name container
+   * @function
+   * @public
+   */
+  set container(container) {
+    this.container_ = container;
+    this.render();
   }
 
   /**
    * If the current widget creates more widgets, register them using this method.
+   * It allows the current widget to properly removes its children from the DOM.
    *
    * @param {Widget} widget the widget to register.
-   * @name _register
+   * @name register
    * @function
    * @protected
    */
-  _register(widget) {
+  register(widget) {
     if (widget) {
       if (!this.widgets_) {
         this.widgets_ = [];
@@ -50,39 +67,39 @@ widgets.Widget = class {
   /**
    * In order to avoid a memory leak, properly remove the widget from the DOM.
    *
-   * @name _destroy
+   * @name destroy
    * @function
-   * @protected
+   * @public
    */
-  _destroy() {
+  destroy() {
 
     if (this.widgets_) {
 
       // Remove registered widgets
       for (let i = 0; i < this.widgets_.length; i++) {
-        this.widgets_[i]._destroy();
+        this.widgets_[i].destroy();
       }
       this.widgets_ = [];
     }
 
     // Empty the container
-    while (this.container_.firstChild) {
-      this.container_.removeChild(this.container_.firstChild);
+    while (this.container.firstChild) {
+      this.container.removeChild(this.container.firstChild);
     }
   }
 
   /**
    * Renders the widget.
    *
-   * @name _render
+   * @name render
    * @function
-   * @protected
+   * @public
    */
-  _render() {
-    this._destroy();
+  render() {
+    this.destroy();
     const element = this._newElement();
     if (element) {
-      this.container_.appendChild(element);
+      this.container.appendChild(element);
     }
   }
 

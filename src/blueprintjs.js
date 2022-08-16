@@ -60,35 +60,35 @@ blueprintjs.Blueprintjs = class extends widgets.Widget {
   /**
    * In order to avoid a memory leak, properly remove the component from the DOM.
    *
-   * @name _destroy
+   * @name destroy
    * @function
    * @protected
    */
-  _destroy() {
+  destroy() {
 
     if (this.widgets_) {
 
       // Remove registered widgets
       for (let i = 0; i < this.widgets_.length; i++) {
-        this.widgets_[i]._destroy();
+        this.widgets_[i].destroy();
       }
       this.widgets_ = [];
     }
 
-    ReactDOM.unmountComponentAtNode(this.container_);
+    ReactDOM.unmountComponentAtNode(this.container);
   }
 
   /**
    * Renders the component.
    *
-   * @name _render
+   * @name render
    * @function
    * @protected
    */
-  _render() {
+  render() {
     const element = this._newElement();
     if (element) {
-      ReactDOM.render(element, this.container_);
+      ReactDOM.render(element, this.container);
     }
   }
 
@@ -128,7 +128,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
     this.columnTypes_ = [];
     this.rows_ = [];
     this.loadingOptions_ = [];
-    this._render();
+    this.render();
   }
 
   get columns() {
@@ -137,7 +137,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set columns(value) {
     this.columns_ = value;
-    this._render();
+    this.render();
   }
 
   get columnTypes() {
@@ -146,7 +146,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set columnTypes(values) {
     this.columnTypes_ = values;
-    this._render();
+    this.render();
   }
 
   get columnWidths() {
@@ -155,7 +155,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set columnWidths(values) {
     this.columnWidths_ = values;
-    this._render();
+    this.render();
   }
 
   get rows() {
@@ -164,7 +164,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set rows(values) {
     this.rows_ = values;
-    this._render();
+    this.render();
   }
 
   get loadingOptions() {
@@ -173,7 +173,7 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   set loadingOptions(values) {
     this.loadingOptions_ = values;
-    this._render();
+    this.render();
   }
 
   /**
@@ -401,7 +401,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     this.items_ = [];
     this.defaultText_ = 'Sélectionnez un élément...';
     this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
-    this._render();
+    this.render();
   }
 
   get fillContainer() {
@@ -410,7 +410,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set fillContainer(value) {
     this.fillContainer_ = value;
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -419,7 +419,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   get filterable() {
@@ -428,7 +428,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set filterable(value) {
     this.filterable_ = value;
-    this._render();
+    this.render();
   }
 
   get items() {
@@ -437,7 +437,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set items(values) {
     this.items_ = values;
-    this._render();
+    this.render();
   }
 
   get selectedItem() {
@@ -446,7 +446,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set selectedItem(value) {
     this.selectedItem_ = value;
-    this._render();
+    this.render();
   }
 
   get defaultText() {
@@ -455,7 +455,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set defaultText(value) {
     this.defaultText_ = value;
-    this._render();
+    this.render();
   }
 
   get noResults() {
@@ -464,7 +464,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   set noResults(value) {
     this.noResults_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -522,7 +522,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
       activeItem: this.activeItem_,
       onActiveItemChange: (item) => {
         this.activeItem_ = item;
-        this._render();
+        this.render();
       },
       onItemSelect: (item) => {
         this.selectedItem = item;
@@ -581,7 +581,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
     this.value_ = min;
     this.observers_ = new observers.Subject();
     this.disabled_ = false;
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -590,7 +590,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   get value() {
@@ -599,7 +599,7 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
 
   set value(value) {
     this.value_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -654,7 +654,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
     this.observers_ = new observers.Subject();
     this.show_ = false;
     this.width_ = width ? width : '75%';
-    this._render();
+    this.render();
   }
 
   get show() {
@@ -663,7 +663,7 @@ blueprintjs.MinimalDrawer = class extends blueprintjs.Blueprintjs {
 
   set show(value) {
     this.show_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -744,7 +744,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     super(container);
     this.observers_ = new observers.Subject();
     this.tabs_ = [];
-    this._render();
+    this.render();
   }
 
   /**
@@ -764,7 +764,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
       is_selected: false,
       ref: React.createRef(),
     });
-    this._render();
+    this.render();
   }
 
   /**
@@ -777,7 +777,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    */
   removeTab(name) {
     this.tabs_ = this.tabs_.filter(tab => tab.name !== name);
-    this._render();
+    this.render();
   }
 
   /**
@@ -801,7 +801,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     if (selectedTab) {
       selectedTab.ref.current.appendChild(selectedTab.panel);
     }
-    this._render();
+    this.render();
   }
 
   /**
@@ -870,7 +870,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
     } else {
       this.size_ = SpinnerSize.STANDARD;
     }
-    this._render();
+    this.render();
   }
 
   /**
@@ -883,7 +883,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
    */
   advance(value) {
     this.value_ = value;
-    this._render();
+    this.render();
   }
 
   _newElement() {
@@ -923,7 +923,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
     this.labelUnchecked_ = labelUnchecked;
     this.observers_ = new observers.Subject();
     this.disabled_ = false;
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -932,7 +932,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   get checked() {
@@ -941,7 +941,7 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
 
   set checked(value) {
     this.checked_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -1014,7 +1014,7 @@ blueprintjs.MinimalToast = class extends blueprintjs.Blueprintjs {
       this.icon_ = null;
     }
     this.observers_ = new observers.Subject();
-    this._render();
+    this.render();
   }
 
   /**
@@ -1061,7 +1061,7 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
   constructor(container) {
     super(container);
     this.toasts_ = [];
-    this._render();
+    this.render();
   }
 
   /**
@@ -1075,15 +1075,15 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
    * @public
    */
   toast(message, intent, timeout) {
-    const toast = new blueprintjs.MinimalToast(this.container_, message, intent,
+    const toast = new blueprintjs.MinimalToast(this.container, message, intent,
         timeout);
     toast.el_ = toast._newElement();
     toast.onDismiss(() => {
       this.toasts_ = this.toasts_.filter(t => t !== toast);
-      this._render();
+      this.render();
     });
     this.toasts_.push(toast);
-    this._render();
+    this.render();
   }
 
   _newElement() {
@@ -1116,9 +1116,9 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
     this.body_ = React.createElement('div', {
       ref: React.createRef(),
     });
-    this._render(); // this.body_ must be rendered first!
+    this.render(); // this.body_ must be rendered first!
     this.body_.ref.current.appendChild(body);
-    this._render();
+    this.render();
   }
 
   get elevation() {
@@ -1127,7 +1127,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
 
   set elevation(value) {
     this.elevation_ = !value ? 0 : value > 4 ? 4 : value;
-    this._render();
+    this.render();
   }
 
   get interactive() {
@@ -1136,7 +1136,7 @@ blueprintjs.MinimalCard = class extends blueprintjs.Blueprintjs {
 
   set interactive(value) {
     this.interactive_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -1197,7 +1197,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
     } else {
       this.intent_ = Intent.NONE;
     }
-    this._render();
+    this.render();
   }
 
   get icon() {
@@ -1206,7 +1206,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
 
   set icon(value) {
     this.icon_ = value;
-    this._render();
+    this.render();
   }
 
   get size() {
@@ -1215,7 +1215,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
 
   set size(value) {
     this.size_ = value;
-    this._render();
+    this.render();
   }
 
   get intent() {
@@ -1224,7 +1224,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
 
   set intent(value) {
     this.intent_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -1278,7 +1278,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
     this.boxPosition_ = labelPosition === 'left' ? Alignment.RIGHT
         : Alignment.LEFT;
     this.disabled_ = false;
-    this._render();
+    this.render();
   }
 
   get checked() {
@@ -1287,7 +1287,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
 
   set checked(value) {
     this.checked_ = value;
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -1296,7 +1296,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -1357,7 +1357,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
     this.showActionsBar_ = false;
     this.minDate_ = minDate ? minDate : sub(new Date(), {years: 10});
     this.maxDate_ = maxDate ? maxDate : add(new Date(), {years: 10});
-    this._render();
+    this.render();
   }
 
   get date() {
@@ -1366,7 +1366,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set date(value) {
     this.value_ = value;
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -1375,7 +1375,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   get shortcuts() {
@@ -1384,7 +1384,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set shortcuts(value) {
     this.shortcuts_ = value;
-    this._render();
+    this.render();
   }
 
   get showActionsBar() {
@@ -1393,7 +1393,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set showActionsBar(value) {
     this.showActionsBar_ = value;
-    this._render();
+    this.render();
   }
 
   get fillContainer() {
@@ -1402,7 +1402,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set fillContainer(value) {
     this.fillContainer_ = value;
-    this._render();
+    this.render();
   }
 
   get minDate() {
@@ -1411,7 +1411,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set minDate(value) {
     this.minDate_ = value;
-    this._render();
+    this.render();
   }
 
   get maxDate() {
@@ -1420,7 +1420,7 @@ blueprintjs.MinimalDate = class extends blueprintjs.Blueprintjs {
 
   set maxDate(value) {
     this.maxDate_ = value;
-    this._render();
+    this.render();
   }
 
   /**
@@ -1508,7 +1508,7 @@ blueprintjs.MinimalDatetime = class extends blueprintjs.MinimalDate {
             : TimePrecision.MINUTE;
     this.defaultTimezone_ = defaultTimezone ? defaultTimezone : 'Etc/UTC';
     this.disableTimezone_ = false;
-    this._render();
+    this.render();
   }
 
   get disableTimezone() {
@@ -1517,7 +1517,7 @@ blueprintjs.MinimalDatetime = class extends blueprintjs.MinimalDate {
 
   set disableTimezone(value) {
     this.disableTimezone_ = value;
-    this._render();
+    this.render();
   }
 
   _showTimezone() {
@@ -1563,7 +1563,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
     this.format_ = format ? format : 'yyyy-MM-dd';
     this.minDate_ = minDate ? minDate : sub(new Date(), {years: 10});
     this.maxDate_ = maxDate ? maxDate : add(new Date(), {years: 10});
-    this._render();
+    this.render();
   }
 
   get disabled() {
@@ -1572,7 +1572,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set disabled(value) {
     this.disabled_ = value;
-    this._render();
+    this.render();
   }
 
   get shortcuts() {
@@ -1581,7 +1581,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set shortcuts(value) {
     this.shortcuts_ = value;
-    this._render();
+    this.render();
   }
 
   get dateMin() {
@@ -1590,7 +1590,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set dateMin(value) {
     this.dateMin_ = value;
-    this._render();
+    this.render();
   }
 
   get dateMax() {
@@ -1599,7 +1599,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set dateMax(value) {
     this.dateMax_ = value;
-    this._render();
+    this.render();
   }
 
   get minDate() {
@@ -1608,7 +1608,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set minDate(value) {
     this.minDate_ = value;
-    this._render();
+    this.render();
   }
 
   get maxDate() {
@@ -1617,7 +1617,7 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
 
   set maxDate(value) {
     this.maxDate_ = value;
-    this._render();
+    this.render();
   }
 
   /**
