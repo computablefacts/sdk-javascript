@@ -525,8 +525,12 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
         this.render();
       },
       onItemSelect: (item) => {
-        this.selectedItem = item;
-        this.observers_.notify('selection-change', item);
+        // If the user selects twice the same item, removes the selection
+        const selection = item === this.selectedItem ? null : item;
+        this.selectedItem_ = selection;
+        this.activeItem_ = selection;
+        this.render();
+        this.observers_.notify('selection-change', selection);
       },
       onQueryChange: (query) => {
         this.observers_.notify('filter-change', query);
