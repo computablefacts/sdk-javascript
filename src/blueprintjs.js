@@ -766,7 +766,6 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
       panel: panel,
       disabled: false,
       is_selected: false,
-      ref: React.createRef(),
     });
     this.render();
   }
@@ -802,25 +801,25 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
         selectedTab = tab;
       }
     });
-    if (selectedTab) {
-      selectedTab.ref.current.appendChild(selectedTab.panel);
-    }
     this.render();
+    if (selectedTab) {
+      this.observers_.notify('selection-change', selectedTab.name, selectedTab.panel);
+    }
   }
 
   /**
    * Listen to the `selection-change` event.
    *
-   * @param {function(): void} callback the callback to call when the event is triggered.
+   * @param {function(string, Element): void} callback the callback to call when the event is triggered.
    * @name onSelectionChange
    * @function
    * @public
    */
   onSelectionChange(callback) {
-    this.observers_.register('selection-change', (oldTabId, newTabId) => {
-      // console.log('Selected tab is ' + newTabId);
+    this.observers_.register('selection-change', (tabName, tabBody) => {
+      // console.log('Selected tab is ' + tabName);
       if (callback) {
-        callback(oldTabId, newTabId);
+        callback(tabName, tabBody);
       }
     });
   }
@@ -829,9 +828,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
     return React.createElement(Tab, {
       id: tab.name,
       title: tab.name,
-      panel: React.createElement('div', {
-        ref: tab.ref,
-      }),
+      panel: null,
       disabled: tab.disabled,
     });
   }
@@ -842,10 +839,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
       id: 'tabs',
       children: this.tabs_.map(tab => this._newTab(tab)),
       selectedTabId: selectedTab ? selectedTab.name : null,
-      onChange: (newTabId, oldTabId) => {
-        this.selectTab(newTabId);
-        this.observers_.notify('selection-change', oldTabId, newTabId);
-      },
+      onChange: (newTabId, oldTabId) => this.selectTab(newTabId)
     });
   }
 }

@@ -24,6 +24,7 @@
 <div id="switch"></div>
 <div id="spinner"></div>
 <div id="tabs"></div>
+<div id="tab"></div>
 <div id="drawer"></div>
 <a href="#" onclick="window.showDrawer()">Show drawer!</a>
 <div id="slider"></div>
@@ -69,50 +70,24 @@
     root.style.height = window.innerHeight + 'px';
     root.style.width = (window.innerWidth / 3) + 'px';
 
-    let columnsOrder = [
-      ['NIDEAD', 'ASC'],
-      ['CAGCOM', 'ASC'],
-      ['NESCAL', 'ASC'],
-      ['NUEXPL', 'ASC'],
-      ['CSOCTE', 'ASC'],
-      ['ATYPEP', 'ASC'],
-      ['NBATIM', 'ASC'],
-      ['CAGEXP', 'ASC']
-    ];
+    let columnsOrder = [['NIDEAD', 'ASC'], ['CAGCOM', 'ASC'], ['NESCAL', 'ASC'], ['NUEXPL', 'ASC'], ['CSOCTE', 'ASC'],
+      ['ATYPEP', 'ASC'], ['NBATIM', 'ASC'], ['CAGEXP', 'ASC']];
 
     const query = (projection, order, nextRow) => `
         SELECT ${projection.join(', ')}
         FROM (SELECT * FROM tmp_babatp)
-        ORDER BY ${order.map(cols => cols.join(' ')).join(', ')} LIMIT ${nextRow}, 100
+        ORDER BY ${order.map(cols => cols.join(' ')).join(', ')}
+        LIMIT ${nextRow}, 100
     `;
 
     const tbl = new com.computablefacts.blueprintjs.MinimalTable(root);
-    tbl.columns = [
-      'NIDEAD',
-      'CAGCOM',
-      'NESCAL',
-      'NUEXPL',
-      'CSOCTE',
-      'ATYPEP',
-      'NBATIM',
-      'CAGEXP'
-    ];
-    tbl.columnTypes = [
-      'text',
-      'number',
-      'number',
-      'text',
-      'text',
-      'text',
-      'number',
-      'number'
-    ];
+    tbl.columns = ['NIDEAD', 'CAGCOM', 'NESCAL', 'NUEXPL', 'CSOCTE', 'ATYPEP', 'NBATIM', 'CAGEXP'];
+    tbl.columnTypes = ['text', 'number', 'number', 'text', 'text', 'text', 'number', 'number'];
 
     const httpClient = new com.computablefacts.platform.HttpClient();
     httpClient.init(baseUrl, apiKey);
     httpClient.executeSqlQuery({
-      format: "arrays_with_header",
-      sql_query: query(tbl.columns, columnsOrder, 0)
+      format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, 0)
     }).then(response => response.data).then(array => {
       array.shift(); // remove header
       tbl.rows = array;
@@ -127,8 +102,7 @@
         }
       });
       httpClient.executeSqlQuery({
-        format: "arrays_with_header",
-        sql_query: query(tbl.columns, columnsOrder, 0)
+        format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, 0)
       }).then(response => response.data).then(array => {
         array.shift(); // remove header
         tbl.rows = array;
@@ -137,8 +111,7 @@
 
     tbl.onFetchNextRows((nextRow) => {
       httpClient.executeSqlQuery({
-        format: "arrays_with_header",
-        sql_query: query(tbl.columns, columnsOrder, nextRow)
+        format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, nextRow)
       }).then(response => response.data).then(array => {
         array.shift(); // remove header
         tbl.rows = tbl.rows.concat(array);
@@ -237,6 +210,12 @@
     const root = document.getElementById('tabs');
 
     const tabs = new com.computablefacts.blueprintjs.MinimalTabs(root);
+    tabs.onSelectionChange((tabName, tabBody) => {
+      if (document.querySelector('#tab').firstChild) {
+        document.querySelector('#tab').firstChild.remove();
+      }
+      document.querySelector('#tab').appendChild(tabBody);
+    });
 
     const tab1 = document.createElement('div');
     tab1.innerText = 'First tab!';
@@ -278,8 +257,8 @@
     const root = document.getElementById('switch');
     root.style.width = '200px';
 
-    const switchz = new com.computablefacts.blueprintjs.MinimalSwitch(root, true, 'Sort by name',
-        'left', 'ASC', 'DESC');
+    const switchz = new com.computablefacts.blueprintjs.MinimalSwitch(root, true, 'Sort by name', 'left', 'ASC',
+        'DESC');
 
     switchz.onSelectionChange((status) => {
       console.log('Selection changed to \'' + status + '\'!')
@@ -331,8 +310,7 @@
 
     const root = document.getElementById('checkbox');
 
-    const checkbox = new com.computablefacts.blueprintjs.MinimalCheckbox(root, false, 'Ma checkbox',
-        'right');
+    const checkbox = new com.computablefacts.blueprintjs.MinimalCheckbox(root, false, 'Ma checkbox', 'right');
     // checkbox.disabled = true;
 
     checkbox.onSelectionChange((status) => {
@@ -357,8 +335,7 @@
 
     const root = document.getElementById('datetime');
 
-    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm',
-        null, null, 'UTC');
+    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm', null, null, 'UTC');
     // datetime.shortcuts = true;
     // datetime.showActionsBar = true;
     datetime.disableTimezone = true;
