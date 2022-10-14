@@ -191,16 +191,15 @@ platform.HttpClient = function () {
    * @preserve The specification can be found at https://www.jsonrpc.org/specification.
    */
   this.fetch = function (payload) {
-    return fetch(`${baseUrl_}/api/v2/public/json-rpc?api_token=${token_}`,
-        {body: payload, method: 'POST'}).then(response => {
-      if ('error' in response) {
-        const error = response['error'];
-        const message = '(' + error.code + ') ' + error.message + '\n'
-            + JSON.stringify(error.data);
-        return Promise.reject(new Error(message));
-      }
-      return response['result'];
-    });
+    return fetch(`${baseUrl_}/api/v2/public/json-rpc?api_token=${token_}`, {body: payload, method: 'POST'}).then(
+        response => {
+          if ('error' in response) {
+            const error = response['error'];
+            const message = '(' + error.code + ') ' + error.message + '\n' + JSON.stringify(error.data);
+            return Promise.reject(new Error(message));
+          }
+          return response['result'];
+        });
   }
 
   /**
@@ -211,10 +210,7 @@ platform.HttpClient = function () {
    */
   this.executeProblogQuery = function (params) {
     return this.fetch({
-      jsonrpc: '2.0',
-      id: Date.now(),
-      method: 'execute-problog-query',
-      params: params
+      jsonrpc: '2.0', id: Date.now(), method: 'execute-problog-query', params: params
     });
   }
 
@@ -226,10 +222,7 @@ platform.HttpClient = function () {
    */
   this.executeSqlQuery = function (params) {
     return this.fetch({
-      jsonrpc: '2.0',
-      id: Date.now(),
-      method: 'execute-sql-query',
-      params: params
+      jsonrpc: '2.0', id: Date.now(), method: 'execute-sql-query', params: params
     });
   }
 
@@ -265,10 +258,7 @@ platform.HttpClient = function () {
    */
   this.getFlattenedObjects = function (params) {
     return this.fetch({
-      jsonrpc: '2.0',
-      id: Date.now(),
-      method: 'get-flattened-objects',
-      params: params
+      jsonrpc: '2.0', id: Date.now(), method: 'get-flattened-objects', params: params
     });
   }
 }

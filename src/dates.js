@@ -51,9 +51,8 @@ dates.ddMmYyyyToDate = function (str) {
  */
 dates.dateToYyyyMmDd = function (date, separator) {
   separator = separator || separator === '' ? separator : '-';
-  return date instanceof Date ? date.getFullYear() + separator
-      + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + separator
-      + (date.getDate() < 10 ? '0' : '') + date.getDate() : null;
+  return date instanceof Date ? date.getFullYear() + separator + (date.getMonth() < 9 ? '0' : '') + (date.getMonth()
+      + 1) + separator + (date.getDate() < 10 ? '0' : '') + date.getDate() : null;
 }
 
 /**
@@ -66,7 +65,6 @@ dates.dateToYyyyMmDd = function (date, separator) {
  */
 dates.dateToDdMmYyyy = function (date, separator) {
   separator = separator || separator === '' ? separator : '-';
-  return date instanceof Date ? (date.getDate() < 10 ? '0' : '')
-      + date.getDate() + separator + (date.getMonth() < 9 ? '0' : '')
-      + (date.getMonth() + 1) + separator + date.getFullYear() : null;
+  return date instanceof Date ? (date.getDate() < 10 ? '0' : '') + date.getDate() + separator + (date.getMonth() < 9
+      ? '0' : '') + (date.getMonth() + 1) + separator + date.getFullYear() : null;
 }

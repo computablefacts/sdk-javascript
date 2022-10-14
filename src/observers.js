@@ -45,8 +45,7 @@ observers.Subject = function () {
    * @param {Function} observer the callback to notify.
    */
   this.register = function (message, observer) {
-    if (message && typeof message === 'string' && observer && observer
-        instanceof Function) {
+    if (message && typeof message === 'string' && observer && observer instanceof Function) {
       if (!observers.hasOwnProperty(message)) {
         observers[message] = [];
       }
@@ -61,8 +60,8 @@ observers.Subject = function () {
    * @param {Function} observer the notified callback.
    */
   this.unregister = function (message, observer) {
-    if (message && typeof message === 'string' && observer && observer
-        instanceof Function && observers.hasOwnProperty(message)) {
+    if (message && typeof message === 'string' && observer && observer instanceof Function && observers.hasOwnProperty(
+        message)) {
       observers[message] = observers[message].filter(o => o !== observer);
     }
   }
@@ -74,8 +73,7 @@ observers.Subject = function () {
    * @param {...*} args a list of arguments to pass to each callback.
    */
   this.notify = function (message, ...args) {
-    if (message && typeof message === 'string' && args
-        && observers.hasOwnProperty(message)) {
+    if (message && typeof message === 'string' && args && observers.hasOwnProperty(message)) {
       observers[message].forEach(observer => observer(...args));
     }
   }

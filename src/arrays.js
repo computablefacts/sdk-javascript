@@ -14,8 +14,7 @@ export const arrays = {};
  * @memberOf module:arrays
  */
 arrays.distinct = function (array) {
-  return array instanceof Array ? Array.from(
-      new Set(array.filter(el => el !== undefined))) : [];
+  return array instanceof Array ? Array.from(new Set(array.filter(el => el !== undefined))) : [];
 }
 
 /**
@@ -29,8 +28,7 @@ arrays.distinct = function (array) {
 arrays.distinctObjects = function (array) {
   return array instanceof Array ? array
   .filter(el => el !== undefined)
-  .filter((el1, index, self) => self.findIndex(
-      el2 => (JSON.stringify(el2) === JSON.stringify(el1))) === index) : [];
+  .filter((el1, index, self) => self.findIndex(el2 => (JSON.stringify(el2) === JSON.stringify(el1))) === index) : [];
 }
 
 /**
@@ -42,7 +40,6 @@ arrays.distinctObjects = function (array) {
  * @memberOf module:arrays
  */
 arrays.intersect = function (array1, array2) {
-  return array1 instanceof Array && array2 instanceof Array ? array1.filter(
-      el => array2.includes(el)) : [];
+  return array1 instanceof Array && array2 instanceof Array ? array1.filter(el => array2.includes(el)) : [];
 }
 

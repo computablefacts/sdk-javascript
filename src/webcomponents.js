@@ -52,16 +52,14 @@ webcomponents.WebComponent = class extends HTMLElement {
           this.renderedCallback();
         });
       });
-    } else if ((!styles || styles.length === 0) && scripts && scripts.length
-        > 0) {
+    } else if ((!styles || styles.length === 0) && scripts && scripts.length > 0) {
       helpers.injectScripts(wrapper, scripts).then(() => {
         if (template !== '') {
           wrapper.insertAdjacentHTML('beforeend', template);
         }
         this.renderedCallback();
       });
-    } else if (styles && styles.length > 0 && (!scripts || scripts.length
-        === 0)) {
+    } else if (styles && styles.length > 0 && (!scripts || scripts.length === 0)) {
       helpers.injectStyles(wrapper, styles).then(() => {
         if (template !== '') {
           wrapper.insertAdjacentHTML('beforeend', template);

@@ -4,12 +4,9 @@ test('escape_characters_with_special_meaning_in_regexp', () => {
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp(null)).toBe('');
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp('')).toBe('');
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp(123)).toBe('123');
-  expect(strings.escapeCharactersWithSpecialMeaningInRegExp(1.23)).toBe(
-      '1\\.23');
-  expect(strings.escapeCharactersWithSpecialMeaningInRegExp(.123)).toBe(
-      '0\\.123');
-  expect(strings.escapeCharactersWithSpecialMeaningInRegExp(
-      'Hello world! (i.e. "Bonjour monde!" en français)')).toBe(
+  expect(strings.escapeCharactersWithSpecialMeaningInRegExp(1.23)).toBe('1\\.23');
+  expect(strings.escapeCharactersWithSpecialMeaningInRegExp(.123)).toBe('0\\.123');
+  expect(strings.escapeCharactersWithSpecialMeaningInRegExp('Hello world! (i.e. "Bonjour monde!" en français)')).toBe(
       'Hello world! \\(i\\.e\\. "Bonjour monde!" en français\\)');
 });
 
@@ -19,8 +16,7 @@ test('to_regexp', () => {
   expect(strings.toRegExp(123)).toStrictEqual(/123/im);
   expect(strings.toRegExp(1.23)).toStrictEqual(/1\.23/im);
   expect(strings.toRegExp(.123)).toStrictEqual(/0\.123/im);
-  expect(strings.toRegExp(
-      'Hello world! (i.e. "Bonjour monde!" en français)')).toStrictEqual(
+  expect(strings.toRegExp('Hello world! (i.e. "Bonjour monde!" en français)')).toStrictEqual(
       /Hello(\s| )*world!(\s| )*\(i\.e\.(\s| )*"Bonjour(\s| )*monde!"(\s| )*en(\s| )*français\)/im);
 });
 
@@ -76,8 +72,7 @@ test('format_null_or_blank', () => {
   expect(strings.formatNullOrBlank(null, '-')).toBe('-');
   expect(strings.formatNullOrBlank('', '-')).toBe('-');
   expect(strings.formatNullOrBlank('     ', '-')).toBe('-');
-  expect(strings.formatNullOrBlank('\u00a0\u00a0\u00a0\u00a0\u00a0', '-')).toBe(
-      '-');
+  expect(strings.formatNullOrBlank('\u00a0\u00a0\u00a0\u00a0\u00a0', '-')).toBe('-');
   expect(strings.formatNullOrBlank('Hello world!', '-')).toBe('Hello world!');
   expect(strings.formatNullOrBlank(123, '-')).toBe('123');
   expect(strings.formatNullOrBlank(1.23, '-')).toBe('1.23');
@@ -96,11 +91,8 @@ test('is_masked', () => {
 
 test('highlight', () => {
 
-  expect(
-      strings.highlight(null, [{pattern: "gmail", color: "#fffec8"}])).toEqual(
-      {snippets: [], text: ""});
-  expect(strings.highlight('', [{pattern: "gmail", color: "#fffec8"}])).toEqual(
-      {snippets: [], text: ""});
+  expect(strings.highlight(null, [{pattern: "gmail", color: "#fffec8"}])).toEqual({snippets: [], text: ""});
+  expect(strings.highlight('', [{pattern: "gmail", color: "#fffec8"}])).toEqual({snippets: [], text: ""});
 
   const text = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, Gmail and Hotmail/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';
   const textHighlighted = 'Welcome to Yahoo!, the world’s most visited home page. Quickly find what you’re searching for, get in touch with friends and stay in-the-know with the latest news and information. CloudSponge provides an interface to easily enable your users to import contacts from a variety of the most popular webmail services including Yahoo, <mark style="border-radius:3px;background:#fffec8">Gmail and Hotmail</mark>/MSN as well as popular desktop address books such as Mac Address Book and Outlook.';

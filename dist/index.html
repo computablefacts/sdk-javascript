@@ -74,10 +74,10 @@
       ['ATYPEP', 'ASC'], ['NBATIM', 'ASC'], ['CAGEXP', 'ASC']];
 
     const query = (projection, order, nextRow) => `
-        SELECT ${projection.join(', ')}
-        FROM (SELECT * FROM tmp_babatp)
-        ORDER BY ${order.map(cols => cols.join(' ')).join(', ')}
-        LIMIT ${nextRow}, 100
+      SELECT ${projection.join(', ')}
+      FROM (SELECT * FROM tmp_babatp)
+      ORDER BY ${order.map(cols => cols.join(' ')).join(', ')}
+      LIMIT ${nextRow}, 100
     `;
 
     const tbl = new com.computablefacts.blueprintjs.MinimalTable(root);

@@ -24,13 +24,7 @@ import {
   Toast,
   Toaster
 } from '@blueprintjs/core';
-import {
-  Cell,
-  Column,
-  ColumnHeaderCell,
-  Table2,
-  TableLoadingOption
-} from '@blueprintjs/table';
+import {Cell, Column, ColumnHeaderCell, Table2, TableLoadingOption} from '@blueprintjs/table';
 import {Select2} from '@blueprintjs/select';
 import {TimePrecision} from '@blueprintjs/datetime';
 import {DateInput2, DateRangeInput2} from '@blueprintjs/datetime2';
@@ -249,34 +243,26 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
   }
 
   _newCell(self, rowIdx, colIdx) {
-    return self.cellRenderer_ ? self.cellRenderer_(rowIdx, colIdx,
-        self.rows[rowIdx][colIdx]) : React.createElement(Cell, {
-      rowIndex: rowIdx,
-      columnIndex: colIdx,
-      style: {
-        'text-align': self.columnTypes[colIdx] === 'number' ? 'right' : 'left'
-      },
-      children: React.createElement('div', {}, self.rows[rowIdx][colIdx]),
-    });
+    return self.cellRenderer_ ? self.cellRenderer_(rowIdx, colIdx, self.rows[rowIdx][colIdx]) : React.createElement(
+        Cell, {
+          rowIndex: rowIdx, columnIndex: colIdx, style: {
+            'text-align': self.columnTypes[colIdx] === 'number' ? 'right' : 'left'
+          }, children: React.createElement('div', {}, self.rows[rowIdx][colIdx]),
+        });
   }
 
   _newColumnHeader(self, column) {
     return React.createElement(ColumnHeaderCell, {
-      name: column,
-      menuRenderer: () => {
+      name: column, menuRenderer: () => {
 
         // Menu item for sorting the column in ascending order
         const menuItemSortAsc = React.createElement(MenuItem, {
-          icon: 'sort-asc',
-          text: 'Sort Asc',
-          onClick: () => self.observers_.notify('sort', column, 'ASC'),
+          icon: 'sort-asc', text: 'Sort Asc', onClick: () => self.observers_.notify('sort', column, 'ASC'),
         });
 
         // Menu item for sorting the column in descending order
         const menuItemSortDesc = React.createElement(MenuItem, {
-          icon: 'sort-desc',
-          text: 'Sort Desc',
-          onClick: () => self.observers_.notify('sort', column, 'DESC'),
+          icon: 'sort-desc', text: 'Sort Desc', onClick: () => self.observers_.notify('sort', column, 'DESC'),
         });
 
         return React.createElement(Menu, {
@@ -327,10 +313,8 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
           }
         }
         for (let k = oldIndex; k < oldIndex + length; k++) {
-          newColumnsOrder.splice(newIndex + k - oldIndex, 0,
-              oldColumnsOrder[k]);
-          newColumnTypes.splice(newIndex + k - oldIndex, 0,
-              oldColumnTypes[k]);
+          newColumnsOrder.splice(newIndex + k - oldIndex, 0, oldColumnsOrder[k]);
+          newColumnTypes.splice(newIndex + k - oldIndex, 0, oldColumnTypes[k]);
         }
 
         // console.log('Previous column order was [' + oldColumnsOrder.join(', ') + ']');
@@ -503,8 +487,8 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
 
   _newButton() {
     return React.createElement(Button, {
-      text: this.selectedItem ? this.itemToText_ ? this.itemToText_(
-          this.selectedItem) : this.selectedItem : this.defaultText,
+      text: this.selectedItem ? this.itemToText_ ? this.itemToText_(this.selectedItem) : this.selectedItem
+          : this.defaultText,
       alignText: 'left',
       rightIcon: 'double-caret-vertical',
       fill: this.fillContainer,
@@ -549,8 +533,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
         });
       },
       noResults: React.createElement(MenuItem, {
-        text: this.noResults,
-        disabled: true,
+        text: this.noResults, disabled: true,
       }),
       popoverProps: {
         matchTargetWidth: true,
@@ -762,10 +745,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
    */
   addTab(name, panel) {
     this.tabs_.push({
-      name: name,
-      panel: panel,
-      disabled: false,
-      is_selected: false,
+      name: name, panel: panel, disabled: false, is_selected: false,
     });
     this.render();
   }
@@ -826,10 +806,7 @@ blueprintjs.MinimalTabs = class extends blueprintjs.Blueprintjs {
 
   _newTab(tab) {
     return React.createElement(Tab, {
-      id: tab.name,
-      title: tab.name,
-      panel: null,
-      disabled: tab.disabled,
+      id: tab.name, title: tab.name, panel: null, disabled: tab.disabled,
     });
   }
 
@@ -886,8 +863,7 @@ blueprintjs.MinimalSpinner = class extends blueprintjs.Blueprintjs {
 
   _newElement() {
     return React.createElement(Spinner, {
-      value: this.value_,
-      size: this.size_,
+      value: this.value_, size: this.size_,
     });
   }
 }
@@ -910,13 +886,11 @@ blueprintjs.MinimalSwitch = class extends blueprintjs.Blueprintjs {
    * @param {string} labelUnchecked the text to display inside the switch indicator when unchecked (optional).
    * @constructor
    */
-  constructor(container, checked, label, labelPosition, labelChecked,
-      labelUnchecked) {
+  constructor(container, checked, label, labelPosition, labelChecked, labelUnchecked) {
     super(container);
     this.checked_ = checked;
     this.label_ = label;
-    this.switchPosition_ = labelPosition === 'left' ? Alignment.RIGHT
-        : Alignment.LEFT;
+    this.switchPosition_ = labelPosition === 'left' ? Alignment.RIGHT : Alignment.LEFT;
     this.labelChecked_ = labelChecked;
     this.labelUnchecked_ = labelUnchecked;
     this.observers_ = new observers.Subject();
@@ -1073,8 +1047,7 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
    * @public
    */
   toast(message, intent, timeout) {
-    const toast = new blueprintjs.MinimalToast(this.container, message, intent,
-        timeout);
+    const toast = new blueprintjs.MinimalToast(this.container, message, intent, timeout);
     toast.el_ = toast._newElement();
     toast.onDismiss(() => {
       this.toasts_ = this.toasts_.filter(t => t !== toast);
@@ -1086,8 +1059,7 @@ blueprintjs.MinimalToaster = class extends blueprintjs.Blueprintjs {
 
   _newElement() {
     return React.createElement(Toaster, {
-      children: this.toasts_.map(toast => toast.el_),
-      position: Position.TOP,
+      children: this.toasts_.map(toast => toast.el_), position: Position.TOP,
     });
   }
 }
@@ -1244,10 +1216,7 @@ blueprintjs.MinimalIcon = class extends blueprintjs.Blueprintjs {
 
   _newElement() {
     return React.createElement(Icon, {
-      icon: this.icon_,
-      size: this.size_,
-      intent: this.intent_,
-      onClick: () => this.observers_.notify('click', this),
+      icon: this.icon_, size: this.size_, intent: this.intent_, onClick: () => this.observers_.notify('click', this),
     });
   }
 }
@@ -1273,8 +1242,7 @@ blueprintjs.MinimalCheckbox = class extends blueprintjs.Blueprintjs {
     this.observers_ = new observers.Subject();
     this.checked_ = checked;
     this.label_ = label;
-    this.boxPosition_ = labelPosition === 'left' ? Alignment.RIGHT
-        : Alignment.LEFT;
+    this.boxPosition_ = labelPosition === 'left' ? Alignment.RIGHT : Alignment.LEFT;
     this.disabled_ = false;
     this.render();
   }
@@ -1498,12 +1466,10 @@ blueprintjs.MinimalDatetime = class extends blueprintjs.MinimalDate {
    * @param {string} defaultTimezone the default time zone (optional). Default is 'UTC'.
    * @constructor
    */
-  constructor(container, format, minDate, maxDate, timePrecision,
-      defaultTimezone) {
+  constructor(container, format, minDate, maxDate, timePrecision, defaultTimezone) {
     super(container, format ? format : 'yyyy-MM-dd HH:mm', minDate, maxDate);
-    this.timePrecision_ = timePrecision === 'hours' ? TimePrecision.HOUR_24
-        : timePrecision === 'seconds' ? TimePrecision.SECOND
-            : TimePrecision.MINUTE;
+    this.timePrecision_ = timePrecision === 'hours' ? TimePrecision.HOUR_24 : timePrecision === 'seconds'
+        ? TimePrecision.SECOND : TimePrecision.MINUTE;
     this.defaultTimezone_ = defaultTimezone ? defaultTimezone : 'Etc/UTC';
     this.disableTimezone_ = false;
     this.render();
