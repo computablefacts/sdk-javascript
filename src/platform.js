@@ -261,4 +261,114 @@ platform.HttpClient = function () {
       jsonrpc: '2.0', id: Date.now(), method: 'get-flattened-objects', params: params
     });
   }
+
+  /**
+   * Sink a single event.
+   *
+   * @param {string} type the event type.
+   * @param {Array<string>} propNames the event property names.
+   * @param {Array<string>} propValues the event property values.
+   * @return {Promise<Object>} the created fact.
+   */
+  this.sinkEvent = function (type, propNames, propValues) {
+
+    if (propNames.length !== propValues.length) {
+      throw "Mismatch between the number of names and values"
+    }
+
+    const typeNormalized = 'event_' + type.replace(/-/g, '_').toLowerCase();
+    const startDate = new Date();
+
+    return fetch(`${baseUrl_}/api/v2/facts`, {
+      body: {
+        data: [{
+          type: typeNormalized,
+          values: propValues.map(prop => '' + prop),
+          is_valid: true,
+          start_date: startDate.toISOString(),
+        }], headers: {
+          Authorization: `Bearer ${token_}`
+        }
+      }, method: 'POST'
+    });
+  }
+
+  /**
+   * Source one or more events.
+   *
+   * @param {string} type the event type.
+   * @param {Array<string>} propNames the event property names.
+   * @param {Array<Object>} propPatterns the list of patterns to match.
+   * @param {number} maxNbResults the maximum number of events to return.
+   * @return {Promise<Array<Object>>} an array of events.
+   */
+  this.sourceEventsAsObjects = function (type, propNames, propPatterns, maxNbResults) {
+    return this.sourceEvents(type, propNames, propPatterns, maxNbResults, 'objects');
+  }
+
+  /**
+   * Source one or more events.
+   *
+   * @param {string} type the event type.
+   * @param {Array<string>} propNames the event property names.
+   * @param {Array<Object>} propPatterns the list of patterns to match.
+   * @param {number} maxNbResults the maximum number of events to return.
+   * @return {Promise<Array<Array<string>>>} an array of events.
+   */
+  this.sourceEventsAsArrays = function (type, propNames, propPatterns, maxNbResults) {
+    return this.sourceEvents(type, propNames, propPatterns, maxNbResults, 'arrays_with_header');
+  }
+
+  /**
+   * Source one or more events.
+   *
+   * @param {string} type the event type.
+   * @param {Array<string>} propNames the event property names.
+   * @param {Array<Object>} propPatterns the list of patterns to match.
+   * @param {number} maxNbResults the maximum number of events to return.
+   * @param {string} format the returned events format. 'objects' returns an `Array<Object>`. Both 'arrays' and 'arrays_with_header' return an `Array<Array<string>>`.
+   * @return {Promise<Array<Object>|Array<Array<string>>>} an array of events.
+   */
+  this.sourceEvents = function (type, propNames, propPatterns, maxNbResults, format) {
+
+    const newRule = (eventType, eventPropertyNames, patterns) => {
+
+      let result = eventType + '(';
+      result += eventPropertyNames.map(prop => prop.toUpperCase()).join(', ');
+      result += ') :- ';
+      result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
+      result += eventType;
+      result += '?alea=' + Math.random().toString(36).substring(2, 12);
+      const filtersQuery = Object.entries(patterns).map(entry => entry[0] + '=' + entry[1]).join('&');
+      result += filtersQuery ? '&' + filtersQuery : '';
+      result += '", "{{ client }}", "{{ env }}", "{{ sftp_host }}", "{{ sftp_username }}", "{{ sftp_password }}", ';
+      result += eventPropertyNames.map((prop, i) => '"value_' + i + '", _, ' + prop.toUpperCase()).join(', ');
+      result += ').';
+
+      // console.log('newRule = ', result);
+      return result.trim();
+    }
+
+    const typeNormalized = 'event_' + type.replace(/-/g, '_').toLowerCase();
+    const patterns = propPatterns.map(pattern => {
+
+      const newPattern = {};
+
+      for (let i = 0; i < propNames.length; i++) {
+        if (pattern[propNames[i]]) {
+          newPattern['value_' + i] = pattern[propNames[i]];
+        }
+      }
+      return newPattern;
+    });
+    const rule = newRule(typeNormalized, propNames, patterns);
+    const alea = Math.random().toString(36).substring(2, 8);
+
+    return this.executeProblogQuery({
+      problog_rules: [alea + '_' + rule],
+      problog_query: alea + '_' + (rule.substring(0, rule.indexOf(':-')).trim()) + '?',
+      format: format ? format : 'objects',
+      sample_size: maxNbResults ? maxNbResults : 15,
+    });
+  }
 }
