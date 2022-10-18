@@ -25,7 +25,7 @@ import {
   Toaster
 } from '@blueprintjs/core';
 import {Cell, Column, ColumnHeaderCell, Table2, TableLoadingOption} from '@blueprintjs/table';
-import {Select2} from '@blueprintjs/select';
+import {MultiSelect2, Select2} from '@blueprintjs/select';
 import {TimePrecision} from '@blueprintjs/datetime';
 import {DateInput2, DateRangeInput2} from '@blueprintjs/datetime2';
 import {add, format, parse, sub} from "date-fns";
@@ -1615,6 +1615,169 @@ blueprintjs.MinimalDateRange = class extends blueprintjs.Blueprintjs {
         this.dateMin = range[0];
         this.dateMax = range[1];
         this.observers_.notify('selection-change', range);
+      }
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs multiselect element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalMultiSelect}
+ */
+blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
+   * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
+   * @param {function(*): string} itemToTag a function that maps an item to the tag to be displayed (optional).
+   * @constructor
+   */
+  constructor(container, itemToText, itemToLabel, itemToTag) {
+    super(container);
+    this.itemToText_ = itemToText;
+    this.itemToLabel_ = itemToLabel;
+    this.itemToTag_ = itemToTag;
+    this.observers_ = new observers.Subject();
+    this.fillContainer_ = true;
+    this.disabled_ = false;
+    this.items_ = [];
+    this.selectedItems_ = [];
+    this.activeItem_ = null;
+    this.defaultText_ = 'Sélectionnez un élément...';
+    this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
+    this.render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get items() {
+    return this.items_;
+  }
+
+  set items(values) {
+    this.items_ = values;
+    this.render();
+  }
+
+  get selectedItems() {
+    return this.selectedItems_;
+  }
+
+  set selectedItems(value) {
+    this.selectedItems_ = value ? value : [];
+    this.render();
+  }
+
+  get defaultText() {
+    return this.defaultText_;
+  }
+
+  set defaultText(value) {
+    this.defaultText_ = value;
+    this.render();
+  }
+
+  get noResults() {
+    return this.noResults_;
+  }
+
+  set noResults(value) {
+    this.noResults_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (items) => {
+      console.log('Selected items are ', items);
+      if (callback) {
+        callback(items);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(MultiSelect2, {
+      fill: this.fillContainer,
+      disabled: this.disabled,
+      items: this.items,
+      selectedItems: this.selectedItems,
+      activeItem: this.activeItem_,
+      placeholder: this.defaultText,
+      onActiveItemChange: (item) => {
+        this.activeItem_ = item;
+        this.render();
+      },
+      onClear: () => {
+        this.selectedItems_ = [];
+        this.activeItem_ = null;
+        this.render();
+        this.observers_.notify('selection-change', this.selectedItems);
+      },
+      onItemSelect: (item) => {
+        // If the user selects twice the same item, do not add it twice to the selection
+        const pos = this.selectedItems.map(i => this.itemToText_ ? this.itemToText_(i) : i).indexOf(
+            this.itemToText_ ? this.itemToText_(item) : item);
+        if (pos !== 0 && pos <= -1) {
+          this.selectedItems_.push(item);
+          this.activeItem_ = item;
+          this.render();
+          this.observers_.notify('selection-change', this.selectedItems);
+        }
+      },
+      itemRenderer: (item, props) => {
+        if (!props.modifiers.matchesPredicate) {
+          return null;
+        }
+        return React.createElement(MenuItem, {
+          key: props.index,
+          selected: props.modifiers.active,
+          text: this.itemToText_ ? this.itemToText_(item) : item,
+          label: this.itemToLabel_ ? this.itemToLabel_(item) : '',
+          onFocus: props.handleFocus,
+          onClick: props.handleClick,
+        });
+      },
+      tagRenderer: (item) => {
+        return this.itemToTag_ ? this.itemToTag_(item) : item;
+      },
+      onRemove: (tag, index) => {
+        this.selectedItems_.splice(index, 1);
+        this.render();
+        this.observers_.notify('selection-change', this.selectedItems);
+      },
+      noResults: React.createElement(MenuItem, {
+        text: this.noResults, disabled: true,
+      }),
+      popoverProps: {
+        matchTargetWidth: true,
       }
     });
   }

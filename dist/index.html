@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="multiselect"></div>
 <div id="list"></div>
 <div id="daterange" style="width:500px"></div>
 <div id="datetime" style="width:250px"></div>
@@ -74,10 +75,15 @@
       ['ATYPEP', 'ASC'], ['NBATIM', 'ASC'], ['CAGEXP', 'ASC']];
 
     const query = (projection, order, nextRow) => `
-      SELECT ${projection.join(', ')}
-      FROM (SELECT * FROM tmp_babatp)
-      ORDER BY ${order.map(cols => cols.join(' ')).join(', ')}
-      LIMIT ${nextRow}, 100
+      SELECT
+        ${projection.join(', ')}
+      FROM (
+        SELECT *
+        FROM tmp_babatp
+      )
+      ORDER BY
+        ${order.map(cols => cols.join(' ')).join(', ')} LIMIT
+        ${nextRow}, 100
     `;
 
     const tbl = new com.computablefacts.blueprintjs.MinimalTable(root);
@@ -417,6 +423,23 @@
     setTimeout(() => list.append([{id: 3, name: 'third'}, {id: 4, name: 'fourth'}]), 5000);
   }
 
+  function testMultiSelect() {
+
+    const root = document.getElementById('multiselect');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const items = ['A', 'B', 'C'];
+
+    const multiselect = new com.computablefacts.blueprintjs.MinimalMultiSelect(root);
+    multiselect.items = items;
+    multiselect.selectedItems = ['B'];
+
+    multiselect.onSelectionChange((items) => {
+      console.log(items);
+    });
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -434,6 +457,7 @@
   testDatetime();
   testDateRange();
   testList();
+  testMultiSelect();
 
 </script>
 </body>
