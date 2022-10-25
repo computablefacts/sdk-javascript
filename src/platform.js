@@ -286,10 +286,10 @@ platform.HttpClient = function () {
           values: propValues.map(prop => '' + prop),
           is_valid: true,
           start_date: startDate.toISOString(),
-        }], headers: {
-          Authorization: `Bearer ${token_}`
-        }
-      }, method: 'POST'
+        }]
+      }, method: 'POST', headers: {
+        Authorization: `Bearer ${token_}`
+      }
     });
   }
 
