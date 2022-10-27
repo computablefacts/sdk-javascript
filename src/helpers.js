@@ -216,3 +216,40 @@ helpers.forEach = function (array, callback, context, maxTimePerChunk) {
 
   doChunk();
 }
+
+/**
+ * Delay a javascript function call. Executes only the last call.
+ *
+ * @param func the function to execute.
+ * @param timeout the delay before the function can be called.
+ * @returns {function}
+ */
+helpers.debounceLast = function (func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
+
+/**
+ * Delay a javascript function call. Executes only the first call.
+ *
+ * @param func the function to execute.
+ * @param timeout the delay before the function can be called again.
+ * @returns {function}
+ */
+helpers.debounceFirst = function (func, timeout = 300) {
+  let timer;
+  return (...args) => {
+    if (!timer) {
+      func.apply(this, args);
+    }
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+    }, timeout);
+  };
+}
