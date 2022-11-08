@@ -324,7 +324,7 @@ platform.HttpClient = function () {
    *
    * @param {string} type the event type.
    * @param {Array<string>} propNames the event property names.
-   * @param {Array<Object>} propPatterns the list of patterns to match.
+   * @param {Object} propPatterns the list of patterns to match.
    * @param {number} maxNbResults the maximum number of events to return.
    * @param {string} format the returned events format. 'objects' returns an `Array<Object>`. Both 'arrays' and 'arrays_with_header' return an `Array<Array<string>>`.
    * @return {Promise<Array<Object>|Array<Array<string>>>} an array of events.
@@ -349,19 +349,16 @@ platform.HttpClient = function () {
       return result.trim();
     }
 
-    const typeNormalized = 'event_' + type.replace(/-/g, '_').toLowerCase();
-    const patterns = propPatterns.map(pattern => {
+    const pattern = {};
 
-      const newPattern = {};
-
-      for (let i = 0; i < propNames.length; i++) {
-        if (pattern[propNames[i]]) {
-          newPattern['value_' + i] = pattern[propNames[i]];
-        }
+    for (let i = 0; i < propNames.length; i++) {
+      if (propPatterns[propNames[i]]) {
+        pattern['value_' + i] = propPatterns[propNames[i]];
       }
-      return newPattern;
-    });
-    const rule = newRule(typeNormalized, propNames, patterns);
+    }
+
+    const typeNormalized = 'event_' + type.replace(/-/g, '_').toLowerCase();
+    const rule = newRule(typeNormalized, propNames, pattern);
     const alea = Math.random().toString(36).substring(2, 8);
 
     return this.executeProblogQuery({
