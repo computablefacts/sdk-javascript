@@ -336,7 +336,7 @@ platform.HttpClient = function () {
       let result = eventType + '(';
       result += eventPropertyNames.map(prop => prop.toUpperCase()).join(', ');
       result += ') :- ';
-      result += 'fn_mysql_materialize_facts("{{ app_url }}api/v3/facts/no_namespace/';
+      result += 'fn_mysql_materialize_facts("{{ app_url }}/api/v3/facts/no_namespace/';
       result += eventType;
       result += '?alea=' + Math.random().toString(36).substring(2, 12);
       const filtersQuery = Object.entries(patterns).map(entry => entry[0] + '=' + entry[1]).join('&');
