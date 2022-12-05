@@ -46,7 +46,7 @@
     "@blueprintjs/core": "^4.8.0",
     "@blueprintjs/datetime": "^4.3.5",
     "@blueprintjs/datetime2": "^0.5.1",
-    "@blueprintjs/select": "^4.5.3",
+    "@blueprintjs/select": "^4.8.12",
     "@blueprintjs/table": "^4.6.0"
   },
   "jest": {

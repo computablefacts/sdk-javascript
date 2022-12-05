@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="suggest"></div>
 <div id="multiselect"></div>
 <div id="list"></div>
 <div id="daterange" style="width:500px"></div>
@@ -438,6 +439,28 @@
     multiselect.onSelectionChange((items) => {
       console.log(items);
     });
+    multiselect.onFilterChange((query) => {
+      console.log(query);
+    });
+  }
+
+  function testSuggest() {
+
+    const root = document.getElementById('suggest');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const items = ['A', 'B', 'C'];
+
+    const suggest = new com.computablefacts.blueprintjs.MinimalSuggest(root, x => x, x => x);
+    suggest.items = items;
+
+    suggest.onSelectionChange((item) => {
+      console.log(item);
+    });
+    suggest.onFilterChange((query) => {
+      console.log(query);
+    });
   }
 
   testWhoAmI();
@@ -458,6 +481,7 @@
   testDateRange();
   testList();
   testMultiSelect();
+  testSuggest();
 
 </script>
 </body>

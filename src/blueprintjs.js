@@ -25,7 +25,7 @@ import {
   Toaster
 } from '@blueprintjs/core';
 import {Cell, Column, ColumnHeaderCell, Table2, TableLoadingOption} from '@blueprintjs/table';
-import {MultiSelect2, Select2} from '@blueprintjs/select';
+import {MultiSelect2, Select2, Suggest2} from '@blueprintjs/select';
 import {TimePrecision} from '@blueprintjs/datetime';
 import {DateInput2, DateRangeInput2} from '@blueprintjs/datetime2';
 import {add, format, parse, sub} from "date-fns";
@@ -377,7 +377,6 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
     this.observers_ = new observers.Subject();
-    this.activeItem_ = null;
     this.selectedItem_ = null;
     this.fillContainer_ = true;
     this.disabled_ = false;
@@ -503,16 +502,17 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
       children: [this._newButton()],
       items: this.items,
       filterable: this.filterable,
-      activeItem: this.activeItem_,
-      onActiveItemChange: (item) => {
-        this.activeItem_ = item;
-        this.render();
+      itemPredicate: (query, item) => {
+        if (query && query !== '') {
+          const txt = this.itemToText_ ? this.itemToText_(item) : item;
+          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+        }
+        return true;
       },
       onItemSelect: (item) => {
         // If the user selects twice the same item, removes the selection
         const selection = item === this.selectedItem ? null : item;
         this.selectedItem_ = selection;
-        this.activeItem_ = selection;
         this.render();
         this.observers_.notify('selection-change', selection);
       },
@@ -1646,7 +1646,6 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
     this.disabled_ = false;
     this.items_ = [];
     this.selectedItems_ = [];
-    this.activeItem_ = null;
     this.defaultText_ = 'Sélectionnez un élément...';
     this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
     this.render();
@@ -1716,9 +1715,26 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
    */
   onSelectionChange(callback) {
     this.observers_.register('selection-change', (items) => {
-      console.log('Selected items are ', items);
+      // console.log('Selected items are ', items);
       if (callback) {
         callback(items);
+      }
+    });
+  }
+
+  /**
+   * Listen to the `filter-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onFilterChange
+   * @function
+   * @public
+   */
+  onFilterChange(callback) {
+    this.observers_.register('filter-change', (query) => {
+      // console.log('Query is ', query);
+      if (callback) {
+        callback(query);
       }
     });
   }
@@ -1729,17 +1745,21 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
       disabled: this.disabled,
       items: this.items,
       selectedItems: this.selectedItems,
-      activeItem: this.activeItem_,
       placeholder: this.defaultText,
-      onActiveItemChange: (item) => {
-        this.activeItem_ = item;
-        this.render();
+      onQueryChange: (query) => {
+        this.observers_.notify('filter-change', query);
       },
       onClear: () => {
         this.selectedItems_ = [];
-        this.activeItem_ = null;
         this.render();
         this.observers_.notify('selection-change', this.selectedItems);
+      },
+      itemPredicate: (query, item) => {
+        if (query && query !== '') {
+          const txt = this.itemToText_ ? this.itemToText_(item) : item;
+          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+        }
+        return true;
       },
       onItemSelect: (item) => {
         // If the user selects twice the same item, do not add it twice to the selection
@@ -1747,7 +1767,6 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
             this.itemToText_ ? this.itemToText_(item) : item);
         if (pos !== 0 && pos <= -1) {
           this.selectedItems_.push(item);
-          this.activeItem_ = item;
           this.render();
           this.observers_.notify('selection-change', this.selectedItems);
         }
@@ -1772,6 +1791,158 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
         this.selectedItems_.splice(index, 1);
         this.render();
         this.observers_.notify('selection-change', this.selectedItems);
+      },
+      noResults: React.createElement(MenuItem, {
+        text: this.noResults, disabled: true,
+      }),
+      popoverProps: {
+        matchTargetWidth: true,
+      }
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs suggest element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalSuggest}
+ */
+blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
+   * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
+   * @constructor
+   */
+  constructor(container, itemToText, itemToLabel) {
+    super(container);
+    this.itemToText_ = itemToText;
+    this.itemToLabel_ = itemToLabel;
+    this.observers_ = new observers.Subject();
+    this.fillContainer_ = true;
+    this.disabled_ = false;
+    this.items_ = [];
+    this.selectedItem_ = null;
+    this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
+    this.render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get items() {
+    return this.items_;
+  }
+
+  set items(values) {
+    this.items_ = values;
+    this.render();
+  }
+
+  get selectedItem() {
+    return this.selectedItem_;
+  }
+
+  set selectedItem(value) {
+    this.selectedItem_ = value ? value : null;
+    this.render();
+  }
+
+  get noResults() {
+    return this.noResults_;
+  }
+
+  set noResults(value) {
+    this.noResults_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (item) => {
+      // console.log('Selected item is ', item);
+      if (callback) {
+        callback(item);
+      }
+    });
+  }
+
+  /**
+   * Listen to the `filter-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onFilterChange
+   * @function
+   * @public
+   */
+  onFilterChange(callback) {
+    this.observers_.register('filter-change', (query) => {
+      // console.log('Query is ', query);
+      if (callback) {
+        callback(query);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(Suggest2, {
+      fill: this.fillContainer,
+      disabled: this.disabled,
+      items: this.items,
+      selectedItems: this.selectedItem,
+      onQueryChange: (query) => {
+        this.observers_.notify('filter-change', query);
+      },
+      inputValueRenderer: item => this.itemToText_ ? this.itemToText_(item) : item,
+      onItemSelect: (item) => {
+        this.selectedItem_ = item;
+        this.render();
+        this.observers_.notify('selection-change', this.selectedItem);
+      },
+      itemPredicate: (query, item) => {
+        if (query && query !== '') {
+          const txt = this.itemToText_ ? this.itemToText_(item) : item;
+          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+        }
+        return true;
+      },
+      itemRenderer: (item, props) => {
+        if (!props.modifiers.matchesPredicate) {
+          return null;
+        }
+        return React.createElement(MenuItem, {
+          key: props.index,
+          selected: props.modifiers.active,
+          text: this.itemToText_ ? this.itemToText_(item) : item,
+          label: this.itemToLabel_ ? this.itemToLabel_(item) : '',
+          onFocus: props.handleFocus,
+          onClick: props.handleClick,
+        });
       },
       noResults: React.createElement(MenuItem, {
         text: this.noResults, disabled: true,
