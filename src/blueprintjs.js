@@ -1914,7 +1914,7 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
       fill: this.fillContainer,
       disabled: this.disabled,
       items: this.items,
-      selectedItems: this.selectedItem,
+      selectedItem: this.selectedItem,
       onQueryChange: (query) => {
         this.observers_.notify('filter-change', query);
       },
