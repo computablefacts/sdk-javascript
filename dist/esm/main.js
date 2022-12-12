@@ -2041,6 +2041,7 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
     this.disabled_ = false;
     this.items_ = [];
     this.selectedItem_ = null;
+    this.defaultText_ = 'Saisissez un caractère...';
     this.noResults_ = 'Il n\'y a aucun résultat pour cette recherche.';
     this.render();
   }
@@ -2079,6 +2080,18 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
   set selectedItem(value) {
     this.selectedItem_ = value ? value : null;
     this.render();
+  }
+
+  get defaultText() {
+    return this.defaultText_;
+  }
+
+  set defaultText(value) {
+    this.defaultText_ = value;
+    const input = this.container.querySelector('input');
+    if (input) {
+      input.placeholder = this.defaultText_;
+    }
   }
 
   get noResults() {
@@ -2129,7 +2142,7 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
       fill: this.fillContainer,
       disabled: this.disabled,
       items: this.items,
-      selectedItems: this.selectedItem,
+      selectedItem: this.selectedItem,
       onQueryChange: (query) => {
         this.observers_.notify('filter-change', query);
       },
