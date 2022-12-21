@@ -2621,6 +2621,31 @@ helpers.debounceFirst = function (func, timeout = 300) {
 };
 
 /**
+ * Download a JSON object or an array of JSON objects.
+ *
+ * @param filename the name of the downloaded file.
+ * @param data the data to download.
+ */
+helpers.download = function (filename, data) {
+
+  const blob = new Blob(JSON.stringify(data), {type: "application/json;charset=utf-8"});
+  const isIE = !!document.documentMode;
+
+  if (isIE) {
+    window.navigator.msSaveBlob(blob, filename);
+  } else {
+    const url = window.URL || window.webkitURL;
+    const link = url.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.download = filename;
+    a.href = link;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+};
+
+/**
  * @module platform
  */
 const platform = {};
