@@ -2628,7 +2628,7 @@ helpers.debounceFirst = function (func, timeout = 300) {
  */
 helpers.download = function (filename, data) {
 
-  const blob = new Blob(JSON.stringify(data), {type: "application/json;charset=utf-8"});
+  const blob = new Blob([JSON.stringify(data)], {type: "application/json;charset=utf-8"});
   const isIE = !!document.documentMode;
 
   if (isIE) {
