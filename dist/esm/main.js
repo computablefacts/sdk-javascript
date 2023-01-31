@@ -585,12 +585,23 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
    * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
+   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
-  constructor(container, itemToText, itemToLabel) {
+  constructor(container, itemToText, itemToLabel, itemPredicate) {
     super(container);
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
+    this.itemPredicate_ = (query, item) => {
+      if (itemPredicate) {
+        return itemPredicate(query, item);
+      }
+      if (query && query !== '') {
+        const txt = this.itemToText_ ? this.itemToText_(item) : item;
+        return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+      }
+      return true;
+    };
     this.observers_ = new observers.Subject();
     this.selectedItem_ = null;
     this.fillContainer_ = true;
@@ -717,13 +728,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
       children: [this._newButton()],
       items: this.items,
       filterable: this.filterable,
-      itemPredicate: (query, item) => {
-        if (query && query !== '') {
-          const txt = this.itemToText_ ? this.itemToText_(item) : item;
-          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
-        }
-        return true;
-      },
+      itemPredicate: this.itemPredicate_,
       onItemSelect: (item) => {
         // If the user selects twice the same item, removes the selection
         const selection = item === this.selectedItem ? null : item;
@@ -1849,13 +1854,24 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
    * @param {function(*): string} itemToTag a function that maps an item to the tag to be displayed (optional).
+   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
-  constructor(container, itemToText, itemToLabel, itemToTag) {
+  constructor(container, itemToText, itemToLabel, itemToTag, itemPredicate) {
     super(container);
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
     this.itemToTag_ = itemToTag;
+    this.itemPredicate_ = (query, item) => {
+      if (itemPredicate) {
+        return itemPredicate(query, item);
+      }
+      if (query && query !== '') {
+        const txt = this.itemToText_ ? this.itemToText_(item) : item;
+        return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+      }
+      return true;
+    };
     this.observers_ = new observers.Subject();
     this.fillContainer_ = true;
     this.disabled_ = false;
@@ -1969,13 +1985,7 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
         this.render();
         this.observers_.notify('selection-change', this.selectedItems);
       },
-      itemPredicate: (query, item) => {
-        if (query && query !== '') {
-          const txt = this.itemToText_ ? this.itemToText_(item) : item;
-          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
-        }
-        return true;
-      },
+      itemPredicate: this.itemPredicate_,
       onItemSelect: (item) => {
         // If the user selects twice the same item, do not add it twice to the selection
         const pos = this.selectedItems.map(i => this.itemToText_ ? this.itemToText_(i) : i).indexOf(
@@ -2030,12 +2040,23 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
    * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
+   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
-  constructor(container, itemToText, itemToLabel) {
+  constructor(container, itemToText, itemToLabel, itemPredicate) {
     super(container);
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
+    this.itemPredicate_ = (query, item) => {
+      if (itemPredicate) {
+        return itemPredicate(query, item);
+      }
+      if (query && query !== '') {
+        const txt = this.itemToText_ ? this.itemToText_(item) : item;
+        return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
+      }
+      return true;
+    };
     this.observers_ = new observers.Subject();
     this.fillContainer_ = true;
     this.disabled_ = false;
@@ -2152,13 +2173,7 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
         this.render();
         this.observers_.notify('selection-change', this.selectedItem);
       },
-      itemPredicate: (query, item) => {
-        if (query && query !== '') {
-          const txt = this.itemToText_ ? this.itemToText_(item) : item;
-          return txt.trim().toLowerCase().indexOf(query.trim().toLowerCase()) >= 0;
-        }
-        return true;
-      },
+      itemPredicate: this.itemPredicate_,
       itemRenderer: (item, props) => {
         if (!props.modifiers.matchesPredicate) {
           return null;
