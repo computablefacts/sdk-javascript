@@ -370,7 +370,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
    * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
-   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
+   * @param {function(*): boolean} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
   constructor(container, itemToText, itemToLabel, itemPredicate) {
@@ -1639,7 +1639,7 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
    * @param {function(*): string} itemToTag a function that maps an item to the tag to be displayed (optional).
-   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
+   * @param {function(*): boolean} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
   constructor(container, itemToText, itemToLabel, itemToTag, itemPredicate) {
@@ -1825,7 +1825,7 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
    * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
-   * @param {function(*): string} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
+   * @param {function(*): boolean} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
    * @constructor
    */
   constructor(container, itemToText, itemToLabel, itemPredicate) {
