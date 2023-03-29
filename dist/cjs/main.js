@@ -594,10 +594,11 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
    * @param {Element} container the parent element.
    * @param {function(*): string} itemToText a function that maps an item to the text to be displayed (optional).
    * @param {function(*): string} itemToLabel a function that maps an item to the label to be displayed (optional).
-   * @param {function(*): boolean} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
+   * @param {function(string, *): boolean} itemPredicate a function that filters the internal list of items when user enters something in the input (optional).
+   * @param {function(string): *} itemCreate a function that creates an item from a string (optional).
    * @constructor
    */
-  constructor(container, itemToText, itemToLabel, itemPredicate) {
+  constructor(container, itemToText, itemToLabel, itemPredicate, itemCreate) {
     super(container);
     this.itemToText_ = itemToText;
     this.itemToLabel_ = itemToLabel;
@@ -611,6 +612,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
       }
       return true;
     };
+    this.itemCreate_ = itemCreate;
     this.observers_ = new observers.Subject();
     this.selectedItem_ = null;
     this.fillContainer_ = true;
@@ -766,7 +768,13 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
       }),
       popoverProps: {
         matchTargetWidth: true,
-      }
+      },
+      createNewItemFromQuery: this.itemCreate_,
+      createNewItemRenderer: (query, active, handleClick) => {
+        return React__default["default"].createElement(core.MenuItem, {
+          icon: 'add', selected: active, text: query, onClick: handleClick,
+        });
+      },
     });
   }
 };
@@ -2038,10 +2046,7 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
       createNewItemFromQuery: this.itemCreate_,
       createNewItemRenderer: (query, active, handleClick) => {
         return React__default["default"].createElement(core.MenuItem, {
-          icon: 'add',
-          selected: active,
-          text: query,
-          onClick: handleClick,
+          icon: 'add', selected: active, text: query, onClick: handleClick,
         });
       },
     });
