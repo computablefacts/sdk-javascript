@@ -430,9 +430,15 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
+    const createItem = (query) => {
+      console.log('Create item \'' + query + '\'');
+      return query;
+    }
+
     const items = ['A', 'B', 'C'];
 
-    const multiselect = new com.computablefacts.blueprintjs.MinimalMultiSelect(root);
+    const multiselect = new com.computablefacts.blueprintjs.MinimalMultiSelect(root, null, null, null, null,
+        createItem);
     multiselect.items = items;
     multiselect.selectedItems = ['B'];
 
