@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
+    "doc": "jsdoc -c jsdoc.config.json",
     "test": "jest"
   },
   "repository": {
