@@ -41,6 +41,8 @@ jobs:
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Build doc with JSDoc
         run: npm run doc
+      - name: Add dist/index.html (Components test page)
+        run: "mkdir ./docs/dist && cp ./dist/index.html ./docs/dist/index.html"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
