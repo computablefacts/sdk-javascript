@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MenuItem, Menu, Button, Slider, Drawer, Position, Tab, Tabs, SpinnerSize, Spinner, Alignment, Switch, Intent, Toast, Toaster, Card, Icon, Checkbox } from '@blueprintjs/core';
+import { MenuItem, Menu, Button, Slider, RangeSlider, Drawer, Position, Tab, Tabs, SpinnerSize, Spinner, Alignment, Switch, Intent, Toast, Toaster, Card, Icon, Checkbox } from '@blueprintjs/core';
 import { Cell, ColumnHeaderCell, Column, Table2, TableLoadingOption } from '@blueprintjs/table';
 import { Select2, MultiSelect2, Suggest2 } from '@blueprintjs/select';
 import { TimePrecision } from '@blueprintjs/datetime';
@@ -844,6 +844,99 @@ blueprintjs.MinimalSlider = class extends blueprintjs.Blueprintjs {
       disabled: this.disabled,
       onChange: (value) => {
         this.value = value;
+        this.observers_.notify('selection-change', value);
+      },
+    });
+  }
+};
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs range slider element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalRangeSlider}
+ */
+blueprintjs.MinimalRangeSlider = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {number} min the minimum value.
+   * @param {number} max the maximum value.
+   * @param {number} increment the internal increment.
+   * @param {number} displayIncrement the display increment.
+   * @param {number} defaultMinValue the minimum value selected when the component is rendered the first time.
+   * @param {number} defaultMaxValue the maximum value selected when the component is rendered the first time.
+   * @constructor
+   */
+  constructor(container, min, max, increment, displayIncrement, defaultMinValue, defaultMaxValue) {
+    super(container);
+    this.min_ = min;
+    this.max_ = max;
+    this.increment_ = increment;
+    this.displayIncrement_ = displayIncrement;
+    this.minValue_ = defaultMinValue;
+    this.maxValue_ = defaultMaxValue;
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get minValue() {
+    return this.minValue_;
+  }
+
+  set minValue(value) {
+    this.minValue_ = value;
+    this.render();
+  }
+
+  get maxValue() {
+    return this.maxValue_;
+  }
+
+  set maxValue(value) {
+    this.maxValue_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(number, number): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      console.log('Selected value is ', value);
+      if (callback) {
+        callback(value[0], value[1]);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(RangeSlider, {
+      min: this.min_,
+      max: this.max_,
+      stepSize: this.increment_,
+      labelStepSize: this.displayIncrement_,
+      value: [this.minValue, this.maxValue],
+      disabled: this.disabled,
+      onChange: (value) => {
+        this.minValue = value[0];
+        this.maxValue = value[1];
         this.observers_.notify('selection-change', value);
       },
     });

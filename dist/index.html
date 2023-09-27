@@ -29,6 +29,7 @@
 <div id="tab"></div>
 <div id="drawer"></div>
 <a href="#" onclick="window.showDrawer()">Show drawer!</a>
+<div id="range-slider"></div>
 <div id="slider"></div>
 <div id="select-with-filter"></div>
 <div id="select-without-filter"></div>
@@ -190,6 +191,19 @@
 
     slider.onSelectionChange((value) => {
       console.log(value);
+    });
+  }
+
+  function testRangeSlider() {
+
+    const root = document.getElementById('range-slider');
+    root.style.width = '300px';
+    root.style.height = '50px';
+
+    const slider = new com.computablefacts.blueprintjs.MinimalRangeSlider(root, 0, 100, 1, 10, 25, 75);
+
+    slider.onSelectionChange((min, max) => {
+      console.log(min, max);
     });
   }
 
@@ -479,6 +493,7 @@
   testSelect1();
   testSelect2();
   testSlider();
+  testRangeSlider();
   testDrawer();
   testTabs();
   testSpinner();
