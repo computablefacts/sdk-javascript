@@ -928,7 +928,7 @@ blueprintjs.MinimalRangeSlider = class extends blueprintjs.Blueprintjs {
    */
   onSelectionChange(callback) {
     this.observers_.register('selection-change', (value) => {
-      console.log('Selected value is ', value);
+      // console.log('Selected value is ', value);
       if (callback) {
         callback(value[0], value[1]);
       }
