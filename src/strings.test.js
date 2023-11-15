@@ -109,4 +109,26 @@ test('highlight', () => {
   expect(strings.highlight(text, [pattern])).toEqual({
     snippets: [snippet], text: textHighlighted
   });
-})
+
+  const text2 = 'Motif n°1: aabbcc.\fMotif n°2: aabbcc.';
+  const textHighlighted2 = 'Motif n°1: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.\fMotif n°2: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.';
+  const pattern2 = {
+    regexp: /aabbcc/gims, color: "#fffec8"
+  };
+  const snippet2 = {
+    matchedText: "aabbcc",
+    matchedPage: 1,
+    rawSnippet: 'Motif n°1: aabbcc.\fMotif n°2: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.',
+    highlightedSnippet: 'Motif n°1: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.\fMotif n°2: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.',
+  };
+  const snippet3 = {
+    matchedText: "aabbcc",
+    matchedPage: 2,
+    rawSnippet: 'Motif n°1: aabbcc.\fMotif n°2: aabbcc.',
+    highlightedSnippet: 'Motif n°1: aabbcc.\fMotif n°2: <mark style="border-radius:3px;background:#fffec8">aabbcc</mark>.',
+  };
+
+  expect(strings.highlight(text2, [pattern2])).toEqual({
+    snippets: [snippet3, snippet2], text: textHighlighted2
+  });
+});

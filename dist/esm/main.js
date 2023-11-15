@@ -3482,6 +3482,10 @@ strings.highlight = function (text, patterns) {
 
   let highlightedText = text;
   text = strings.removeDiacritics(text, true);
+
+  if (text.length !== highlightedText.length) {
+    highlightedText = text;
+  }
   const highlights = patterns.flatMap(pattern => {
 
     const matcher = pattern.regexp;
@@ -3518,7 +3522,6 @@ strings.highlight = function (text, patterns) {
         begin)}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(0, end)}`;
     const pages = prefix.split('\f' /* page separator */).map((page, index) => index);
 
-    // matchedText, rawSnippet, highlightedSnippet, page
     return new strings.Highlight(infix, pages.length, rawSnippet, highlightedSnippet);
   });
   return new strings.HighlightedText(highlightedText, highlights);
