@@ -2317,6 +2317,93 @@ blueprintjs.MinimalSuggest = class extends blueprintjs.Blueprintjs {
 };
 
 /**
+ * A skeleton to ease the creation of a minimal Blueprintjs file input element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalFileInput}
+ */
+blueprintjs.MinimalFileInput = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @constructor
+   */
+  constructor(container) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this.text_ = null;
+    this.buttonText_ = null;
+    this.fill_ = true;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get fill() {
+    return this.fill_;
+  }
+
+  set fill(value) {
+    this.fill_ = value;
+    this.render();
+  }
+
+  get text() {
+    return this.text_;
+  }
+
+  set text(value) {
+    this.text_ = value;
+    this.render();
+  }
+
+  get buttonText() {
+    return this.buttonText_;
+  }
+
+  set buttonText(value) {
+    this.buttonText_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(*): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (file) => {
+      // console.log('Selected file is ', file);
+      if (callback) {
+        callback(file);
+      }
+    });
+  }
+
+  _newElement() {
+    return React__default["default"].createElement(core.FileInput, {
+      disabled: this.disabled, text: this.text, buttonText: this.buttonText, fill: this.fill, onInputChange: (el) => {
+        this.text = el.target.files[0].name;
+        this.render();
+        this.observers_.notify('selection-change', el.target.files[0]);
+      },
+    });
+  }
+};
+
+/**
  * @module caches
  */
 const caches = {};

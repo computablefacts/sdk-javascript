@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="file-input"></div>
 <div id="suggest"></div>
 <div id="multiselect"></div>
 <div id="list"></div>
@@ -488,6 +489,20 @@
     });
   }
 
+  function testFileInput() {
+
+    const root = document.getElementById('file-input');
+
+    const fileInput = new com.computablefacts.blueprintjs.MinimalFileInput(root);
+    // fileInput.disabled = true;
+    fileInput.text = 'Sélectionner un fichier...';
+    fileInput.buttonText = 'Rechercher...';
+
+    fileInput.onSelectionChange((file) => {
+      console.log(file);
+    });
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -508,6 +523,7 @@
   testList();
   testMultiSelect();
   testSuggest();
+  testFileInput();
 
 </script>
 </body>
