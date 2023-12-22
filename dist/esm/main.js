@@ -3120,6 +3120,18 @@ platform.HttpClient = function () {
   };
 
   /**
+   * Call the `find-terms` platform endpoint.
+   *
+   * @param params the request payload.
+   * @return {Promise<Object>} the platform response.
+   */
+  this.findTerms = function (params) {
+    return this.fetch({
+      jsonrpc: '2.0', id: Date.now(), method: 'find-terms', params: params
+    });
+  };
+
+  /**
    * Sink a single event.
    *
    * @param {string} type the event type.
