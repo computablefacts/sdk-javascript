@@ -3626,10 +3626,15 @@ strings.highlight = function (text, patterns) {
     const begin = Math.max(0, prefix.length - 50);
     const end = Math.min(150, suffix.length);
     const rawSnippet = `${prefix.substring(begin)}${infix}${suffix.substring(0, end)}`;
-    const highlightedSnippet = `${prefix.substring(
+    let highlightedSnippet = `${prefix.substring(
         begin)}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(0, end)}`;
     const pages = prefix.split('\f' /* page separator */).map((page, index) => index);
+    const beginMark = highlightedSnippet.lastIndexOf('<mark');
+    const endMark = highlightedSnippet.lastIndexOf('</mark>');
 
+    if (beginMark && (!endMark || beginMark > endMark)) {
+      highlightedSnippet = highlightedSnippet.substring(0, beginMark);
+    }
     return new strings.Highlight(infix, pages.length, rawSnippet, highlightedSnippet);
   });
   return new strings.HighlightedText(highlightedText, highlights);

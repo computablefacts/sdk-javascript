@@ -56,16 +56,55 @@
 <script src="main.min.js"></script>
 <script>
 
-  const env = 'dev';
+  const env = 'www';
   const client = 'ista';
-  const apiKey = 'xxx';
+  const apiKey = '87YuSBuuqM5Nq8C51u2sHWNK6vtnHkJdADVeyUg9ATQ0q6Rj2YdBZYGLI18V'; // dev = '8z6ADlE5UpG3Fd3pJbhssabEPxsl3S5MlCCZafbeHz83LA0or5RgngR5j9ST';
   const baseUrl = `https://${env}.${client}.computablefacts.com`;
   const url = `https://${env}.${client}.computablefacts.com/api/v2/public/json-rpc?api_token=${apiKey}`;
 
   function testWhoAmI() {
-    const httpClient = new com.computablefacts.platform.HttpClient();
-    httpClient.init(baseUrl, apiKey);
-    httpClient.whoAmI().then(response => console.log(response));
+
+  const httpClient = new com.computablefacts.platform.HttpClient();
+  httpClient.init(baseUrl, apiKey);
+  httpClient.whoAmI().then(response => console.log(response));
+/*
+  httpClient.findObjects({
+    format: 'arrays', dataset: 'rnic-t4-2023', sample_size: 10, cursor: null, json_query: 'TEXT:vérif*',
+  }).then(response => {
+    return httpClient.getObjects({
+      dataset: 'test-ocr-irve',
+      json_ids: response.data,
+    });
+  }).then(response => console.log(response));
+*/
+/*
+  httpClient.findTerms({
+    dataset: 'test-ocr-irve', sample_size: 10, json_query: 'TEXT:blabla*',
+  }).then(response => console.log(response));
+*/
+/*
+  httpClient.executeSqlQuery({
+    format: 'arrays_with_header', invalidate_cache: true, force_rebuild: true, sql_query: 'SELECT ID FROM tmp_docs_irve LIMIT 30',
+  }).then(response => console.log(response));
+*/
+    httpClient.executeSqlQuery({
+      format: 'arrays_with_header',
+      invalidate_cache: true,
+      sql_query: 'SELECT ID FROM tmp_copros_clientes_2_3_denormalise LIMIT 30',
+    }).then(response => console.log(response));
+
+/*
+  httpClient.getObjects({
+    dataset: 'test-ocr-irve',
+    json_ids: ['85723|2023-12-13T21:28:52.610Z'],
+  }).then(response => console.log(response));
+*/
+/*
+  httpClient.getObjects({
+    dataset: 'bamhvp2009',
+    json_ids: ['2fsxq|2022-06-01T14:03:03.815Z'],
+  }).then(response => console.log(response));
+*/
   }
 
   function testTable() {
