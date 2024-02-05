@@ -133,7 +133,7 @@ test('highlight', () => {
   });
 });
 
-test('highlight_overlaps', () => {
+test('highlight_overlaps_style', () => {
 
   const text = "Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx stationner ici.";
   const textHighlighted = 'Le <mark style="border-radius:3px;background:#fffec8">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style="border-radius:3px;background:#fffec8">statio</mark>nner ici.';
@@ -151,6 +151,56 @@ test('highlight_overlaps', () => {
     matchedPage: 1,
     rawSnippet: 'Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style="border-radi',
     highlightedSnippet: 'Le <mark style="border-radius:3px;background:#fffec8">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx ',
+  };
+
+  expect(strings.highlight(text, [pattern])).toEqual({
+    snippets: [snippet1, snippet2], text: textHighlighted
+  });
+});
+
+test('highlight_overlaps_begin_tag', () => {
+
+  const text = "Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx stationner ici.";
+  const textHighlighted = 'Le <mark style="border-radius:3px;background:#fffec8">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style="border-radius:3px;background:#fffec8">statio</mark>nner ici.';
+  const pattern = {
+    regexp: /statio/gims, color: "#fffec8"
+  };
+  const snippet1 = {
+    matchedText: "statio",
+    matchedPage: 1,
+    rawSnippet: 'x xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx stationner ici.',
+    highlightedSnippet: 'x xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style=\"border-radius:3px;background:#fffec8\">statio</mark>nner ici.',
+  };
+  const snippet2 = {
+    matchedText: "statio",
+    matchedPage: 1,
+    rawSnippet: 'Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mar',
+    highlightedSnippet: 'Le <mark style=\"border-radius:3px;background:#fffec8\">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx ',
+  };
+
+  expect(strings.highlight(text, [pattern])).toEqual({
+    snippets: [snippet1, snippet2], text: textHighlighted
+  });
+});
+
+test('highlight_overlaps_end_tag', () => {
+
+  const text = "Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx stationner ici.";
+  const textHighlighted = 'Le <mark style="border-radius:3px;background:#fffec8">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style="border-radius:3px;background:#fffec8">statio</mark>nner ici.';
+  const pattern = {
+    regexp: /statio/gims, color: "#fffec8"
+  };
+  const snippet1 = {
+    matchedText: "statio",
+    matchedPage: 1,
+    rawSnippet: 'x xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx stationner ici.',
+    highlightedSnippet: 'x xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style=\"border-radius:3px;background:#fffec8\">statio</mark>nner ici.',
+  };
+  const snippet2 = {
+    matchedText: "statio",
+    matchedPage: 1,
+    rawSnippet: 'Le stationnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx <mark style=\"border-radius:3px;background:#fffec8\">statio</m',
+    highlightedSnippet: 'Le <mark style=\"border-radius:3px;background:#fffec8\">statio</mark>nnement est interdit. Merci de ne pas xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx ',
   };
 
   expect(strings.highlight(text, [pattern])).toEqual({
