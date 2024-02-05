@@ -3629,7 +3629,7 @@ strings.highlight = function (text, patterns) {
     let highlightedSnippet = `${prefix.substring(
         begin)}<mark style="border-radius:3px;background:${position.color}">${infix}</mark>${suffix.substring(0, end)}`;
     const pages = prefix.split('\f' /* page separator */).map((page, index) => index);
-    const beginMark = highlightedSnippet.lastIndexOf('<mark');
+    const beginMark = highlightedSnippet.lastIndexOf('<m');
     const endMark = highlightedSnippet.lastIndexOf('</mark>');
 
     if (beginMark && (!endMark || beginMark > endMark)) {
