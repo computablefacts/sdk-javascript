@@ -1,3 +1,1 @@
-TODO
-
-Link to [Components test page](dist/index.html)
+Link to [components' test page](dist/index.html)
