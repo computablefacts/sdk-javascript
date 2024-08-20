@@ -2669,15 +2669,15 @@ blueprintjs.MinimalNumericInput = class extends blueprintjs.Blueprintjs {
   }
 
   /**
-   * Listen to the `selection-change` event.
+   * Listen to the `value-change` event.
    *
    * @param {function(number): void} callback the callback to call when the event is triggered.
-   * @name onSelectionChange
+   * @name onValueChange
    * @function
    * @public
    */
-  onSelectionChange(callback) {
-    this.observers_.register('selection-change', (value) => {
+  onValueChange(callback) {
+    this.observers_.register('value-change', (value) => {
       // console.log('Selected value is ' + value);
       if (callback) {
         callback(value);
@@ -2698,7 +2698,7 @@ blueprintjs.MinimalNumericInput = class extends blueprintjs.Blueprintjs {
       leftIcon: this.icon,
       intent: this.intent,
       onValueChange: (value) => {
-        this.observers_.notify('selection-change', value);
+        this.observers_.notify('value-change', value);
       }
     });
   }
