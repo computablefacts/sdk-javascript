@@ -7,7 +7,7 @@ test('escape_characters_with_special_meaning_in_regexp', () => {
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp(1.23)).toBe('1\\.23');
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp(.123)).toBe('0\\.123');
   expect(strings.escapeCharactersWithSpecialMeaningInRegExp('Hello world! (i.e. "Bonjour monde!" en français)')).toBe(
-      'Hello world! \\(i\\.e\\. "Bonjour monde!" en français\\)');
+    'Hello world! \\(i\\.e\\. "Bonjour monde!" en français\\)');
 });
 
 test('to_regexp', () => {
@@ -17,7 +17,7 @@ test('to_regexp', () => {
   expect(strings.toRegExp(1.23)).toStrictEqual(/1\.23/im);
   expect(strings.toRegExp(.123)).toStrictEqual(/0\.123/im);
   expect(strings.toRegExp('Hello world! (i.e. "Bonjour monde!" en français)')).toStrictEqual(
-      /Hello(\s| )*world!(\s| )*\(i\.e\.(\s| )*"Bonjour(\s| )*monde!"(\s| )*en(\s| )*français\)/im);
+    /Hello(\s| )*world!(\s| )*\(i\.e\.(\s| )*"Bonjour(\s| )*monde!"(\s| )*en(\s| )*français\)/im);
 });
 
 test('remove_diacritics', () => {
@@ -27,8 +27,8 @@ test('remove_diacritics', () => {
   expect(strings.removeDiacritics(1.23)).toBe('1.23');
   expect(strings.removeDiacritics(.123)).toBe('0.123');
   expect(strings.removeDiacritics(
-      'Dès lors les voyelles et consonne accompagnées d’un signe diacritique connues de la langue française sont : à - â - ä - é - è - ê - ë - î - ï - ô - ö - ù - û - ü - ÿ - ç.')).toBe(
-      'Des lors les voyelles et consonne accompagnees d’un signe diacritique connues de la langue francaise sont : a - a - a - e - e - e - e - i - i - o - o - u - u - u - y - c.');
+    'Dès lors les voyelles et consonne accompagnées d’un signe diacritique connues de la langue française sont : à - â - ä - é - è - ê - ë - î - ï - ô - ö - ù - û - ü - ÿ - ç.')).toBe(
+    'Des lors les voyelles et consonne accompagnees d’un signe diacritique connues de la langue francaise sont : a - a - a - e - e - e - e - i - i - o - o - u - u - u - y - c.');
 });
 
 test('pad', () => {
@@ -206,4 +206,12 @@ test('highlight_overlaps_end_tag', () => {
   expect(strings.highlight(text, [pattern])).toEqual({
     snippets: [snippet1, snippet2], text: textHighlighted
   });
+});
+
+test('camel_case_to_snake_case', () => {
+  expect(strings.camelToSnakeCase(null)).toStrictEqual(null);
+  expect(strings.camelToSnakeCase('')).toStrictEqual('');
+  expect(strings.camelToSnakeCase(123)).toStrictEqual(null);
+  expect(strings.camelToSnakeCase('camelCase')).toStrictEqual('camel_case');
+  expect(strings.camelToSnakeCase('PascalCase')).toStrictEqual('pascal_case');
 });
