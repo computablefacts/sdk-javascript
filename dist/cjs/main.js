@@ -2420,9 +2420,9 @@ blueprintjs.MinimalRadioGroup = class extends blueprintjs.Blueprintjs {
    */
   constructor(container, label, inline) {
     super(container);
-    this.observers_ = new observers.Subject();
     this.label_ = label;
     this.inline_ = inline;
+    this.observers_ = new observers.Subject();
     this.disabled_ = false;
     this.items_ = [];
     this.selectedItem_ = null;
@@ -2496,28 +2496,28 @@ blueprintjs.MinimalRadioGroup = class extends blueprintjs.Blueprintjs {
  *
  * @memberOf module:blueprintjs
  * @extends {blueprintjs.Blueprintjs}
- * @type {blueprintjs.InputGroup}
+ * @type {blueprintjs.MinimalTextInput}
  */
 blueprintjs.MinimalTextInput = class extends blueprintjs.Blueprintjs {
 
   /**
    * @param {Element} container the parent element.
+   * @param {string} defaultValue the input default value (optional).
    * @param {string} icon the icon name (optional).
    * @param {string} intent the input intent in {none, primary, success, warning, danger} (optional).
    *
    * @constructor
    */
-  constructor(container, icon, intent) {
+  constructor(container, defaultValue, icon, intent) {
     super(container);
-    this.observers_ = new observers.Subject();
-    this.id_ = 'i' + Math.random().toString(36).substring(2, 12);
+    this.defaultValue_ = defaultValue;
     this.icon_ = icon;
     this.intent_ = intent;
+    this.observers_ = new observers.Subject();
+    this.id_ = 'i' + Math.random().toString(36).substring(2, 12);
     this.disabled_ = false;
     this.fillContainer_ = true;
     this.placeholder_ = null;
-    this.defaultText_ = null;
-    this.text_ = null;
     this.render();
   }
 
@@ -2566,29 +2566,140 @@ blueprintjs.MinimalTextInput = class extends blueprintjs.Blueprintjs {
     this.render();
   }
 
-  get defaultText() {
-    return this.defaultText_;
-  }
-
-  set defaultText(value) {
-    this.defaultText_ = value;
-    this.render();
-  }
-
-  get text() {
+  get value() {
     return document.getElementById(this.id_).value;
   }
 
   _newElement() {
     return React__default["default"].createElement(core.InputGroup, {
-      type: 'text',
       id: this.id_,
       disabled: this.disabled,
       placeholder: this.placeholder,
-      defaultValue: this.defaultText,
+      defaultValue: this.defaultValue_,
       fill: this.fillContainer,
       leftIcon: this.icon,
       intent: this.intent,
+    });
+  }
+};
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs text input element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalNumericInput}
+ */
+blueprintjs.MinimalNumericInput = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {number} min the minimum value.
+   * @param {number} max the maximum value.
+   * @param {number} increment the internal increment.
+   * @param {string} defaultValue the input default value (optional).
+   * @param {string} icon the icon name (optional).
+   * @param {string} intent the input intent in {none, primary, success, warning, danger} (optional).
+   *
+   * @constructor
+   */
+  constructor(container, min, max, increment, defaultValue, icon, intent) {
+    super(container);
+    this.min_ = min;
+    this.max_ = max;
+    this.increment_ = increment;
+    this.defaultValue_ = defaultValue;
+    this.icon_ = icon;
+    this.intent_ = intent;
+    this.id_ = 'i' + Math.random().toString(36).substring(2, 12);
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this.fillContainer_ = true;
+    this.placeholder_ = null;
+    this.render();
+  }
+
+  get icon() {
+    return this.icon_;
+  }
+
+  set icon(value) {
+    this.icon_ = value;
+    this.render();
+  }
+
+  get intent() {
+    return this.intent_;
+  }
+
+  set intent(value) {
+    this.intent_ = value;
+    this.render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get placeholder() {
+    return this.placeholder_;
+  }
+
+  set placeholder(value) {
+    this.placeholder_ = value;
+    this.render();
+  }
+
+  get value() {
+    return document.getElementById(this.id_).value;
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(number): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected value is ' + value);
+      if (callback) {
+        callback(value);
+      }
+    });
+  }
+
+  _newElement() {
+    return React__default["default"].createElement(core.NumericInput, {
+      id: this.id_,
+      min: this.min_,
+      max: this.max_,
+      stepSize: this.increment_,
+      disabled: this.disabled,
+      placeholder: this.placeholder,
+      defaultValue: this.defaultValue_,
+      fill: this.fillContainer,
+      leftIcon: this.icon,
+      intent: this.intent,
+      onValueChange: (value) => {
+        this.observers_.notify('selection-change', value);
+      }
     });
   }
 };

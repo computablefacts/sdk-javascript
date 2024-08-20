@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="numeric-input"></div>
 <div id="text-input"></div>
 <div id="radio-group"></div>
 <div id="file-input"></div>
@@ -568,14 +569,27 @@
 
     const root = document.getElementById('text-input');
 
-    const input = new com.computablefacts.blueprintjs.MinimalTextInput(root);
+    const input = new com.computablefacts.blueprintjs.MinimalTextInput(root, 'john.doe@example.com', 'filter');
     // input.disabled = true;
     input.placeholder = 'Filter users...';
-    input.defaultText = 'john.doe@example.com';
-    input.icon = 'filter';
     input.intent = 'danger';
 
-    console.log(input.text);
+    console.log('Default TextInput value is ' + input.value);
+  }
+
+  function testNumericInput() {
+
+    const root = document.getElementById('numeric-input');
+    const input = new com.computablefacts.blueprintjs.MinimalNumericInput(root, -5, 5, 0.5, 2, 'th-filtered');
+    // input.disabled = true;
+    input.placeholder = 'Filter rows...';
+    input.intent = 'success';
+
+    console.log('Default NumericInput value is ' + input.value);
+
+    input.onSelectionChange((value) => {
+      console.log('The new value is ' + value);
+    });
   }
 
   testWhoAmI();
@@ -601,6 +615,7 @@
   testFileInput();
   testRadioGroup();
   testTextInput();
+  testNumericInput();
 
 </script>
 </body>
