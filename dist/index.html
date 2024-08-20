@@ -134,9 +134,36 @@
         ${nextRow}, 100
     `;
 
-    const tbl = new com.computablefacts.blueprintjs.MinimalTable(root);
-    tbl.columns = ['NIDEAD', 'CAGCOM', 'NESCAL', 'NUEXPL', 'CSOCTE', 'ATYPEP', 'NBATIM', 'CAGEXP'];
-    tbl.columnTypes = ['text', 'number', 'number', 'text', 'text', 'text', 'number', 'number'];
+    const tbl = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Table',
+      container: 'table',
+      columns: ['NIDEAD', 'CAGCOM', 'NESCAL', 'NUEXPL', 'CSOCTE', 'ATYPEP', 'NBATIM', 'CAGEXP'],
+      columnTypes: ['text', 'number', 'number', 'text', 'text', 'text', 'number', 'number'],
+      on_sort_columns: (column, order) => {
+        tbl.el.rows = []; // force table rendering (an update on the number of rows trigger a refresh)
+        columnsOrder = [[column, order]];
+        tbl.el.columns.forEach(col => {
+          if (col !== column) {
+            columnsOrder.push([col, 'ASC']);
+          }
+        });
+        httpClient.executeSqlQuery({
+          format: "arrays_with_header", sql_query: query(tbl.el.columns, columnsOrder, 0)
+        }).then(response => response.data).then(array => {
+          array.shift(); // remove header
+          tbl.el.rows = array;
+        }).catch(err => console.log(err));
+      },
+      on_fetch_next_rows: (nextRow) => {
+        httpClient.executeSqlQuery({
+          format: "arrays_with_header", sql_query: query(tbl.el.columns, columnsOrder, nextRow)
+        }).then(response => response.data).then(array => {
+          array.shift(); // remove header
+          tbl.el.rows = tbl.el.rows.concat(array);
+        }).catch(err => console.log(err))
+      },
+      on_selection_change: cells => console.log(cells),
+    });
 
     const httpClient = new com.computablefacts.platform.HttpClient();
     httpClient.init(baseUrl, apiKey);
@@ -144,37 +171,8 @@
       format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, 0)
     }).then(response => response.data).then(array => {
       array.shift(); // remove header
-      tbl.rows = array;
+      tbl.el.rows = array;
     }).catch(err => console.log(err))
-
-    tbl.onSortColumn((column, order) => {
-      tbl.rows = []; // force table rendering (an update on the number of rows trigger a refresh)
-      columnsOrder = [[column, order]];
-      tbl.columns.forEach(col => {
-        if (col !== column) {
-          columnsOrder.push([col, 'ASC']);
-        }
-      });
-      httpClient.executeSqlQuery({
-        format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, 0)
-      }).then(response => response.data).then(array => {
-        array.shift(); // remove header
-        tbl.rows = array;
-      }).catch(err => console.log(err));
-    });
-
-    tbl.onFetchNextRows((nextRow) => {
-      httpClient.executeSqlQuery({
-        format: "arrays_with_header", sql_query: query(tbl.columns, columnsOrder, nextRow)
-      }).then(response => response.data).then(array => {
-        array.shift(); // remove header
-        tbl.rows = tbl.rows.concat(array);
-      }).catch(err => console.log(err))
-    });
-
-    tbl.onSelectionChange((cells => {
-      console.log(cells);
-    }));
   }
 
   function testSelect1() {
@@ -183,29 +181,31 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
+    const items = ['A', 'B', 'C'];
+
     const createItem = (query) => {
       console.log('Create item \'' + query + '\'');
       return query;
     }
 
-    const items = ['A', 'B', 'C'];
-
-    const selectWithFilter = new com.computablefacts.blueprintjs.MinimalSelect(root, null, null, null, createItem);
-    selectWithFilter.items = items;
-    // selectWithFilter.selectedItem = 'B'
-
-    selectWithFilter.onSelectionChange((item) => {
-      console.log(item);
-    });
-
-    selectWithFilter.onFilterChange((query) => {
+    const filterChange = (query) => {
       const itemz = [];
       for (let i = 0; i < items.length; i++) {
         if (query === '' || items[i].toLowerCase().indexOf(query.toLowerCase()) >= 0) {
           itemz.push(items[i])
         }
       }
-      selectWithFilter.items = itemz;
+      select.el.items = itemz;
+    };
+
+    const select = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Select',
+      container: 'select-with-filter',
+      items: items,
+      item_create: createItem,
+      selected_item: 'A',
+      on_selection_change: item => console.log(item),
+      on_filter_change: filterChange,
     });
   }
 
@@ -215,15 +215,13 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const items = ['A', 'B', 'C'];
-
-    const selectWithoutFilter = new com.computablefacts.blueprintjs.MinimalSelect(root);
-    selectWithoutFilter.filterable = false;
-    selectWithoutFilter.items = items;
-    // selectWithoutFilter.selectedItem = 'B'
-
-    selectWithoutFilter.onSelectionChange((item) => {
-      console.log(item);
+    const select = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Select',
+      container: 'select-without-filter',
+      filterable: false,
+      items: ['A', 'B', 'C'],
+      selected_item: 'B',
+      on_selection_change: item => console.log(item),
     });
   }
 
@@ -233,10 +231,14 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const slider = new com.computablefacts.blueprintjs.MinimalSlider(root, 0, 100, 1, 10);
-
-    slider.onSelectionChange((value) => {
-      console.log(value);
+    const slider = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Slider',
+      container: 'slider',
+      min: 0,
+      max: 100,
+      increment: 1,
+      display_increment: 10,
+      on_selection_change: value => console.log(value),
     });
   }
 
@@ -246,47 +248,46 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const slider = new com.computablefacts.blueprintjs.MinimalRangeSlider(root, 0, 100, 1, 10, 25, 75);
-
-    slider.onSelectionChange((min, max) => {
-      console.log(min, max);
+    const slider = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'RangeSlider',
+      container: 'range-slider',
+      min: 0,
+      max: 100,
+      increment: 1,
+      display_increment: 10,
+      default_min_value: 25,
+      default_max_value: 75,
+      on_selection_change: (min, max) => console.log(min, max),
     });
   }
 
   function testDrawer() {
 
-    const root = document.getElementById('drawer');
-
-    const drawer = new com.computablefacts.blueprintjs.MinimalDrawer(root);
-
-    drawer.onOpen((el) => {
-      const div = document.createElement('div');
-      div.style.textAlign = 'center';
-      div.style.color = 'red';
-      div.style.padding = '20px';
-      div.innerText = 'Hello world!';
-      el.appendChild(div);
-    });
-
-    drawer.onClose((el) => {
-      console.log('Drawer closed!');
+    const drawer = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Drawer', container: 'drawer', on_open: el => {
+        const div = document.createElement('div');
+        div.style.textAlign = 'center';
+        div.style.color = 'red';
+        div.style.padding = '20px';
+        div.innerText = 'Hello world!';
+        el.appendChild(div);
+      }, on_close: el => console.log('Drawer closed!'),
     });
 
     window.showDrawer = function () {
-      drawer.show = true;
+      drawer.el.show = true;
     }
   }
 
   function testTabs() {
 
-    const root = document.getElementById('tabs');
-
-    const tabs = new com.computablefacts.blueprintjs.MinimalTabs(root);
-    tabs.onSelectionChange((tabName, tabBody) => {
-      if (document.querySelector('#tab').firstChild) {
-        document.querySelector('#tab').firstChild.remove();
-      }
-      document.querySelector('#tab').appendChild(tabBody);
+    const tabs = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Tabs', container: 'tabs', on_selection_change: (tabName, tabBody) => {
+        if (document.querySelector('#tab').firstChild) {
+          document.querySelector('#tab').firstChild.remove();
+        }
+        document.querySelector('#tab').appendChild(tabBody);
+      },
     });
 
     const tab1 = document.createElement('div');
@@ -307,21 +308,16 @@
     tab3.style.backgroundColor = 'blue';
     tab3.style.color = 'white';
 
-    tabs.addTab('Tab n°1', tab1);
-    tabs.addTab('Tab n°2', tab2);
-    tabs.addTab('Tab n°3', tab3);
-    tabs.selectTab('Tab n°2');
+    tabs.el.addTab('Tab n°1', tab1);
+    tabs.el.addTab('Tab n°2', tab2);
+    tabs.el.addTab('Tab n°3', tab3);
+    tabs.el.selectTab('Tab n°2');
   }
 
   function testSpinner() {
-
-    const root = document.getElementById('spinner');
-
-    const spinner = new com.computablefacts.blueprintjs.MinimalSpinner(root);
-
-    // for (let i = 0; i < 100; i++) {
-    // spinner.advance(i / 100);
-    //}
+    const spinner = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Spinner', container: 'spinner'
+    });
   }
 
   function testSwitch() {
@@ -329,21 +325,26 @@
     const root = document.getElementById('switch');
     root.style.width = '200px';
 
-    const switchz = new com.computablefacts.blueprintjs.MinimalSwitch(root, true, 'Sort by name', 'left', 'ASC',
-      'DESC');
-
-    switchz.onSelectionChange((status) => {
-      console.log('Selection changed to \'' + status + '\'!')
+    const switchz = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Switch',
+      container: 'switch',
+      checked: true,
+      label: 'Sort by name',
+      label_position: 'left',
+      label_checked: 'ASC',
+      label_unchecked: 'DESC',
+      on_selection_change: status => console.log('Selection changed to \'' + status + '\'!')
     });
   }
 
   function testToaster() {
 
-    const root = document.getElementById('toaster');
+    const toaster = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Toaster', container: 'toaster',
+    });
 
-    const toaster = new com.computablefacts.blueprintjs.MinimalToaster(root);
-    toaster.toast('An error occurred!', 'danger');
-    toaster.toast('Everything is fine!');
+    toaster.el.toast('An error occurred!', 'danger');
+    toaster.el.toast('Everything is fine!');
   }
 
   function testCard() {
@@ -357,82 +358,63 @@
     body.style.padding = '10px';
     body.innerText = 'Hello world!';
 
-    const card = new com.computablefacts.blueprintjs.MinimalCard(root, body);
-    // card.elevation = 2;
-    card.interactive = true;
-
-    card.onClick(() => {
-      console.log('Card clicked!');
+    const card = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Card', container: 'card', body: body, interactive: true, on_click: () => console.log('Card clicked!'),
     });
   }
 
   function testIcon() {
-
-    const root = document.getElementById('icon');
-
-    const icon = new com.computablefacts.blueprintjs.MinimalIcon(root, 'globe', 'danger');
-    icon.icon = 'graph';
-
-    icon.onClick(() => {
-      console.log('Icon clicked!');
+    const icon = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Icon', container: 'icon', icon: 'graph', intent: 'danger', on_click: () => console.log('Icon clicked!'),
     });
   }
 
   function testCheckbox() {
-
-    const root = document.getElementById('checkbox');
-
-    const checkbox = new com.computablefacts.blueprintjs.MinimalCheckbox(root, false, 'Ma checkbox', 'right');
-    // checkbox.disabled = true;
-
-    checkbox.onSelectionChange((status) => {
-      console.log('Checkbox clicked!');
+    const checkbox = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Checkbox',
+      container: 'icon',
+      checked: false,
+      label: 'Ma checkbox',
+      label_position: 'right',
+      on_selection_change: () => console.log('Checkbox clicked!'),
     });
   }
 
   function testDate() {
-
-    const root = document.getElementById('date');
-
-    const date = new com.computablefacts.blueprintjs.MinimalDate(root, 'dd/MM/yyyy');
-    date.shortcuts = true;
-    date.showActionsBar = true;
-
-    date.onSelectionChange((date) => {
-      console.log(date);
+    const date = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Date',
+      container: 'date',
+      format: 'dd/MM/yyyy',
+      shortcuts: true,
+      show_actions_bar: true,
+      on_selection_change: date => console.log(date),
     });
   }
 
   function testDatetime() {
-
-    const root = document.getElementById('datetime');
-
-    const datetime = new com.computablefacts.blueprintjs.MinimalDatetime(root, 'dd/MM/yyyy HH:mm', null, null, 'UTC');
-    // datetime.shortcuts = true;
-    // datetime.showActionsBar = true;
-    datetime.disableTimezone = true;
-
-    datetime.onSelectionChange((datetime) => {
-      console.log(datetime);
+    const date = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Datetime',
+      container: 'datetime',
+      format: 'dd/MM/yyyy HH:mm',
+      default_timezone: 'UTC',
+      disable_timezone: true,
+      on_selection_change: datetime => console.log(datetime),
     });
   }
 
   function testDateRange() {
 
-    const root = document.getElementById('daterange');
-
-    const daterange = new com.computablefacts.blueprintjs.MinimalDateRange(root);
-    daterange.shortcuts = false;
-    // daterange.disabled = true;
-    daterange.dateMin = new Date();
-
     const date = new Date();
     date.setDate(new Date().getDate() + 3); // add three days to today
 
-    daterange.dateMax = date;
-
-    daterange.onSelectionChange((minDate, maxDate) => {
-      console.log(minDate, maxDate);
+    const daterange = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'DateRange',
+      container: 'daterange',
+      date_min: new Date(),
+      date_max: date,
+      shortcuts: false,
+      disable_timezone: true,
+      on_selection_change: (minDate, maxDate) => console.log(minDate, maxDate),
     });
   }
 
@@ -495,23 +477,21 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
+    const items = ['A', 'B', 'C'];
+
     const createItem = (query) => {
       console.log('Create item \'' + query + '\'');
       return query;
     }
 
-    const items = ['A', 'B', 'C'];
-
-    const multiselect = new com.computablefacts.blueprintjs.MinimalMultiSelect(root, null, null, null, null,
-      createItem);
-    multiselect.items = items;
-    multiselect.selectedItems = ['B'];
-
-    multiselect.onSelectionChange((items) => {
-      console.log(items);
-    });
-    multiselect.onFilterChange((query) => {
-      console.log(query);
+    const multiselect = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'MultiSelect',
+      container: 'multiselect',
+      item_create: createItem,
+      items: items,
+      selected_items: ['B'],
+      on_selection_change: items => console.log(items),
+      on_filter_change: query => console.log('query=' + query),
     });
   }
 
@@ -523,111 +503,107 @@
 
     const items = ['A', 'B', 'C'];
 
-    const suggest = new com.computablefacts.blueprintjs.MinimalSuggest(root, x => x, x => x);
-    suggest.items = items;
-
-    suggest.onSelectionChange((item) => {
-      console.log(item);
-    });
-    suggest.onFilterChange((query) => {
-      console.log(query);
+    const suggest = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Suggest',
+      container: 'suggest',
+      items: items,
+      on_selection_change: items => console.log(items),
+      on_filter_change: query => console.log('query=' + query),
     });
   }
 
   function testFileInput() {
 
     const root = document.getElementById('file-input');
+    root.style.width = '500px';
 
-    const fileInput = new com.computablefacts.blueprintjs.MinimalFileInput(root);
-    // fileInput.disabled = true;
-    fileInput.text = 'Sélectionner un fichier...';
-    fileInput.buttonText = 'Rechercher...';
-
-    fileInput.onSelectionChange((file) => {
-      console.log(file);
+    const fileInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'FileInput',
+      container: 'file-input',
+      text: 'Sélectionner un fichier...',
+      buttonText: 'Rechercher...',
+      on_selection_change: file => console.log(file),
     });
   }
 
   function testRadioGroup() {
-
-    const root = document.getElementById('radio-group');
-
-    const group = new com.computablefacts.blueprintjs.MinimalRadioGroup(root, 'A Group of Radio Buttons :', true);
-    // group.disabled = true;
-    group.items = [{
-      label: 'Option A', value: 'a', disabled: false
-    }, {
-      label: 'Option B', value: 'b', disabled: true
-    }, {
-      label: 'Option C', value: 'c'
-    }];
-    group.selectedItem = 'a';
-
-    group.onSelectionChange((option) => {
-      console.log(option);
+    const radioGroup = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'RadioGroup', container: 'radio-group', label: 'A Group of Radio Buttons :', inline: true, items: [{
+        label: 'Option A', value: 'a', disabled: false
+      }, {
+        label: 'Option B', value: 'b', disabled: true
+      }, {
+        label: 'Option C', value: 'c'
+      }], selected_item: 'a', on_selection_change: selection => console.log(selection),
     });
   }
 
   function testTextInput() {
 
     const root = document.getElementById('text-input');
+    root.style.width = '300px';
 
-    const input = new com.computablefacts.blueprintjs.MinimalTextInput(root, 'john.doe@example.com', 'filter');
-    // input.disabled = true;
-    input.placeholder = 'Filter users...';
-    input.intent = 'danger';
-
-    console.log('Default TextInput value is ' + input.value);
+    const textInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'TextInput',
+      container: 'text-input',
+      default_value: 'john.doe@example.com',
+      icon: 'filter',
+      intent: 'danger',
+      placeholder: 'Filter users...',
+    });
   }
 
   function testNumericInput() {
 
     const root = document.getElementById('numeric-input');
+    root.style.width = '300px';
 
-    const input = new com.computablefacts.blueprintjs.MinimalNumericInput(root, -5, 5, 0.5, 2, 'th-filtered');
-    // input.disabled = true;
-    input.placeholder = 'Filter rows...';
-    input.intent = 'success';
-
-    console.log('Default NumericInput value is ' + input.value);
-
-    input.onValueChange((value) => {
-      console.log('The new value is ' + value);
+    const numericInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'NumericInput',
+      container: 'numeric-input',
+      min: -5,
+      max: 5,
+      increment: 0.5,
+      default_value: 2,
+      icon: 'th-filtered',
+      intent: 'success',
+      placeholder: 'Filter rows...',
+      on_value_change: value => console.log(value),
     });
   }
 
   function testButtonLeftIcon() {
-
-    const root = document.getElementById('button-left-icon');
-
-    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', 'download');
-    input.fillContainer = false;
-    input.disabled = true;
-
-    input.onClick(() => {
-      console.log('Button clicked!');
+    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Button',
+      container: 'button-left-icon',
+      label: 'Click me!',
+      left_icon: 'download',
+      fill_container: false,
+      on_click: () => console.log('Button clicked!'),
     });
   }
 
   function testButtonRightIcon() {
-
-    const root = document.getElementById('button-right-icon');
-
-    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', null, 'download');
-    input.fillContainer = false;
-
-    input.onClick(() => {
-      console.log('Button clicked!');
+    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Button',
+      container: 'button-right-icon',
+      label: 'Click me!',
+      right_icon: 'download',
+      fill_container: false,
+      on_click: () => console.log('Button clicked!'),
     });
   }
 
   function testButtonLoading() {
-
-    const root = document.getElementById('button-loading');
-
-    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', 'download');
-    input.fillContainer = false;
-    input.loading = true;
+    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+      type: 'Button',
+      container: 'button-loading',
+      label: 'Click me!',
+      left_icon: 'download',
+      fill_container: false,
+      loading: true,
+      on_click: () => console.log('Button clicked!'),
+    });
   }
 
   testWhoAmI();

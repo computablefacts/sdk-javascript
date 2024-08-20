@@ -34,6 +34,7 @@ import {MultiSelect2, Select2, Suggest2} from '@blueprintjs/select';
 import {TimePrecision} from '@blueprintjs/datetime';
 import {DateInput2, DateRangeInput2} from '@blueprintjs/datetime2';
 import {add, format, parse, sub} from "date-fns";
+import {strings} from "./strings";
 
 /**
  * @module blueprintjs
@@ -54,6 +55,201 @@ blueprintjs.Blueprintjs = class extends widgets.Widget {
    */
   constructor(container) {
     super(container);
+  }
+
+  /**
+   * Create a Blueprintjs widget from a JSON object.
+   *
+   * @param template
+   * @param obj
+   */
+  static create(template, obj) {
+
+    // {
+    //    type: '<string>',
+    //    container: '<string>',
+    //    el: null,
+    //    ...
+    // }
+    const container = template.querySelector(`#${obj.container}`);
+    if (!container) {
+      return obj;
+    }
+    switch (obj.type) {
+      case 'Table': {
+        obj.el = new blueprintjs.MinimalTable(container);
+        break;
+      }
+      case 'Select': {
+        const itemToText = obj.item_to_text;
+        const itemToLabel = obj.item_to_label;
+        const itemPredicate = obj.item_predicate;
+        const itemCreate = obj.item_create;
+        obj.el = new blueprintjs.MinimalSelect(container, itemToText, itemToLabel, itemPredicate, itemCreate);
+        break;
+      }
+      case 'Slider': {
+        const min = obj.min;
+        const max = obj.max;
+        const increment = obj.increment;
+        const displayIncrement = obj.display_increment;
+        obj.el = new blueprintjs.MinimalSlider(container, min, max, increment, displayIncrement);
+        break;
+      }
+      case 'RangeSlider': {
+        const min = obj.min;
+        const max = obj.max;
+        const increment = obj.increment;
+        const displayIncrement = obj.display_increment;
+        const defaultMinValue = obj.default_min_value;
+        const defaultMaxValue = obj.default_max_value;
+        obj.el = new blueprintjs.MinimalRangeSlider(container, min, max, increment, displayIncrement, defaultMinValue,
+          defaultMaxValue);
+        break;
+      }
+      case 'Drawer': {
+        const width = obj.width;
+        obj.el = new blueprintjs.MinimalDrawer(container, width);
+        break;
+      }
+      case 'Tabs': {
+        obj.el = new blueprintjs.MinimalTabs(container);
+        break;
+      }
+      case 'Spinner': {
+        const size = obj.size;
+        obj.el = new blueprintjs.MinimalSpinner(container, size);
+        break;
+      }
+      case 'Switch': {
+        const checked = obj.checked;
+        const label = obj.label;
+        const labelPosition = obj.label_position;
+        const labelChecked = obj.label_checked;
+        const labelUnchecked = obj.label_unchecked;
+        obj.el = new blueprintjs.MinimalSwitch(container, checked, label, labelPosition, labelChecked, labelUnchecked);
+        break;
+      }
+      case 'Toaster': {
+        obj.el = new blueprintjs.MinimalToaster(container);
+        break;
+      }
+      case 'Card': {
+        const body = obj.body;
+        obj.el = new blueprintjs.MinimalCard(container, body);
+        break;
+      }
+      case 'Icon': {
+        const icon = obj.icon;
+        const intent = obj.intent;
+        obj.el = new blueprintjs.MinimalIcon(container, icon, intent);
+        break;
+      }
+      case 'Checkbox': {
+        const checked = obj.checked;
+        const label = obj.label;
+        const labelPosition = obj.label_position;
+        obj.el = new blueprintjs.MinimalCheckbox(container, checked, label, labelPosition);
+        break;
+      }
+      case 'Date': {
+        const format = obj.format;
+        const minDate = obj.min_date;
+        const maxDate = obj.max_date;
+        obj.el = new blueprintjs.MinimalDate(container, format, minDate, maxDate);
+        break;
+      }
+      case 'Datetime': {
+        const format = obj.format;
+        const minDate = obj.min_date;
+        const maxDate = obj.max_date;
+        const timePrecision = obj.default_precision;
+        const defaultTimezone = obj.default_timezone;
+        obj.el = new blueprintjs.MinimalDatetime(container, format, minDate, maxDate, timePrecision, defaultTimezone);
+        break;
+      }
+      case 'DateRange': {
+        const format = obj.format;
+        const minDate = obj.min_date;
+        const maxDate = obj.max_date;
+        obj.el = new blueprintjs.MinimalDateRange(container, format, minDate, maxDate);
+        break;
+      }
+      case 'MultiSelect': {
+        const itemToText = obj.item_to_text;
+        const itemToLabel = obj.item_to_label;
+        const itemToTag = obj.item_to_tag;
+        const itemPredicate = obj.item_predicate;
+        const itemCreate = obj.item_create;
+        obj.el = new blueprintjs.MinimalMultiSelect(container, itemToText, itemToLabel, itemToTag, itemPredicate,
+          itemCreate);
+        break;
+      }
+      case 'Suggest': {
+        const itemToText = obj.item_to_text;
+        const itemToLabel = obj.item_to_label;
+        const itemPredicate = obj.item_predicate;
+        obj.el = new blueprintjs.MinimalSuggest(container, itemToText, itemToLabel, itemPredicate);
+        break;
+      }
+      case 'FileInput': {
+        obj.el = new blueprintjs.MinimalFileInput(container);
+        break;
+      }
+      case 'RadioGroup': {
+        const label = obj.label;
+        const inline = obj.inline;
+        obj.el = new blueprintjs.MinimalRadioGroup(container, label, inline);
+        break;
+      }
+      case 'TextInput': {
+        const defaultValue = obj.default_value;
+        const icon = obj.icon;
+        const intent = obj.intent;
+        obj.el = new blueprintjs.MinimalTextInput(container, defaultValue, icon, intent);
+        break;
+      }
+      case 'NumericInput': {
+        const min = obj.min;
+        const max = obj.max;
+        const increment = obj.increment;
+        const defaultValue = obj.default_value;
+        const icon = obj.icon;
+        const intent = obj.intent;
+        obj.el = new blueprintjs.MinimalNumericInput(container, min, max, increment, defaultValue, icon, intent);
+        break;
+      }
+      case 'Button': {
+        const label = obj.label;
+        const labelPosition = obj.label_position;
+        const leftIcon = obj.left_icon;
+        const rightIcon = obj.right_icon;
+        const intent = obj.intent;
+        obj.el = new blueprintjs.MinimalButton(container, label, labelPosition, leftIcon, rightIcon, intent);
+        break;
+      }
+      default:
+        obj.el = null;
+        break;
+    }
+    if (obj.el) {
+      for (let key in obj) {
+        if (key === 'type' || key === 'container' || key === 'el') {
+          continue;
+        }
+        const prop = strings.snakeCaseToCamelCase(key);
+        const desc = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(obj.el), prop);
+        // console.log(prop, desc);
+        if (desc) {
+          if (desc.set) { // setter
+            obj.el[prop] = obj[key];
+          } else if (desc.writable) { // function
+            obj.el[prop](obj[key]);
+          }
+        }
+      }
+    }
+    return obj;
   }
 
   /**
