@@ -13,6 +13,16 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="form">
+  <div style="display:flex;flex-direction:row;align-items:center;background-color:yellow;">
+    <div id="form-text-input" style="width:50%;"></div>
+    <div id="form-radio-buttons" style="width:50%"></div>
+  </div>
+  <div style="display:flex;flex-direction:row;align-items:center;background-color:green;">
+    <div style="width:50%"></div>
+    <div id="form-button" style="width:50%"></div>
+  </div>
+</div>
 <div id="button-loading"></div>
 <div id="button-left-icon"></div>
 <div id="button-right-icon"></div>
@@ -606,6 +616,39 @@
     });
   }
 
+  function testPopulate() {
+
+    const textInput = {
+      type: 'TextInput', container: 'form-text-input', icon: 'filter', placeholder: 'Filter stuff...',
+    };
+
+    const radioButtons = {
+      type: 'RadioGroup',
+      container: 'form-radio-buttons',
+      label: 'Another Group of Radio Buttons :',
+      inline: true,
+      items: [{
+        label: 'Option A', value: 'a', disabled: false
+      }, {
+        label: 'Option B', value: 'b', disabled: true
+      }, {
+        label: 'Option C', value: 'c'
+      }],
+      selected_item: 'a',
+    };
+
+    const button = {
+      type: 'Button',
+      container: 'form-button',
+      label: 'Submit',
+      right_icon: 'chevron-right',
+      on_click: () => console.log(textInput.el.value, radioButtons.el.selectedItem),
+    };
+
+    com.computablefacts.blueprintjs.Blueprintjs.populate(document.getElementById('form'),
+      [textInput, radioButtons, button]);
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -633,6 +676,7 @@
   testButtonLeftIcon();
   testButtonRightIcon();
   testButtonLoading();
+  testPopulate();
 
 </script>
 </body>

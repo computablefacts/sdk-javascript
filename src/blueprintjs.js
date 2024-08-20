@@ -58,6 +58,16 @@ blueprintjs.Blueprintjs = class extends widgets.Widget {
   }
 
   /**
+   * Populate a DOM element with Blueprintjs components.
+   *
+   * @param template the DOM element.
+   * @param objs the components.
+   */
+  static populate(template, objs) {
+    objs.forEach(obj => blueprintjs.Blueprintjs.component(template, obj));
+  }
+
+  /**
    * Create a Blueprintjs component from a JSON object.
    *
    * @param template the DOM element where the component will be added.
