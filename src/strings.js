@@ -387,3 +387,14 @@ strings.camelToSnakeCase = function (str) {
   return typeof str === 'string' ? str.replace(/[A-Z]/g,
     (letter, idx) => idx === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`) : null;
 }
+
+/**
+ * Convert a string from snake case to camel case.
+ *
+ * @param {string} str the string in snake case.
+ * @returns {string} the string in camel case.
+ */
+strings.snakeCaseToCamelCase = function (str) {
+  return typeof str === 'string' ? str.replace(/_[a-z]/g,
+    (group, idx) => idx === 0 ? group.replace('_', '') : group.toUpperCase().replace('_', '')) : null;
+}

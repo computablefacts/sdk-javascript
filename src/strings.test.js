@@ -215,3 +215,11 @@ test('camel_case_to_snake_case', () => {
   expect(strings.camelToSnakeCase('camelCase')).toStrictEqual('camel_case');
   expect(strings.camelToSnakeCase('PascalCase')).toStrictEqual('pascal_case');
 });
+
+test('snake_case_to_camel_case', () => {
+  expect(strings.snakeCaseToCamelCase(null)).toStrictEqual(null);
+  expect(strings.snakeCaseToCamelCase('')).toStrictEqual('');
+  expect(strings.snakeCaseToCamelCase(123)).toStrictEqual(null);
+  expect(strings.snakeCaseToCamelCase('snake_case')).toStrictEqual('snakeCase');
+  expect(strings.snakeCaseToCamelCase('_snake_case')).toStrictEqual('snakeCase');
+});
