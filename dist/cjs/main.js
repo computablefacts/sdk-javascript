@@ -2705,6 +2705,128 @@ blueprintjs.MinimalNumericInput = class extends blueprintjs.Blueprintjs {
 };
 
 /**
+ * A skeleton to ease the creation of a minimal Blueprintjs button element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalButton}
+ */
+blueprintjs.MinimalButton = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} label the switch label.
+   * @param {string} labelPosition the switch label position (in {left, center, right}) in respect to the element (optional).
+   * @param {string} leftIcon the left icon name (optional).
+   * @param {string} rightIcon the right icon name (optional).
+   * @param {string} intent the input intent in {none, primary, success, warning, danger} (optional).
+   *
+   * @constructor
+   */
+  constructor(container, label, labelPosition, leftIcon, rightIcon, intent) {
+    super(container);
+    this.label_ = label;
+    this.labelPosition_ = labelPosition === 'left' ? core.Alignment.LEFT : labelPosition === 'right' ? core.Alignment.RIGHT
+      : core.Alignment.CENTER;
+    this.leftIcon_ = leftIcon;
+    this.rightIcon_ = rightIcon;
+    this.intent_ = intent;
+    this.observers_ = new observers.Subject();
+    this.disabled_ = false;
+    this.loading_ = false;
+    this.fillContainer_ = true;
+    this.render();
+  }
+
+  get leftIcon() {
+    return this.leftIcon_;
+  }
+
+  set leftIcon(value) {
+    this.leftIcon_ = value;
+    this.render();
+  }
+
+  get rightIcon() {
+    return this.rightIcon_;
+  }
+
+  set rightIcon(value) {
+    this.rightIcon_ = value;
+    this.render();
+  }
+
+  get intent() {
+    return this.intent_;
+  }
+
+  set intent(value) {
+    this.intent_ = value;
+    this.render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get loading() {
+    return this.loading_;
+  }
+
+  set loading(value) {
+    this.loading_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `click` event.
+   *
+   * @param {function(void): void} callback the callback to call when the event is triggered.
+   * @name onClick
+   * @function
+   * @public
+   */
+  onClick(callback) {
+    this.observers_.register('click', () => {
+      // console.log('Clicked!');
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  _newElement() {
+    return React__default["default"].createElement(core.Button, {
+      text: this.label_,
+      alignText: this.labelPosition_,
+      disabled: this.disabled,
+      fill: this.fillContainer,
+      loading: this.loading,
+      icon: this.leftIcon,
+      rightIcon: this.rightIcon,
+      intent: this.intent,
+      onClick: () => {
+        this.observers_.notify('click');
+      }
+    });
+  }
+};
+
+/**
  * @module caches
  */
 const caches = {};

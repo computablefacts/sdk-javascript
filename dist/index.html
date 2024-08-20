@@ -13,6 +13,9 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="button-loading"></div>
+<div id="button-left-icon"></div>
+<div id="button-right-icon"></div>
 <div id="numeric-input"></div>
 <div id="text-input"></div>
 <div id="radio-group"></div>
@@ -580,6 +583,7 @@
   function testNumericInput() {
 
     const root = document.getElementById('numeric-input');
+
     const input = new com.computablefacts.blueprintjs.MinimalNumericInput(root, -5, 5, 0.5, 2, 'th-filtered');
     // input.disabled = true;
     input.placeholder = 'Filter rows...';
@@ -590,6 +594,40 @@
     input.onValueChange((value) => {
       console.log('The new value is ' + value);
     });
+  }
+
+  function testButtonLeftIcon() {
+
+    const root = document.getElementById('button-left-icon');
+
+    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', 'download');
+    input.fillContainer = false;
+    input.disabled = true;
+
+    input.onClick(() => {
+      console.log('Button clicked!');
+    });
+  }
+
+  function testButtonRightIcon() {
+
+    const root = document.getElementById('button-right-icon');
+
+    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', null, 'download');
+    input.fillContainer = false;
+
+    input.onClick(() => {
+      console.log('Button clicked!');
+    });
+  }
+
+  function testButtonLoading() {
+
+    const root = document.getElementById('button-loading');
+
+    const input = new com.computablefacts.blueprintjs.MinimalButton(root, 'Click me!', 'center', 'download');
+    input.fillContainer = false;
+    input.loading = true;
   }
 
   testWhoAmI();
@@ -616,6 +654,9 @@
   testRadioGroup();
   testTextInput();
   testNumericInput();
+  testButtonLeftIcon();
+  testButtonRightIcon();
+  testButtonLoading();
 
 </script>
 </body>
