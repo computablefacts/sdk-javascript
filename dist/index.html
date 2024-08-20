@@ -134,7 +134,7 @@
         ${nextRow}, 100
     `;
 
-    const tbl = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const tbl = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Table',
       container: 'table',
       columns: ['NIDEAD', 'CAGCOM', 'NESCAL', 'NUEXPL', 'CSOCTE', 'ATYPEP', 'NBATIM', 'CAGEXP'],
@@ -198,7 +198,7 @@
       select.el.items = itemz;
     };
 
-    const select = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const select = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Select',
       container: 'select-with-filter',
       items: items,
@@ -215,7 +215,7 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const select = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const select = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Select',
       container: 'select-without-filter',
       filterable: false,
@@ -231,7 +231,7 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const slider = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const slider = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Slider',
       container: 'slider',
       min: 0,
@@ -248,7 +248,7 @@
     root.style.width = '300px';
     root.style.height = '50px';
 
-    const slider = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const slider = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'RangeSlider',
       container: 'range-slider',
       min: 0,
@@ -263,7 +263,7 @@
 
   function testDrawer() {
 
-    const drawer = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const drawer = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Drawer', container: 'drawer', on_open: el => {
         const div = document.createElement('div');
         div.style.textAlign = 'center';
@@ -281,7 +281,7 @@
 
   function testTabs() {
 
-    const tabs = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const tabs = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Tabs', container: 'tabs', on_selection_change: (tabName, tabBody) => {
         if (document.querySelector('#tab').firstChild) {
           document.querySelector('#tab').firstChild.remove();
@@ -315,7 +315,7 @@
   }
 
   function testSpinner() {
-    const spinner = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const spinner = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Spinner', container: 'spinner'
     });
   }
@@ -325,7 +325,7 @@
     const root = document.getElementById('switch');
     root.style.width = '200px';
 
-    const switchz = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const switchz = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Switch',
       container: 'switch',
       checked: true,
@@ -339,7 +339,7 @@
 
   function testToaster() {
 
-    const toaster = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const toaster = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Toaster', container: 'toaster',
     });
 
@@ -358,19 +358,19 @@
     body.style.padding = '10px';
     body.innerText = 'Hello world!';
 
-    const card = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const card = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Card', container: 'card', body: body, interactive: true, on_click: () => console.log('Card clicked!'),
     });
   }
 
   function testIcon() {
-    const icon = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const icon = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Icon', container: 'icon', icon: 'graph', intent: 'danger', on_click: () => console.log('Icon clicked!'),
     });
   }
 
   function testCheckbox() {
-    const checkbox = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const checkbox = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Checkbox',
       container: 'icon',
       checked: false,
@@ -381,7 +381,7 @@
   }
 
   function testDate() {
-    const date = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const date = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Date',
       container: 'date',
       format: 'dd/MM/yyyy',
@@ -392,7 +392,7 @@
   }
 
   function testDatetime() {
-    const date = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const date = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Datetime',
       container: 'datetime',
       format: 'dd/MM/yyyy HH:mm',
@@ -407,7 +407,7 @@
     const date = new Date();
     date.setDate(new Date().getDate() + 3); // add three days to today
 
-    const daterange = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const daterange = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'DateRange',
       container: 'daterange',
       date_min: new Date(),
@@ -484,7 +484,7 @@
       return query;
     }
 
-    const multiselect = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const multiselect = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'MultiSelect',
       container: 'multiselect',
       item_create: createItem,
@@ -503,7 +503,7 @@
 
     const items = ['A', 'B', 'C'];
 
-    const suggest = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const suggest = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Suggest',
       container: 'suggest',
       items: items,
@@ -517,7 +517,7 @@
     const root = document.getElementById('file-input');
     root.style.width = '500px';
 
-    const fileInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const fileInput = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'FileInput',
       container: 'file-input',
       text: 'Sélectionner un fichier...',
@@ -527,7 +527,7 @@
   }
 
   function testRadioGroup() {
-    const radioGroup = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const radioGroup = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'RadioGroup', container: 'radio-group', label: 'A Group of Radio Buttons :', inline: true, items: [{
         label: 'Option A', value: 'a', disabled: false
       }, {
@@ -543,7 +543,7 @@
     const root = document.getElementById('text-input');
     root.style.width = '300px';
 
-    const textInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const textInput = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'TextInput',
       container: 'text-input',
       default_value: 'john.doe@example.com',
@@ -558,7 +558,7 @@
     const root = document.getElementById('numeric-input');
     root.style.width = '300px';
 
-    const numericInput = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const numericInput = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'NumericInput',
       container: 'numeric-input',
       min: -5,
@@ -573,7 +573,7 @@
   }
 
   function testButtonLeftIcon() {
-    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const button = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Button',
       container: 'button-left-icon',
       label: 'Click me!',
@@ -584,7 +584,7 @@
   }
 
   function testButtonRightIcon() {
-    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const button = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Button',
       container: 'button-right-icon',
       label: 'Click me!',
@@ -595,7 +595,7 @@
   }
 
   function testButtonLoading() {
-    const button = com.computablefacts.blueprintjs.Blueprintjs.create(document, {
+    const button = com.computablefacts.blueprintjs.Blueprintjs.component(document, {
       type: 'Button',
       container: 'button-loading',
       label: 'Click me!',

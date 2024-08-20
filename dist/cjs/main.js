@@ -675,12 +675,12 @@ blueprintjs.Blueprintjs = class extends widgets.Widget {
   }
 
   /**
-   * Create a Blueprintjs widget from a JSON object.
+   * Create a Blueprintjs component from a JSON object.
    *
-   * @param template
-   * @param obj
+   * @param template the DOM element where the component will be added.
+   * @param obj the component properties.
    */
-  static create(template, obj) {
+  static component(template, obj) {
 
     // {
     //    type: '<string>',
