@@ -12,6 +12,7 @@ import {
   Drawer,
   FileInput,
   Icon,
+  InputGroup,
   Intent,
   Menu,
   MenuItem,
@@ -2266,6 +2267,108 @@ blueprintjs.MinimalRadioGroup = class extends blueprintjs.Blueprintjs {
           this.observers_.notify('selection-change', selection);
         }
       },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs text input element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.InputGroup}
+ */
+blueprintjs.MinimalTextInput = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} icon the icon name (optional).
+   * @param {string} intent the input intent in {none, primary, success, warning, danger} (optional).
+   *
+   * @constructor
+   */
+  constructor(container, icon, intent) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.id_ = 'i' + Math.random().toString(36).substring(2, 12);
+    this.icon_ = icon;
+    this.intent_ = intent;
+    this.disabled_ = false;
+    this.fillContainer_ = true;
+    this.placeholder_ = null;
+    this.defaultText_ = null;
+    this.text_ = null;
+    this.render();
+  }
+
+  get icon() {
+    return this.icon_;
+  }
+
+  set icon(value) {
+    this.icon_ = value;
+    this.render();
+  }
+
+  get intent() {
+    return this.intent_;
+  }
+
+  set intent(value) {
+    this.intent_ = value;
+    this.render();
+  }
+
+  get fillContainer() {
+    return this.fillContainer_;
+  }
+
+  set fillContainer(value) {
+    this.fillContainer_ = value;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get placeholder() {
+    return this.placeholder_;
+  }
+
+  set placeholder(value) {
+    this.placeholder_ = value;
+    this.render();
+  }
+
+  get defaultText() {
+    return this.defaultText_;
+  }
+
+  set defaultText(value) {
+    this.defaultText_ = value;
+    this.render();
+  }
+
+  get text() {
+    return document.getElementById(this.id_).value;
+  }
+
+  _newElement() {
+    return React.createElement(InputGroup, {
+      type: 'text',
+      id: this.id_,
+      disabled: this.disabled,
+      placeholder: this.placeholder,
+      defaultValue: this.defaultText,
+      fill: this.fillContainer,
+      leftIcon: this.icon,
+      intent: this.intent,
     });
   }
 }

@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="text-input"></div>
 <div id="radio-group"></div>
 <div id="file-input"></div>
 <div id="suggest"></div>
@@ -563,6 +564,20 @@
     });
   }
 
+  function testTextInput() {
+
+    const root = document.getElementById('text-input');
+
+    const input = new com.computablefacts.blueprintjs.MinimalTextInput(root);
+    // input.disabled = true;
+    input.placeholder = 'Filter users...';
+    input.defaultText = 'john.doe@example.com';
+    input.icon = 'filter';
+    input.intent = 'danger';
+
+    console.log(input.text);
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -585,6 +600,7 @@
   testSuggest();
   testFileInput();
   testRadioGroup();
+  testTextInput();
 
 </script>
 </body>
