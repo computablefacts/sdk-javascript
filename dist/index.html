@@ -13,6 +13,7 @@
   <link href="blueprintjs/blueprint-datetime.css" rel="stylesheet"/>
 </head>
 <body>
+<div id="radio-group"></div>
 <div id="file-input"></div>
 <div id="suggest"></div>
 <div id="multiselect"></div>
@@ -64,47 +65,47 @@
 
   function testWhoAmI() {
 
-  const httpClient = new com.computablefacts.platform.HttpClient();
-  httpClient.init(baseUrl, apiKey);
-  httpClient.whoAmI().then(response => console.log(response));
-/*
-  httpClient.findObjects({
-    format: 'arrays', dataset: 'rnic-t4-2023', sample_size: 10, cursor: null, json_query: 'TEXT:vérif*',
-  }).then(response => {
-    return httpClient.getObjects({
-      dataset: 'test-ocr-irve',
-      json_ids: response.data,
-    });
-  }).then(response => console.log(response));
-*/
-/*
-  httpClient.findTerms({
-    dataset: 'test-ocr-irve', sample_size: 10, json_query: 'TEXT:blabla*',
-  }).then(response => console.log(response));
-*/
-/*
-  httpClient.executeSqlQuery({
-    format: 'arrays_with_header', invalidate_cache: true, force_rebuild: true, sql_query: 'SELECT ID FROM tmp_docs_irve LIMIT 30',
-  }).then(response => console.log(response));
-*/
+    const httpClient = new com.computablefacts.platform.HttpClient();
+    httpClient.init(baseUrl, apiKey);
+    httpClient.whoAmI().then(response => console.log(response));
+    /*
+      httpClient.findObjects({
+        format: 'arrays', dataset: 'rnic-t4-2023', sample_size: 10, cursor: null, json_query: 'TEXT:vérif*',
+      }).then(response => {
+        return httpClient.getObjects({
+          dataset: 'test-ocr-irve',
+          json_ids: response.data,
+        });
+      }).then(response => console.log(response));
+    */
+    /*
+      httpClient.findTerms({
+        dataset: 'test-ocr-irve', sample_size: 10, json_query: 'TEXT:blabla*',
+      }).then(response => console.log(response));
+    */
+    /*
+      httpClient.executeSqlQuery({
+        format: 'arrays_with_header', invalidate_cache: true, force_rebuild: true, sql_query: 'SELECT ID FROM tmp_docs_irve LIMIT 30',
+      }).then(response => console.log(response));
+    */
     httpClient.executeSqlQuery({
       format: 'arrays_with_header',
       invalidate_cache: true,
       sql_query: 'SELECT ID FROM tmp_copros_clientes_2_3_denormalise LIMIT 30',
     }).then(response => console.log(response));
 
-/*
-  httpClient.getObjects({
-    dataset: 'test-ocr-irve',
-    json_ids: ['85723|2023-12-13T21:28:52.610Z'],
-  }).then(response => console.log(response));
-*/
-/*
-  httpClient.getObjects({
-    dataset: 'bamhvp2009',
-    json_ids: ['2fsxq|2022-06-01T14:03:03.815Z'],
-  }).then(response => console.log(response));
-*/
+    /*
+      httpClient.getObjects({
+        dataset: 'test-ocr-irve',
+        json_ids: ['85723|2023-12-13T21:28:52.610Z'],
+      }).then(response => console.log(response));
+    */
+    /*
+      httpClient.getObjects({
+        dataset: 'bamhvp2009',
+        json_ids: ['2fsxq|2022-06-01T14:03:03.815Z'],
+      }).then(response => console.log(response));
+    */
   }
 
   function testTable() {
@@ -324,7 +325,7 @@
     root.style.width = '200px';
 
     const switchz = new com.computablefacts.blueprintjs.MinimalSwitch(root, true, 'Sort by name', 'left', 'ASC',
-        'DESC');
+      'DESC');
 
     switchz.onSelectionChange((status) => {
       console.log('Selection changed to \'' + status + '\'!')
@@ -497,7 +498,7 @@
     const items = ['A', 'B', 'C'];
 
     const multiselect = new com.computablefacts.blueprintjs.MinimalMultiSelect(root, null, null, null, null,
-        createItem);
+      createItem);
     multiselect.items = items;
     multiselect.selectedItems = ['B'];
 
@@ -542,6 +543,26 @@
     });
   }
 
+  function testRadioGroup() {
+
+    const root = document.getElementById('radio-group');
+
+    const group = new com.computablefacts.blueprintjs.MinimalRadioGroup(root, 'A Group of Radio Buttons :', true);
+    // group.disabled = true;
+    group.items = [{
+      label: 'Option A', value: 'a', disabled: false
+    }, {
+      label: 'Option B', value: 'b', disabled: true
+    }, {
+      label: 'Option C', value: 'c'
+    }];
+    group.selectedItem = 'a';
+
+    group.onSelectionChange((option) => {
+      console.log(option);
+    });
+  }
+
   testWhoAmI();
   testTable();
   testSelect1();
@@ -563,6 +584,7 @@
   testMultiSelect();
   testSuggest();
   testFileInput();
+  testRadioGroup();
 
 </script>
 </body>

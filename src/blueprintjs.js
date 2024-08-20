@@ -16,6 +16,7 @@ import {
   Menu,
   MenuItem,
   Position,
+  RadioGroup,
   RangeSlider,
   Slider,
   Spinner,
@@ -246,11 +247,11 @@ blueprintjs.MinimalTable = class extends blueprintjs.Blueprintjs {
 
   _newCell(self, rowIdx, colIdx) {
     return self.cellRenderer_ ? self.cellRenderer_(rowIdx, colIdx, self.rows[rowIdx][colIdx]) : React.createElement(
-        Cell, {
-          rowIndex: rowIdx, columnIndex: colIdx, style: {
-            'text-align': self.columnTypes[colIdx] === 'number' ? 'right' : 'left'
-          }, children: React.createElement('div', {}, self.rows[rowIdx][colIdx]),
-        });
+      Cell, {
+        rowIndex: rowIdx, columnIndex: colIdx, style: {
+          'text-align': self.columnTypes[colIdx] === 'number' ? 'right' : 'left'
+        }, children: React.createElement('div', {}, self.rows[rowIdx][colIdx]),
+      });
   }
 
   _newColumnHeader(self, column) {
@@ -502,7 +503,7 @@ blueprintjs.MinimalSelect = class extends blueprintjs.Blueprintjs {
   _newButton() {
     return React.createElement(Button, {
       text: this.selectedItem ? this.itemToText_ ? this.itemToText_(this.selectedItem) : this.selectedItem
-          : this.defaultText,
+        : this.defaultText,
       alignText: 'left',
       rightIcon: 'double-caret-vertical',
       fill: this.fillContainer,
@@ -1577,7 +1578,7 @@ blueprintjs.MinimalDatetime = class extends blueprintjs.MinimalDate {
   constructor(container, format, minDate, maxDate, timePrecision, defaultTimezone) {
     super(container, format ? format : 'yyyy-MM-dd HH:mm', minDate, maxDate);
     this.timePrecision_ = timePrecision === 'hours' ? TimePrecision.HOUR_24 : timePrecision === 'seconds'
-        ? TimePrecision.SECOND : TimePrecision.MINUTE;
+      ? TimePrecision.SECOND : TimePrecision.MINUTE;
     this.defaultTimezone_ = defaultTimezone ? defaultTimezone : 'Etc/UTC';
     this.disableTimezone_ = false;
     this.render();
@@ -1879,7 +1880,7 @@ blueprintjs.MinimalMultiSelect = class extends blueprintjs.Blueprintjs {
       onItemSelect: (item) => {
         // If the user selects twice the same item, do not add it twice to the selection
         const pos = this.selectedItems.map(i => this.itemToText_ ? this.itemToText_(i) : i).indexOf(
-            this.itemToText_ ? this.itemToText_(item) : item);
+          this.itemToText_ ? this.itemToText_(item) : item);
         if (pos !== 0 && pos <= -1) {
           this.selectedItems_.push(item);
           this.render();
@@ -2176,6 +2177,94 @@ blueprintjs.MinimalFileInput = class extends blueprintjs.Blueprintjs {
         this.text = el.target.files[0].name;
         this.render();
         this.observers_.notify('selection-change', el.target.files[0]);
+      },
+    });
+  }
+}
+
+/**
+ * A skeleton to ease the creation of a minimal Blueprintjs radio group element.
+ *
+ * @memberOf module:blueprintjs
+ * @extends {blueprintjs.Blueprintjs}
+ * @type {blueprintjs.MinimalRadioGroup}
+ */
+blueprintjs.MinimalRadioGroup = class extends blueprintjs.Blueprintjs {
+
+  /**
+   * @param {Element} container the parent element.
+   * @param {string} label the group label (optional).
+   * @param {boolean} inline true iif the radio buttons are to be displayed inline horizontally, false otherwise. (optional).
+   * @constructor
+   */
+  constructor(container, label, inline) {
+    super(container);
+    this.observers_ = new observers.Subject();
+    this.label_ = label;
+    this.inline_ = inline;
+    this.disabled_ = false;
+    this.items_ = [];
+    this.selectedItem_ = null;
+    this.render();
+  }
+
+  get disabled() {
+    return this.disabled_;
+  }
+
+  set disabled(value) {
+    this.disabled_ = value;
+    this.render();
+  }
+
+  get items() {
+    return this.items_;
+  }
+
+  set items(values) {
+    this.items_ = values;
+    this.render();
+  }
+
+  get selectedItem() {
+    return this.selectedItem_;
+  }
+
+  set selectedItem(value) {
+    this.selectedItem_ = value;
+    this.render();
+  }
+
+  /**
+   * Listen to the `selection-change` event.
+   *
+   * @param {function(string): void} callback the callback to call when the event is triggered.
+   * @name onSelectionChange
+   * @function
+   * @public
+   */
+  onSelectionChange(callback) {
+    this.observers_.register('selection-change', (value) => {
+      // console.log('Selected option is ', value);
+      if (callback) {
+        callback(value);
+      }
+    });
+  }
+
+  _newElement() {
+    return React.createElement(RadioGroup, {
+      label: this.label_,
+      inline: this.inline_,
+      disabled: this.disabled,
+      options: this.items,
+      selectedValue: this.selectedItem,
+      onChange: (event) => {
+        const selection = this.items.find(item => item.value === event.currentTarget.value);
+        if (selection) {
+          this.selectedItem = selection.value;
+          this.observers_.notify('selection-change', selection);
+        }
       },
     });
   }
