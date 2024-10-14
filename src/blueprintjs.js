@@ -2405,7 +2405,7 @@ blueprintjs.MinimalFileInput = class extends blueprintjs.Blueprintjs {
       onInputChange: (el) => {
         this.text = el.target.files[0].name;
         this.render();
-        this.observers_.notify('selection-change', el.target.files[0]);
+        this.observers_.notify('selection-change', this.multiple ? el.target.files : el.target.files[0]);
       },
     });
   }
